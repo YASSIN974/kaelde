@@ -43,6 +43,9 @@ public class DiscordCommands extends Commands implements EventListener {
         }
         MessageReceivedEvent messageEvent = (MessageReceivedEvent) event;
         String[] args = messageEvent.getMessage().getContent().split(" ");
+        if (!args[0].startsWith("!")) {
+            return;
+        }
         handleCommand(messageEvent.getMessage(), this.getCommand(args[0]), args[0], args);
     }
 }
