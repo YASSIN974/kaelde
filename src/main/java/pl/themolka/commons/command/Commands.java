@@ -1,14 +1,10 @@
 package pl.themolka.commons.command;
 
+import net.dv8tion.jda.core.entities.Message;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.command.CommandSender;
+import java.util.*;
 
 public abstract class Commands {
     private final Map<String, Command> commandMap = new HashMap<>();
@@ -33,24 +29,14 @@ public abstract class Commands {
         return commands;
     }
 
-    public abstract void handleCommand(CommandSender sender, CommandContext context);
+    public abstract void handleCommand(Message message, CommandContext context);
 
-    public void handleCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void handleCommand(Message sender, Command command, String label, String[] args) {
         this.handleCommand(sender, command, label, args, new CommandContextParser());
     }
 
-    public void handleCommand(CommandSender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
+    public void handleCommand(Message sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
         this.handleCommand(sender, parser.parse(command, label, args));
-    }
-
-    public abstract List<String> handleCompleter(CommandSender sender, CommandContext context);
-
-    public List<String> handleCompleter(CommandSender sender, Command command, String label, String[] args) {
-        return this.handleCompleter(sender, command, label, args, new CommandContextParser());
-    }
-
-    public List<String> handleCompleter(CommandSender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
-        return this.handleCompleter(sender, parser.parse(command, label, args));
     }
 
     public void registerCommand(Command command) {
@@ -94,25 +80,6 @@ public abstract class Commands {
     }
 
     public void registerCommandMethod(Method method, Object object, CommandInfo info) {
-        Method completer = null;
-        if (!info.completer().isEmpty()) {
-            try {
-                completer = object.getClass().getDeclaredMethod(info.completer(), CommandSender.class, CommandContext.class);
-                completer.setAccessible(true);
-            } catch (NoSuchMethodException ignored) {
-            }
-        }
-
-        this.registerCommand(new Command(
-                info.name(),
-                info.description(),
-                info.min(),
-                info.usage(),
-                info.userOnly(),
-                info.flags(), info.permission(),
-                method,
-                object,
-                completer
-        ));
+        this.registerCommand(new Command(info.name(), info.description(), info.min(), info.usage(), info.flags(), method, object));
     }
 }

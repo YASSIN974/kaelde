@@ -1,34 +1,27 @@
 package pl.themolka.commons.command;
 
-import org.bukkit.command.CommandSender;
+import net.dv8tion.jda.core.entities.Message;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class Command {
     private final String[] name;
     private String description;
     private int min;
     private String usage;
-    private boolean userOnly;
     private final String[] flags;
-    private String permission;
     private final Method method;
     private final Object classObject;
-    private final Method completer;
 
-    public Command(String[] name, String description, int min, String usage, boolean userOnly, String[] flags, String permission, Method method, Object classObject, Method completer) {
+    public Command(String[] name, String description, int min, String usage, String[] flags,  Method method, Object classObject) {
         this.name = name;
         this.description = description;
         this.min = min;
         this.usage = usage;
-        this.userOnly = userOnly;
         this.flags = flags;
-        this.permission = permission;
         this.method = method;
         this.classObject = classObject;
-        this.completer = completer;
     }
 
     public String getCommand() {
@@ -48,15 +41,11 @@ public class Command {
     }
 
     public String getUsage() {
-        return ("/" + this.getCommand() + " " + this.usage).trim();
+        return ("!" + this.getCommand() + " " + this.usage).trim();
     }
 
     public String[] getFlags() {
         return this.flags;
-    }
-
-    public String getPermission() {
-        return this.permission;
     }
 
     public Method getMethod() {
@@ -67,44 +56,17 @@ public class Command {
         return this.classObject;
     }
 
-    public Method getCompleter() {
-        return this.completer;
-    }
-
-    public void handleCommand(CommandSender sender, CommandContext context) throws Throwable {
+    public void handleCommand(Message message, CommandContext context) throws Throwable {
         if (this.getMethod() == null) {
             return;
         }
 
         try {
             this.getMethod().setAccessible(true);
-            this.getMethod().invoke(this.getClassObject(), sender, context);
+            this.getMethod().invoke(this.getClassObject(), message, context);
         } catch (InvocationTargetException ex) {
             throw ex.getTargetException();
         }
-    }
-
-    public List<String> handleCompleter(CommandSender sender, CommandContext context) throws Throwable {
-        if (this.getCompleter() == null) {
-            return null;
-        }
-
-        try {
-            this.getCompleter().setAccessible(true);
-            Object result = this.getCompleter().invoke(this.getClassObject(), sender, context);
-
-            if (result instanceof List) {
-                return (List<String>) result;
-            }
-        } catch (InvocationTargetException ex) {
-            throw ex.getTargetException();
-        }
-
-        return null;
-    }
-
-    public boolean hasCompleter() {
-        return this.completer != null;
     }
 
     public boolean hasFlag(String flag) {
@@ -114,14 +76,6 @@ public class Command {
             }
         }
         return false;
-    }
-
-    public boolean hasPermission() {
-        return this.permission != null;
-    }
-
-    public boolean isUserOnly() {
-        return this.userOnly;
     }
 
     public void setDescription(String description) {
@@ -134,13 +88,5 @@ public class Command {
 
     public void setUsage(String usage) {
         this.usage = usage;
-    }
-
-    public void setUserOnly(boolean userOnly) {
-        this.userOnly = userOnly;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
     }
 }

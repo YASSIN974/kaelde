@@ -10,17 +10,13 @@ import java.lang.annotation.Target;
 public @interface CommandInfo {
     String[] name();
 
-    String description() default "No description provided.";
+    String description() default "No description provided!";
 
     int min() default 0;
 
     String[] flags() default "";
 
     String usage() default "";
-
-    boolean userOnly() default false;
-
-    String permission() default "";
 
     String completer() default "";
 }
