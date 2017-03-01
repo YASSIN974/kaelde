@@ -1,1 +1,0 @@
-package com.programmingwizzard.charrizard.bot.command;

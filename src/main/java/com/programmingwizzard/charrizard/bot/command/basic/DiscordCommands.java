@@ -27,10 +27,13 @@ public class DiscordCommands extends Commands implements EventListener {
             if (context.getCommand().getMin() > context.getParamsLength()) {
                 throw new CommandUsageException("error"); // TODO
             }
-            try {
-                context.getCommand().handleCommand(message, context);
-            } catch (Throwable ignored) {
-            }
+            charrizard.run(message.getGuild(), () -> {
+                try {
+                    context.getCommand().handleCommand(message, context);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
         } catch (CommandUsageException ex) {
             // TODO
         }

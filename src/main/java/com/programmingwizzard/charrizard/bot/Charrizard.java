@@ -2,6 +2,7 @@ package com.programmingwizzard.charrizard.bot;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.programmingwizzard.charrizard.bot.command.HelpCommand;
 import com.programmingwizzard.charrizard.bot.command.basic.DiscordCommands;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -50,6 +51,14 @@ public class Charrizard {
         builder.setAudioEnabled(false);
         builder.setStatus(OnlineStatus.ONLINE);
         jda = builder.buildBlocking();
+
+        commands();
+    }
+
+    private void commands() {
+        commands.registerCommandObjects(
+                new HelpCommand(this)
+        );
     }
 
     public void run(Guild guild, Runnable runnable) {
@@ -64,4 +73,7 @@ public class Charrizard {
         service.execute(runnable);
     }
 
+    public Commands getCommands() {
+        return commands;
+    }
 }
