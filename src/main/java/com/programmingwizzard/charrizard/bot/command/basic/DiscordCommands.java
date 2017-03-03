@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+import pl.themolka.commons.command.Command;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandUsageException;
 import pl.themolka.commons.command.Commands;
@@ -50,6 +51,10 @@ public class DiscordCommands extends Commands implements EventListener {
             return;
         }
         args[0] = args[0].substring(1);
-        handleCommand(messageEvent.getMessage(), this.getCommand(args[0]), args[0], args);
+        Command command = this.getCommand(args[0]);
+        if (command == null) {
+            return;
+        }
+        handleCommand(messageEvent.getMessage(), command, args[0], args);
     }
 }

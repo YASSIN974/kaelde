@@ -20,7 +20,7 @@ public class BasicCommands extends AbstractEmbedBuilder {
         this.charrizard = charrizard;
     }
 
-    @CommandInfo(name = "help", description = "Prints all bot commands.")
+    @CommandInfo(name = "help", description = "Prints all bot commands!")
     public void helpCommand(Message message, CommandContext context) {
         EmbedBuilder normal = getNormalBuilder();
         StringBuilder labels = new StringBuilder();
@@ -36,7 +36,7 @@ public class BasicCommands extends AbstractEmbedBuilder {
         message.getChannel().sendMessage(normal.build()).queue();
     }
 
-    @CommandInfo(name = "author", description = "Shows bot autors")
+    @CommandInfo(name = "author", description = "Shows bot autors!")
     public void authorCommand(Message message, CommandContext context) {
         EmbedBuilder builder = getNormalBuilder()
                                        .addField("Charrizard version", Charrizard.VERSION, true)
@@ -45,10 +45,18 @@ public class BasicCommands extends AbstractEmbedBuilder {
         message.getChannel().sendMessage(builder.build()).queue();
     }
 
-    @CommandInfo(name = "invite", description = "Invite Charrizard for Your server")
-    public void author(Message message, CommandContext context) {
+    @CommandInfo(name = "invite", description = "Invite Charrizard for Your serve!r")
+    public void inviteCommand(Message message, CommandContext context) {
         String clientId = charrizard.getJda().getSelfUser().getId();
         EmbedBuilder builder = getNormalBuilder().addField("Invite URL", new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=1207434304").toString(), true);
+        message.getChannel().sendMessage(builder.build()).queue();
+    }
+
+    @CommandInfo(name = "statistics", description = "Shows bot statistics!")
+    public void statisticsCommand(Message message, CommandContext context) {
+        EmbedBuilder builder = getNormalBuilder();
+        builder.addField("Servers", String.valueOf(charrizard.getJda().getGuilds().size()), true);
+        builder.addField("Clients", String.valueOf(charrizard.getJda().getUsers().size()), true);
         message.getChannel().sendMessage(builder.build()).queue();
     }
 
