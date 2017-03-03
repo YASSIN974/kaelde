@@ -8,6 +8,9 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandInfo;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /*
  * @author ProgrammingWizzard
  * @date 03.03.2017
@@ -27,10 +30,38 @@ public class MiscCommands extends AbstractEmbedBuilder {
         String action = context.getParam(1);
         switch (action.toLowerCase()) {
             case "print":
+                for (int i = 2; i < context.getParamsLength(); i++) {
+                    for (char c : context.getParam(i).toLowerCase().toCharArray()) {
+                        builder.append(toRegionalIndicator(c)).append(" ");
+                    }
+                    builder.append("   ");
+                }
+                channel.sendMessage(builder.toString()).queue();
                 break;
             case "raw":
+                builder.append("```");
+                for (int i = 2; i < context.getParamsLength(); i++) {
+                    for (char c : context.getParam(i).toLowerCase().toCharArray()) {
+                        builder.append(toRegionalIndicator(c)).append(" ");
+                    }
+                    builder.append("   ");
+                }
+                builder.append("```");
+                channel.sendMessage(builder.toString()).queue();
                 break;
             case "react":
+                Set<String> reactions = new LinkedHashSet<>();
+                for (int i = 2; i < context.getParamsLength(); i++) {
+                    for (char c : context.getParam(i).toLowerCase().toCharArray()) {
+                        String reaction = toRegionalIndicator(c);
+                        if (!reaction.isEmpty()) {
+                            reactions.add(reaction);
+                        }
+                    }
+                }
+                for (String reaction : reactions) {
+                    message.addReaction(reaction).queue();
+                }
                 break;
             default:
                 channel.sendMessage(getErrorBuilder().addField("Usage", "!bigtext <print|raw|react> <text>", false).build());
