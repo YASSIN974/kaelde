@@ -25,7 +25,7 @@ public class DiscordCommands extends Commands implements EventListener {
     public void handleCommand(Message message, CommandContext context) {
         try {
             if (context.getCommand().getMin() > context.getParamsLength()) {
-                throw new CommandUsageException(""); // TODO
+                throw new CommandUsageException(context.getCommand().getUsage());
             }
             charrizard.run(message.getGuild(), () -> {
                 try {
@@ -35,7 +35,7 @@ public class DiscordCommands extends Commands implements EventListener {
                 }
             });
         } catch (CommandUsageException ex) {
-
+            message.getChannel().sendMessage(getErrorBuilder().addField("Usage", ex.getMessage(), false).build()).queue();
         }
     }
 

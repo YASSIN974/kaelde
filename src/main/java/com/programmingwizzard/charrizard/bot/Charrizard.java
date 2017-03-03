@@ -3,6 +3,7 @@ package com.programmingwizzard.charrizard.bot;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.programmingwizzard.charrizard.bot.command.BasicCommands;
+import com.programmingwizzard.charrizard.bot.command.MiscCommands;
 import com.programmingwizzard.charrizard.bot.command.basic.DiscordCommands;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -59,7 +60,8 @@ public class Charrizard {
 
     private void commands() {
         commands.registerCommandObjects(
-                new BasicCommands(this)
+                new BasicCommands(this),
+                new MiscCommands(this)
         );
     }
 
@@ -77,5 +79,9 @@ public class Charrizard {
 
     public Commands getCommands() {
         return commands;
+    }
+
+    public JDA getJda() {
+        return jda;
     }
 }

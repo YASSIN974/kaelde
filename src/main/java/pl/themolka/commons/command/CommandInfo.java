@@ -12,11 +12,9 @@ public @interface CommandInfo {
 
     String description() default "No description provided!";
 
+    String usage() default "No usage provided!";
+
     int min() default 0;
 
     String[] flags() default "";
-
-    String usage() default "";
-
-    String completer() default "";
 }

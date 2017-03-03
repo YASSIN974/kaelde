@@ -45,4 +45,11 @@ public class BasicCommands extends AbstractEmbedBuilder {
         message.getChannel().sendMessage(builder.build()).queue();
     }
 
+    @CommandInfo(name = "invite", description = "Invite Charrizard for Your server")
+    public void author(Message message, CommandContext context) {
+        String clientId = charrizard.getJda().getSelfUser().getId();
+        EmbedBuilder builder = getNormalBuilder().addField("Invite URL", new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=1207434304").toString(), true);
+        message.getChannel().sendMessage(builder.build()).queue();
+    }
+
 }
