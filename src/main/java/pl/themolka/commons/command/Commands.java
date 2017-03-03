@@ -1,12 +1,13 @@
 package pl.themolka.commons.command;
 
+import com.programmingwizzard.charrizard.bot.command.basic.AbstractEmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public abstract class Commands {
+public abstract class Commands extends AbstractEmbedBuilder {
     private final Map<String, Command> commandMap = new HashMap<>();
 
     public Command getCommand(String command) {

@@ -12,21 +12,21 @@ import pl.themolka.commons.command.CommandInfo;
  * @author ProgrammingWizzard
  * @date 27.02.2017
  */
-public class HelpCommand extends AbstractEmbedBuilder {
+public class BasicCommands extends AbstractEmbedBuilder {
 
     private final Charrizard charrizard;
 
-    public HelpCommand(Charrizard charrizard) {
+    public BasicCommands(Charrizard charrizard) {
         this.charrizard = charrizard;
     }
 
-    @CommandInfo(name = "!help", description = "Prints all bot commands.")
+    @CommandInfo(name = "help", description = "Prints all bot commands.")
     public void helpCommand(Message message, CommandContext context) {
         EmbedBuilder normal = getNormalBuilder();
         StringBuilder labels = new StringBuilder();
         StringBuilder descs = new StringBuilder();
         for (Command command : charrizard.getCommands().getCommands()) {
-            labels.append(command.getCommand()).append("\n");
+            labels.append("!").append(command.getCommand()).append("\n");
             descs.append(command.getDescription()).append("\n");
         }
         String ls = labels.toString();
@@ -34,6 +34,15 @@ public class HelpCommand extends AbstractEmbedBuilder {
         normal.addField("Command", ls.substring(0, ls.length() - 1), true);
         normal.addField("Description", ds.substring(0, ds.length() - 1), true);
         message.getChannel().sendMessage(normal.build()).queue();
+    }
+
+    @CommandInfo(name = "author", description = "Shows bot autors")
+    public void authorCommand(Message message, CommandContext context) {
+        EmbedBuilder builder = getNormalBuilder()
+                                       .addField("Charrizard version", Charrizard.VERSION, true)
+                                       .addField("Authors", "https://github.com/CharrizardBot/Charrizard/contributors", true)
+                                       .addField("Official Discord server", "https://discord.gg/jBCzCx8", true);
+        message.getChannel().sendMessage(builder.build()).queue();
     }
 
 }

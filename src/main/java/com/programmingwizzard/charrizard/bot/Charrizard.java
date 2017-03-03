@@ -2,7 +2,7 @@ package com.programmingwizzard.charrizard.bot;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.programmingwizzard.charrizard.bot.command.HelpCommand;
+import com.programmingwizzard.charrizard.bot.command.BasicCommands;
 import com.programmingwizzard.charrizard.bot.command.basic.DiscordCommands;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
  * @date 27.02.2017
  */
 public class Charrizard {
+
+    public static String VERSION = "3.0.0";
 
     private final Settings settings;
     private final Commands commands;
@@ -57,7 +59,7 @@ public class Charrizard {
 
     private void commands() {
         commands.registerCommandObjects(
-                new HelpCommand(this)
+                new BasicCommands(this)
         );
     }
 

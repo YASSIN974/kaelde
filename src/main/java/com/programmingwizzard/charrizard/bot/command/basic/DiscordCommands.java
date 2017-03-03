@@ -25,17 +25,17 @@ public class DiscordCommands extends Commands implements EventListener {
     public void handleCommand(Message message, CommandContext context) {
         try {
             if (context.getCommand().getMin() > context.getParamsLength()) {
-                throw new CommandUsageException("error"); // TODO
+                throw new CommandUsageException(""); // TODO
             }
             charrizard.run(message.getGuild(), () -> {
                 try {
                     context.getCommand().handleCommand(message, context);
                 } catch (Throwable throwable) {
-                    throwable.printStackTrace();
+                    message.getChannel().sendMessage(getErrorBuilder().addField("Error", throwable.getMessage(), false).build());
                 }
             });
         } catch (CommandUsageException ex) {
-            // TODO
+
         }
     }
 
@@ -49,6 +49,7 @@ public class DiscordCommands extends Commands implements EventListener {
         if (!args[0].startsWith("!")) {
             return;
         }
+        args[0] = args[0].substring(1);
         handleCommand(messageEvent.getMessage(), this.getCommand(args[0]), args[0], args);
     }
 }

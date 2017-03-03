@@ -18,4 +18,12 @@ public class AbstractEmbedBuilder {
                        .setColor(new Color(46, 204, 113));
     }
 
+    protected final EmbedBuilder getErrorBuilder() {
+        return new EmbedBuilder()
+                       .setTitle("Charrizard")
+                       .setFooter("© 2017 Charrizard contributors", null)
+                       .setUrl("https://github.com/CharrizardBot/Charrizard/")
+                       .setColor(new Color(231, 76, 60));
+    }
+
 }

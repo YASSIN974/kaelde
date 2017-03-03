@@ -5,7 +5,7 @@
     <name>Charrizard</name>
     <groupId>com.programmingwizzard</groupId>
     <artifactId>charrizard</artifactId>
-    <version>2.0</version>
+    <version>3.0.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
