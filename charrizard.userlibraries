@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="Maven: net.dv8tion:JDA:3.0.BETA2_108">
+    <archive path="C:/Users/gabixdev/.m2/repository/net/dv8tion/JDA/3.0.BETA2_108/JDA-3.0.BETA2_108.jar" />
+  </library>
+  <library name="Maven: org.apache.commons:commons-lang3:3.5">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar" />
+  </library>
+  <library name="Maven: org.apache.commons:commons-collections4:4.1">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar" />
+  </library>
+  <library name="Maven: org.json:json:20160810">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/json/json/20160810/json-20160810.jar" />
+  </library>
+  <library name="Maven: net.java.dev.jna:jna:4.2.2">
+    <archive path="C:/Users/gabixdev/.m2/repository/net/java/dev/jna/jna/4.2.2/jna-4.2.2.jar" />
+  </library>
+  <library name="Maven: com.neovisionaries:nv-websocket-client:1.30">
+    <archive path="C:/Users/gabixdev/.m2/repository/com/neovisionaries/nv-websocket-client/1.30/nv-websocket-client-1.30.jar" />
+  </library>
+  <library name="Maven: com.mashape.unirest:unirest-java:1.4.9">
+    <archive path="C:/Users/gabixdev/.m2/repository/com/mashape/unirest/unirest-java/1.4.9/unirest-java-1.4.9.jar" />
+  </library>
+  <library name="Maven: org.apache.httpcomponents:httpclient:4.5.2">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/httpcomponents/httpclient/4.5.2/httpclient-4.5.2.jar" />
+  </library>
+  <library name="Maven: org.apache.httpcomponents:httpcore:4.4.4">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/httpcomponents/httpcore/4.4.4/httpcore-4.4.4.jar" />
+  </library>
+  <library name="Maven: commons-logging:commons-logging:1.2">
+    <archive path="C:/Users/gabixdev/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar" />
+  </library>
+  <library name="Maven: commons-codec:commons-codec:1.9">
+    <archive path="C:/Users/gabixdev/.m2/repository/commons-codec/commons-codec/1.9/commons-codec-1.9.jar" />
+  </library>
+  <library name="Maven: org.apache.httpcomponents:httpasyncclient:4.1.1">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/httpcomponents/httpasyncclient/4.1.1/httpasyncclient-4.1.1.jar" />
+  </library>
+  <library name="Maven: org.apache.httpcomponents:httpcore-nio:4.4.4">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/httpcomponents/httpcore-nio/4.4.4/httpcore-nio-4.4.4.jar" />
+  </library>
+  <library name="Maven: org.apache.httpcomponents:httpmime:4.5.2">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/httpcomponents/httpmime/4.5.2/httpmime-4.5.2.jar" />
+  </library>
+  <library name="Maven: com.google.code.gson:gson:2.7">
+    <archive path="C:/Users/gabixdev/.m2/repository/com/google/code/gson/gson/2.7/gson-2.7.jar" />
+  </library>
+  <library name="Maven: com.google.guava:guava:21.0">
+    <archive path="C:/Users/gabixdev/.m2/repository/com/google/guava/guava/21.0/guava-21.0.jar" />
+  </library>
+  <library name="Maven: ca.pjer:chatter-bot-api:1.4.5">
+    <archive path="C:/Users/gabixdev/.m2/repository/ca/pjer/chatter-bot-api/1.4.5/chatter-bot-api-1.4.5.jar" />
+  </library>
+  <library name="Maven: redis.clients:jedis:2.9.0">
+    <archive path="C:/Users/gabixdev/.m2/repository/redis/clients/jedis/2.9.0/jedis-2.9.0.jar" />
+  </library>
+  <library name="Maven: org.apache.commons:commons-pool2:2.4.2">
+    <archive path="C:/Users/gabixdev/.m2/repository/org/apache/commons/commons-pool2/2.4.2/commons-pool2-2.4.2.jar" />
+  </library>
+  <library name="Maven: io.netty:netty-all:4.1.8.Final">
+    <archive path="C:/Users/gabixdev/.m2/repository/io/netty/netty-all/4.1.8.Final/netty-all-4.1.8.Final.jar" />
+  </library>
+</eclipse-userlibraries>
+

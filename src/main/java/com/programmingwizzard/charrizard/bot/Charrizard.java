@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Charrizard {
 
-    public static String VERSION = "3.0.0";
+    public static final String VERSION = "3.0.0";
 
     private final Settings settings;
     private final Commands commands;
