@@ -1,8 +1,8 @@
 package com.programmingwizzard.charrizard.bot.response;
 
 /*
- * @author Libter
- * @date 11.02.2017
+ * @author ProgrammingWizzard
+ * @date 03.03.2017
  */
 public class ResponseException extends Exception {
 

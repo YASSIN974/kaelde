@@ -1,111 +1,87 @@
 package com.programmingwizzard.charrizard.bot;
 
-import com.google.common.eventbus.EventBus;
-import com.programmingwizzard.charrizard.bot.commands.*;
-import com.programmingwizzard.charrizard.bot.commands.basic.CommandCaller;
-import com.programmingwizzard.charrizard.bot.database.KeepDataThread;
-import com.programmingwizzard.charrizard.bot.database.RedisConnection;
-import com.programmingwizzard.charrizard.bot.events.EventCaller;
-import com.programmingwizzard.charrizard.bot.listeners.ReputationListener;
-import com.programmingwizzard.charrizard.bot.listeners.VoiceListener;
-import com.programmingwizzard.charrizard.bot.managers.CGuildManager;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.programmingwizzard.charrizard.bot.command.BasicCommands;
+import com.programmingwizzard.charrizard.bot.command.MiscCommands;
+import com.programmingwizzard.charrizard.bot.command.basic.DiscordCommands;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.impl.GameImpl;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import pl.themolka.commons.command.Commands;
 
 import javax.security.auth.login.LoginException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /*
  * @author ProgrammingWizzard
- * @date 04.02.2017
+ * @date 27.02.2017
  */
 public class Charrizard {
 
-    private final EventBus eventBus;
+    public static String VERSION = "3.0.0";
+
     private final Settings settings;
-    private final CommandCaller commandCaller;
-    private final RedisConnection redisConnection;
-    private final CGuildManager cGuildManager;
-    private final KeepDataThread keepDataThread;
-    private JDA discordAPI;
+    private final Commands commands;
+
+    private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+
+    private JDA jda;
 
     public Charrizard(Settings settings) {
         this.settings = settings;
-        this.eventBus = new EventBus();
-        this.commandCaller = new CommandCaller(this);
-        this.redisConnection = new RedisConnection(settings);
-        this.cGuildManager = new CGuildManager(this);
-        this.keepDataThread = new KeepDataThread(this);
+        this.commands = new DiscordCommands(this);
     }
 
-    public void start() throws RateLimitedException, InterruptedException, LoginException {
-        this.discordAPI = new JDABuilder(AccountType.BOT)
-                                  .setToken(settings.getToken())
-                                  .setGame(new GameImpl(settings.getGame(), settings.getGameUrl(), settings.isTwitch() ? Game.GameType.TWITCH : Game.GameType.DEFAULT))
-                                  .addListener(new EventCaller(this))
-                                  .setAutoReconnect(true)
-                                  .setAudioEnabled(true)
-                                  .setBulkDeleteSplittingEnabled(false)
-                                  .buildBlocking();
-        if (settings.getRedis().isEnabled()) {
-            redisConnection.start();
-            keepDataThread.start();
+    public void start() throws LoginException, InterruptedException, RateLimitedException {
+        JDABuilder builder = new JDABuilder(AccountType.BOT);
+        if (settings.getToken() != null) {
+            builder.setToken(settings.getToken());
         }
-        initCommands();
-        initListeners();
-    }
-
-    private void initCommands() {
-        commandCaller.getCommands().add(new AuthorCommand());
-        commandCaller.getCommands().add(new BigTextCommand(this));
-        commandCaller.getCommands().add(new InviteCommand(this));
-        commandCaller.getCommands().add(new MinecraftCommand(this));
-        commandCaller.getCommands().add(new CleverbotCommand(this));
-        commandCaller.getCommands().add(new PingCommand());
-        commandCaller.getCommands().add(new CatCommand(this));
-        commandCaller.getCommands().add(new HelpCommand(this));
-        commandCaller.getCommands().add(new DiscordCommand(this));
-        commandCaller.getCommands().add(new StatisticsCommand(this));
-        commandCaller.getCommands().add(new ReputationCommand(this));
-        // Work in progress commands here
-        if (settings.getWip()) {
-            commandCaller.getCommands().add(new AudioCommand(this));
-            if (settings.getMyAnimeList().isEnabled()) {
-                commandCaller.getCommands().add(new AnimeCommand(this));
-            }
+        if (settings.getGame() != null) {
+            builder.setGame(Game.of(settings.getGame(), settings.getGameUrl()));
         }
-        this.eventBus.register(commandCaller);
+        builder.setAutoReconnect(true);
+        builder.setBulkDeleteSplittingEnabled(false);
+        builder.addListener((DiscordCommands) commands);
+        builder.setAudioEnabled(false);
+        builder.setStatus(OnlineStatus.ONLINE);
+        jda = builder.buildBlocking();
+
+        commands();
     }
 
-    private void initListeners() {
-        this.eventBus.register(new VoiceListener(this));
-        this.eventBus.register(new ReputationListener(this));
+    private void commands() {
+        commands.registerCommandObjects(
+                new BasicCommands(this),
+                new MiscCommands(this)
+        );
     }
 
-    public Settings getSettings() {
-        return settings;
+    public void run(Guild guild, Runnable runnable) {
+        if (guild == null || runnable == null) {
+            return;
+        }
+        ExecutorService service = poolCache.getIfPresent(guild.getId());
+        if (service == null) {
+            service = new ThreadPoolExecutor(2, 16, 60, TimeUnit.SECONDS, new SynchronousQueue<>());
+            poolCache.put(guild.getId(), service);
+        }
+        service.execute(runnable);
     }
 
-    public JDA getDiscordAPI() {
-        return discordAPI;
+    public Commands getCommands() {
+        return commands;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    public CommandCaller getCommandCaller() {
-        return commandCaller;
-    }
-
-    public RedisConnection getRedisConnection() {
-        return redisConnection;
-    }
-
-    public CGuildManager getCGuildManager() {
-        return cGuildManager;
+    public JDA getJda() {
+        return jda;
     }
 }

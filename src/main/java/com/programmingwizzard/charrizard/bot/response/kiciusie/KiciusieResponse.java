@@ -3,8 +3,8 @@ package com.programmingwizzard.charrizard.bot.response.kiciusie;
 import com.google.gson.JsonElement;
 
 /*
- * @author Libter
- * @date 09.02.2017
+ * @author ProgrammingWizzard
+ * @date 03.03.2017
  */
 public class KiciusieResponse {
 

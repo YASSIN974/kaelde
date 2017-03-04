@@ -5,7 +5,7 @@ import com.programmingwizzard.charrizard.bot.response.ResponseException;
 
 /*
  * @author ProgrammingWizzard
- * @date 07.02.2017
+ * @date 03.03.2017
  */
 public class KiciusieResponses {
 
@@ -13,7 +13,7 @@ public class KiciusieResponses {
 
     public KiciusieResponse call(KiciusieMode mode) throws ResponseException {
         return new KiciusieResponse(Response.getJson(
-            String.format(API, mode.name().toLowerCase())));
+                String.format(API, mode.name().toLowerCase())));
     }
 
 }
