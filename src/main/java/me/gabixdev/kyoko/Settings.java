@@ -17,10 +17,13 @@ public class Settings {
     private String token = "Change me";
 
     @SerializedName("game")
-    private String game = null;
+    private String game = "dev";
 
     @SerializedName("game-url")
-    private String gameUrl = null;
+    private String gameUrl = "https://gabixdev.me";
+
+    @SerializedName("blinking-shit")
+    private String blinkingShit = "none";
 
     @SerializedName("normal-color")
     @JsonAdapter(ColorTypeAdapter.class)
@@ -48,5 +51,9 @@ public class Settings {
 
     public Color getErrorColor() {
         return errorColor;
+    }
+
+    public String getBlinkingShit() {
+        return blinkingShit;
     }
 }

@@ -53,7 +53,8 @@ public class BasicCommands {
         String clientId = kyoko.getJda().getSelfUser().getId();
         EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-        eb.addField("Invite URL", new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=1207434304").toString(), true);
+        eb.addField("Invite URL ", new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=" + Constants.PERMISSIONS).toString(), true);
+        //eb.addField("Invite URL (no moderation)", new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=1207434304").toString(), true);
 
         message.getChannel().sendMessage(eb.build()).queue();
     }

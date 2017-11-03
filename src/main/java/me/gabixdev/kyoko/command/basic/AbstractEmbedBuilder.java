@@ -23,21 +23,21 @@ public class AbstractEmbedBuilder {
     public EmbedBuilder getNormalBuilder() {
         return new EmbedBuilder()
                 .setFooter(footer, null)
-                .setUrl(Constants.GITHUB_URL)
+                //.setUrl(Constants.GITHUB_URL)
                 .setColor(kyoko.getSettings().getNormalColor());
     }
 
     public final EmbedBuilder getErrorBuilder() {
         return new EmbedBuilder()
                 .setFooter(footer, null)
-                .setUrl(Constants.GITHUB_URL)
+                //.setUrl(Constants.GITHUB_URL)
                 .setColor(kyoko.getSettings().getErrorColor());
     }
 
     public final EmbedBuilder getUsageBuilder(String commandName, String usage) {
         return new EmbedBuilder()
                 .setFooter(footer, null)
-                .setUrl(Constants.GITHUB_URL)
+                //.setUrl(Constants.GITHUB_URL)
                 .setColor(kyoko.getSettings().getErrorColor());
     }
 }
