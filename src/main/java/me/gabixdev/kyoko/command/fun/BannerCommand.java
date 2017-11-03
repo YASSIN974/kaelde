@@ -52,6 +52,7 @@ public class BannerCommand extends Command {
         }
 
         for (int i = 1; i < args.length; i++) {
+            args[i] = args[i].replaceAll("✔️", "✔").replaceAll("✅", "✔").replaceAll("☑️", "✔");
             for (char c : args[i].toLowerCase().toCharArray()) {
                 builder.append(toRegionalIndicator(c)).append(" ");
             }
@@ -62,9 +63,14 @@ public class BannerCommand extends Command {
     }
 
     private String toRegionalIndicator(char c) {
+        if (c == '❤') return "\uD83D\uDC9F";
+        if (c == '✔') return "✅";
+
         if (c >= CharCodes.SMALL_A && c <= CharCodes.SMALL_Z) {
             c -= CharCodes.SMALL_A;
             return String.valueOf(Character.toChars(CharCodes.REGIONAL_INDICATOR_A + c));
+        } else if (c >= CharCodes.NUM_0 && c <= CharCodes.NUM_9) {
+            return new String(new char[]{c, '\u20E3'});
         } else {
             return "";
         }
