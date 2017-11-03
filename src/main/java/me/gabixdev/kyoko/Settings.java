@@ -22,7 +22,7 @@ public class Settings {
     @SerializedName("game-url")
     private String gameUrl = "https://gabixdev.me";
 
-    private String prefix = "k!";
+    private String prefix = "ky!";
 
     @SerializedName("blinking-shit")
     private String blinkingShit = "none";
