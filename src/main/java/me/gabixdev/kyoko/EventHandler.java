@@ -1,8 +1,6 @@
 package me.gabixdev.kyoko;
 
-import me.gabixdev.kyoko.Kyoko;
-import me.gabixdev.kyoko.util.command.*;
-import net.dv8tion.jda.core.entities.Message;
+import me.gabixdev.kyoko.util.command.Command;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
@@ -63,7 +61,7 @@ public class EventHandler implements EventListener {
                     } catch (Throwable ex) {
                         ex.printStackTrace();
                         // TODO: i18n
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().setTitle("Kyoko").addField("Error", "Something bad happened, please report to bot authors.", false).build());
+                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField("Error", "Something bad happened, please report to bot authors.", true).build()).queue();
                     }
                 }
             }
