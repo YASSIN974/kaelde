@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.command;
+package me.gabixdev.kyoko.command.old;
 
 import com.google.code.chatterbotapi.ChatterBot;
 import com.google.code.chatterbotapi.ChatterBotFactory;
@@ -7,18 +7,14 @@ import com.google.code.chatterbotapi.ChatterBotType;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.gabixdev.kyoko.Kyoko;
-import me.gabixdev.kyoko.command.basic.AbstractEmbedBuilder;
 import me.gabixdev.kyoko.remoteapi.ResponseException;
 import me.gabixdev.kyoko.remoteapi.kiciusie.KiciusieMode;
 import me.gabixdev.kyoko.remoteapi.kiciusie.KiciusieResponse;
 import me.gabixdev.kyoko.remoteapi.kiciusie.KiciusieResponses;
 import me.gabixdev.kyoko.util.CharCodes;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
-import me.gabixdev.kyoko.util.command.CommandContext;
-import me.gabixdev.kyoko.util.command.CommandInfo;
 
 import java.util.LinkedHashSet;
 import java.util.Locale;
@@ -32,20 +28,19 @@ import java.util.concurrent.TimeUnit;
 public class MiscCommands {
 
     private final Kyoko kyoko;
-    private final ChatterBotFactory factory;
-    private final KiciusieResponses kiciusieResponses = new KiciusieResponses();
+    //private final ChatterBotFactory factory;
+    //private final KiciusieResponses kiciusieResponses = new KiciusieResponses();
 
-    private ChatterBot bot;
+    //private ChatterBot bot;
 
-    private final Cache<String, ChatterBotSession> sessionCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+    //private final Cache<String, ChatterBotSession> sessionCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     public MiscCommands(Kyoko kyoko) {
         this.kyoko = kyoko;
-        this.factory = new ChatterBotFactory();
+        //this.factory = new ChatterBotFactory();
     }
 
-    // TODO: Move commands to classes
-    @CommandInfo(name = "bigtext", description = "Sends message from regional indicator characters!", usage = "<print|raw|react> <text>", min = 3)
+    /*
     public void bigtextCommand(Message message, CommandContext context) {
         TextChannel channel = message.getTextChannel();
         StringBuilder builder = new StringBuilder();
@@ -91,7 +86,6 @@ public class MiscCommands {
         }
     }
 
-    @CommandInfo(name = "clever", description = "Talk with CleverBot!", usage = "<text>", min = 2)
     public void cleverbotCommand(Message message, CommandContext context) {
         MessageEmbed error = kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField("Error", "The problem during query execution! Please report to bot authors!", false).build();
         if (bot == null) {
@@ -126,7 +120,6 @@ public class MiscCommands {
         }
     }
 
-    @CommandInfo(name = "cat", description = "Sends an kawaii neko!", usage = "<random|image|gif>", min = 2)
     public void kiciusieCommand(Message message, CommandContext context) {
         KiciusieMode mode;
         try {
@@ -152,5 +145,5 @@ public class MiscCommands {
             return "";
         }
     }
-
+    */
 }

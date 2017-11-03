@@ -1,13 +1,6 @@
-package me.gabixdev.kyoko.command;
+package me.gabixdev.kyoko.command.old;
 
-import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
-import me.gabixdev.kyoko.command.basic.AbstractEmbedBuilder;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandContext;
-import me.gabixdev.kyoko.util.command.CommandInfo;
 
 /*
  * @author ProgrammingWizzard
@@ -21,7 +14,7 @@ public class BasicCommands {
         this.kyoko = kyoko;
     }
 
-    @CommandInfo(name = "help", description = "Prints all bot commands!")
+    /*@CommandInfo(name = "help", description = "Prints all bot commands!")
     public void helpCommand(Message message, CommandContext context) {
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         StringBuilder labels = new StringBuilder();
@@ -66,5 +59,5 @@ public class BasicCommands {
         eb.addField("Clients", String.valueOf(kyoko.getJda().getUsers().size()), true);
         message.getChannel().sendMessage(eb.build()).queue();
     }
-
+    */
 }

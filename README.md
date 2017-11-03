@@ -4,7 +4,7 @@
 Kyoko is a continuation of [Charrizard](https://github.com/CharrizardBot/Charrizard) Discord bot.
 
 # Join the community
-Kyoko is beign developed everyday and we are constantly adding new features. If you want a function to be added, or just talk to us - no problem. Join our [Discord](https://discord.gg/jBCzCx8)!
+Kyoko is developed everyday and we are constantly adding new features. If you want a function to be added, or just talk to us or open an issue - no problem. Join our [Discord](https://discord.gg/jBCzCx8)!
 
 # Official wiki & tutorials
 Official wiki is available [here](https://github.com/gabixdev/Kyoko/wiki).

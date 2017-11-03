@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.command.basic;
+package me.gabixdev.kyoko.util.command;
 
 import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;

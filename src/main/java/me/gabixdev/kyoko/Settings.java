@@ -22,6 +22,8 @@ public class Settings {
     @SerializedName("game-url")
     private String gameUrl = "https://gabixdev.me";
 
+    private String prefix = "k!";
+
     @SerializedName("blinking-shit")
     private String blinkingShit = "none";
 
@@ -45,15 +47,19 @@ public class Settings {
         return gameUrl;
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public String getBlinkingShit() {
+        return blinkingShit;
+    }
+
     public Color getNormalColor() {
         return normalColor;
     }
 
     public Color getErrorColor() {
         return errorColor;
-    }
-
-    public String getBlinkingShit() {
-        return blinkingShit;
     }
 }

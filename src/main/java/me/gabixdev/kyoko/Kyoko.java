@@ -2,11 +2,12 @@ package me.gabixdev.kyoko;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import me.gabixdev.kyoko.command.BasicCommands;
-import me.gabixdev.kyoko.command.MiscCommands;
-import me.gabixdev.kyoko.command.basic.AbstractEmbedBuilder;
-import me.gabixdev.kyoko.command.basic.DiscordCommands;
+import me.gabixdev.kyoko.command.basic.HelpCommand;
+import me.gabixdev.kyoko.command.basic.InviteCommand;
+import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.util.ColoredFormatter;
+import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
+import me.gabixdev.kyoko.util.command.CommandManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -14,7 +15,6 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import me.gabixdev.kyoko.util.command.Commands;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.security.auth.login.LoginException;
@@ -31,7 +31,9 @@ import java.util.logging.Logger;
  */
 public class Kyoko {
     private final Settings settings;
-    private final Commands commands;
+    private final EventHandler eventHandler;
+    private final CommandManager commandManager;
+    private final I18n i18n;
 
     private final AbstractEmbedBuilder abstractEmbedBuilder;
 
@@ -44,8 +46,10 @@ public class Kyoko {
 
     public Kyoko(Settings settings) {
         this.settings = settings;
-        this.commands = new DiscordCommands(this);
+        this.eventHandler = new EventHandler(this);
         this.abstractEmbedBuilder = new AbstractEmbedBuilder(this);
+        this.commandManager = new CommandManager(this);
+        this.i18n = new I18n(this);
     }
 
     public void start() throws LoginException, InterruptedException, RateLimitedException {
@@ -61,6 +65,8 @@ public class Kyoko {
         log.addHandler(handler);
 
         log.info("Kyoko v" + Constants.VERSION + " is starting...");
+
+        i18n.loadMessages();
 
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         if (settings.getToken() != null) {
@@ -79,8 +85,8 @@ public class Kyoko {
 
         builder.setAutoReconnect(true);
         builder.setBulkDeleteSplittingEnabled(false);
-        builder.addEventListener((DiscordCommands) commands);
-        builder.setAudioEnabled(false);
+        builder.addEventListener(eventHandler);
+        builder.setAudioEnabled(true);
         builder.setStatus(OnlineStatus.IDLE);
         jda = builder.buildBlocking();
 
@@ -91,15 +97,18 @@ public class Kyoko {
             t.start();
         }
 
-        commands();
+        commandManager.registerCommand(new HelpCommand(this));
+        commandManager.registerCommand(new InviteCommand(this));
+
+        //commands();
     }
 
-    private void commands() {
+    /*private void commands() {
         commands.registerCommandObjects(
                 new BasicCommands(this),
                 new MiscCommands(this)
         );
-    }
+    }*/
 
     public void run(Guild guild, Runnable runnable) {
         if (guild == null || runnable == null) {
@@ -113,8 +122,12 @@ public class Kyoko {
         service.execute(runnable);
     }
 
-    public Commands getCommands() {
-        return commands;
+    public EventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     public JDA getJda() {
@@ -123,6 +136,14 @@ public class Kyoko {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public Logger getLog() {
+        return log;
+    }
+
+    public I18n getI18n() {
+        return i18n;
     }
 
     public AbstractEmbedBuilder getAbstractEmbedBuilder() {
@@ -156,14 +177,14 @@ public class Kyoko {
                         }
                     }
                     break;
-                case "redgreen":
-                    log.info("Blinking shit set to \"redgreen\".");
+                case "redyellow":
+                    log.info("Blinking shit set to \"redyellow\".");
                     jda.getPresence().setGame(Game.of(settings.getGame(), settings.getGameUrl()));
                     while (running) {
                         try {
                             jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
                             Thread.sleep(2000);
-                            jda.getPresence().setStatus(OnlineStatus.ONLINE);
+                            jda.getPresence().setStatus(OnlineStatus.IDLE);
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
                             // nothing
