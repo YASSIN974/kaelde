@@ -2,10 +2,8 @@ package me.gabixdev.kyoko.util.command;
 
 import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
-import me.gabixdev.kyoko.Settings;
+import me.gabixdev.kyoko.i18n.Language;
 import net.dv8tion.jda.core.EmbedBuilder;
-
-import java.awt.*;
 
 /*
  * @author ProgrammingWizzard
@@ -27,6 +25,13 @@ public class AbstractEmbedBuilder {
                 .setColor(kyoko.getSettings().getNormalColor());
     }
 
+    public final EmbedBuilder getSuccessBuilder() {
+        return new EmbedBuilder()
+                .setFooter(footer, null)
+                //.setUrl(Constants.GITHUB_URL)
+                .setColor(kyoko.getSettings().getSuccessColor());
+    }
+
     public final EmbedBuilder getErrorBuilder() {
         return new EmbedBuilder()
                 .setFooter(footer, null)
@@ -34,10 +39,10 @@ public class AbstractEmbedBuilder {
                 .setColor(kyoko.getSettings().getErrorColor());
     }
 
-    public final EmbedBuilder getUsageBuilder(String commandName, String usage) {
+    public final EmbedBuilder getUsageBuilder(Language lang, String commandName, String usage) {
         return new EmbedBuilder()
                 .setFooter(footer, null)
-                //.setUrl(Constants.GITHUB_URL)
+                .addField(kyoko.getI18n().get(lang, "generic.usage"), new StringBuilder(kyoko.getSettings().getPrefix()).append(commandName).append(" ").append(usage).toString(), true)
                 .setColor(kyoko.getSettings().getErrorColor());
     }
 }

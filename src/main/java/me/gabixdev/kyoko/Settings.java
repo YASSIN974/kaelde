@@ -29,7 +29,11 @@ public class Settings {
 
     @SerializedName("normal-color")
     @JsonAdapter(ColorTypeAdapter.class)
-    private Color normalColor = new Color(46, 204, 113);
+    private Color normalColor = new Color(230, 126, 34);
+
+    @SerializedName("success-color")
+    @JsonAdapter(ColorTypeAdapter.class)
+    private Color successColor = new Color(46, 204, 113);
 
     @SerializedName("error-color")
     @JsonAdapter(ColorTypeAdapter.class)
@@ -57,6 +61,10 @@ public class Settings {
 
     public Color getNormalColor() {
         return normalColor;
+    }
+
+    public Color getSuccessColor() {
+        return successColor;
     }
 
     public Color getErrorColor() {

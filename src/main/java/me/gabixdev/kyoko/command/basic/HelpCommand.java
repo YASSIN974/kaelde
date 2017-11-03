@@ -9,16 +9,13 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class HelpCommand extends Command {
     private final Kyoko kyoko;
     private final String[] aliases = new String[] {"help"};
     private HashMap<CommandType, HashSet<Command>> categories;
-    private HashMap<String, String> cached;
+    private TreeMap<String, String> cached;
 
     public HelpCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
@@ -79,7 +76,7 @@ public class HelpCommand extends Command {
             categories.put(t, cmds);
         }
 
-        cached = new HashMap<>();
+        cached = new TreeMap<>();
 
         for (CommandType t : categories.keySet()) {
             HashSet<Command> set = categories.get(t);

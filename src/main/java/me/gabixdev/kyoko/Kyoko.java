@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
+import me.gabixdev.kyoko.command.fun.BannerCommand;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
@@ -97,18 +98,15 @@ public class Kyoko {
             t.start();
         }
 
+        registerCommands();
+    }
+
+    private void registerCommands() {
         commandManager.registerCommand(new HelpCommand(this));
         commandManager.registerCommand(new InviteCommand(this));
 
-        //commands();
+        commandManager.registerCommand(new BannerCommand(this));
     }
-
-    /*private void commands() {
-        commands.registerCommandObjects(
-                new BasicCommands(this),
-                new MiscCommands(this)
-        );
-    }*/
 
     public void run(Guild guild, Runnable runnable) {
         if (guild == null || runnable == null) {
