@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.BannerCommand;
+import me.gabixdev.kyoko.command.fun.HugCommand;
 import me.gabixdev.kyoko.command.fun.MargoJCommand;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.util.ColoredFormatter;
@@ -108,6 +109,7 @@ public class Kyoko {
 
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new MargoJCommand(this));
+        commandManager.registerCommand(new HugCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
