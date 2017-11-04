@@ -6,6 +6,7 @@ import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.BannerCommand;
 import me.gabixdev.kyoko.command.fun.HugCommand;
+import me.gabixdev.kyoko.command.util.PingCommand;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
@@ -108,6 +109,8 @@ public class Kyoko {
 
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new HugCommand(this));
+
+        commandManager.registerCommand(new PingCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
