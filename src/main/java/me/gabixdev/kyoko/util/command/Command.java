@@ -31,6 +31,10 @@ public abstract class Command {
         c.sendMessage(kyoko.getAbstractEmbedBuilder().getUsageBuilder(lang, getLabel(), kyoko.getI18n().get(lang, getUsage())).build()).queue();
     }
 
+    public void printNSFW(Kyoko kyoko, Language lang, TextChannel c) {
+        c.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(lang, "generic.error"), String.format(kyoko.getI18n().get(lang, "generic.nsfw"), kyoko.getSettings().getPrefix()), false).build()).queue();
+    }
+
     public void handle(Message message, Event event, String[] args) throws Throwable {
 
     }
