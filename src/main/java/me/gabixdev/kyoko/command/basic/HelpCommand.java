@@ -56,10 +56,6 @@ public class HelpCommand extends Command {
             normal.addField(kyoko.getI18n().get(l, s), cached.get(s), false);
         }
 
-        //normal.addField("_Command system is being rewritten, not ready to use_", "", false);
-        //normal.addField(kyoko.getI18n().get(l, "help.header.commands"), ls.substring(0, ls.length() - 1), true);
-        //normal.addField(kyoko.getI18n().get(l, "help.header.description"), ds.substring(0, ds.length() - 1), true);
-
         message.getChannel().sendMessage(normal.build()).queue();
     }
 
