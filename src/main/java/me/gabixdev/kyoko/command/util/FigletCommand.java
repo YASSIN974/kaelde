@@ -23,7 +23,7 @@ public class FigletCommand extends Command {
 
         this.fontList = new ArrayList<>();
 
-        fontList.add("banner");
+        //fontList.add("banner"); // BROKEN!
         fontList.add("big");
         fontList.add("block");
         fontList.add("bubble");
