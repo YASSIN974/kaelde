@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.BannerCommand;
+import me.gabixdev.kyoko.command.fun.CatCommand;
 import me.gabixdev.kyoko.command.fun.HugCommand;
 import me.gabixdev.kyoko.command.util.FigletCommand;
 import me.gabixdev.kyoko.command.util.PingCommand;
@@ -111,6 +112,7 @@ public class Kyoko {
 
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new HugCommand(this));
+        commandManager.registerCommand(new CatCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
