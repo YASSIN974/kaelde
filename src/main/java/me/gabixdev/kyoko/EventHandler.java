@@ -26,9 +26,10 @@ public class EventHandler implements EventListener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof MessageReceivedEvent) {
-            if (mention == null) mention = kyoko.getJda().getSelfUser().getAsMention();
-
             MessageReceivedEvent e = (MessageReceivedEvent) event;
+            if (e.getAuthor().isBot()) return;
+
+            if (mention == null) mention = kyoko.getJda().getSelfUser().getAsMention();
 
             String[] bits = e.getMessage().getRawContent().split(" ");
 
