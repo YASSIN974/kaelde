@@ -1,0 +1,1 @@
+This folder contains fonts taken from [figlet](https://github.com/cmatsuoka/figlet/tree/master/fonts).
