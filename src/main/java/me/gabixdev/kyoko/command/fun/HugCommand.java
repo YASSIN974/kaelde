@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.command.fun;
 import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
@@ -46,6 +47,13 @@ public class HugCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        boolean skipme = false;
+
+        if (message.getRawContent().startsWith(kyoko.getJda().getSelfUser().getAsMention())) {
+            if (StringUtil.getOccurencies(message.getRawContent(), kyoko.getJda().getSelfUser().getAsMention()) == 1)
+                skipme = true;
+        }
+
         if (args.length == 1) {
             normal.setTitle(kyoko.getI18n().get(l, "hug.description"));
         } else {
@@ -54,6 +62,9 @@ public class HugCommand extends Command {
             } else {
                 List<String> userlist = new ArrayList<>();
                 for (User u : message.getMentionedUsers()) {
+                    if (skipme)
+                        if (u.getIdLong() == kyoko.getJda().getSelfUser().getIdLong())
+                            continue;
                     userlist.add(u.getName());
                 }
                 normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), String.join(", ", userlist), message.getAuthor().getName()));
