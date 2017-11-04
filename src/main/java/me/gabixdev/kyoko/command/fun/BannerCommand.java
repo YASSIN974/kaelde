@@ -52,7 +52,7 @@ public class BannerCommand extends Command {
         }
 
         for (int i = 1; i < args.length; i++) {
-            args[i] = args[i].replaceAll("✔️", "✔").replaceAll("✅", "✔").replaceAll("☑️", "✔");
+            args[i] = args[i].replace("✔️", "✔").replace("✅", "✔").replace("☑️", "✔");
             for (char c : args[i].toLowerCase().toCharArray()) {
                 builder.append(toRegionalIndicator(c)).append(" ");
             }
