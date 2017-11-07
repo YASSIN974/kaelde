@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.command.util;
+package me.gabixdev.kyoko.command.fun;
 
 import com.github.lalyos.jfiglet.FigletFont;
 import me.gabixdev.kyoko.Kyoko;
@@ -66,7 +66,7 @@ public class FigletCommand extends Command {
 
     @Override
     public CommandType getType() {
-        return CommandType.UTILITY;
+        return CommandType.FUN;
     }
 
     @Override
