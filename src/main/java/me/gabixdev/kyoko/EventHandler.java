@@ -45,6 +45,7 @@ public class EventHandler implements EventListener {
                 Command c = kyoko.getCommandManager().getHandler(args[0]);
                 if (c != null) {
                     try {
+                        kyoko.getCommandManager().incrementRunCount();
                         c.handle(e.getMessage(), e, args);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
@@ -58,6 +59,7 @@ public class EventHandler implements EventListener {
                 Command c = kyoko.getCommandManager().getHandler(bits[0]);
                 if (c != null) {
                     try {
+                        kyoko.getCommandManager().incrementRunCount();
                         c.handle(e.getMessage(), e, bits);
                     } catch (Throwable ex) {
                         ex.printStackTrace();

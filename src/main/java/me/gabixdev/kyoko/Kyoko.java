@@ -7,6 +7,7 @@ import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.util.PingCommand;
 import me.gabixdev.kyoko.command.util.SayCommand;
+import me.gabixdev.kyoko.command.util.StatsCommand;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
@@ -111,10 +112,11 @@ public class Kyoko {
         commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new BananaCommand(this));
+        commandManager.registerCommand(new FigletCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
-        commandManager.registerCommand(new FigletCommand(this));
+        commandManager.registerCommand(new StatsCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
@@ -159,6 +161,14 @@ public class Kyoko {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public String getShardInfo() {
+        if (jda.getShardInfo() == null) {
+            return "n/a";
+        } else {
+            return jda.getShardInfo().getShardString();
+        }
     }
 
     private class BlinkThread implements Runnable {

@@ -4,11 +4,11 @@ import me.gabixdev.kyoko.Kyoko;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 
 public class CommandManager {
     private Kyoko kyoko;
+
+    private long runs;
 
     private HashSet<Command> commands;
     private HashMap<String, Command> handlers;
@@ -17,6 +17,7 @@ public class CommandManager {
         this.kyoko = kyoko;
         this.commands = new HashSet<>();
         this.handlers = new HashMap<>();
+        this.runs = 0;
     }
 
     public void registerCommand(Command c) {
@@ -46,6 +47,14 @@ public class CommandManager {
         else {
             return handlers.get(label);
         }
+    }
+
+    public long getCommandRunCount() {
+        return runs;
+    }
+
+    public void incrementRunCount() {
+        runs++;
     }
 
     public HashSet<Command> getCommands() {
