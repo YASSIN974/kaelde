@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FigletCommand extends Command {
-    private final String[] aliases = new String[]{"figlet"};
     private List<String> fontList;
     private String cachedList;
+    private final String mention;
+    private final String name;
+
+    private final String[] aliases = new String[]{"figlet"};
     private Kyoko kyoko;
 
     public FigletCommand(Kyoko kyoko) {
@@ -42,6 +45,9 @@ public class FigletCommand extends Command {
         fontList.add("term");
 
         cachedList = "`" + String.join("`, `", fontList) + "`";
+
+        mention = kyoko.getJda().getSelfUser().getAsMention();
+        name = kyoko.getJda().getSelfUser().getName();
     }
 
     @Override
@@ -95,10 +101,9 @@ public class FigletCommand extends Command {
                 return;
             }
 
-            String msg = message.getRawContent();
-            String mention = kyoko.getJda().getSelfUser().getAsMention();
-            if (msg.startsWith(mention)) {
-                msg = msg.substring(mention.length()).trim().substring(args[0].length()).trim().substring(args[1].length());
+            String msg = message.getContent();
+            if (message.getRawContent().startsWith(mention)) {
+                msg = msg.substring(name.length()).trim().substring(args[0].length()).trim().substring(args[1].length());
             } else {
                 msg = msg.substring(kyoko.getSettings().getPrefix().length() + args[0].length()).trim().substring(args[1].length());
             }
