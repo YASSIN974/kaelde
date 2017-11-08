@@ -21,6 +21,8 @@ public class EventHandler implements EventListener {
         this.kyoko = kyoko;
         this.pref = kyoko.getSettings().getPrefix();
         this.prefLen = this.pref.length();
+
+        mention = null;
     }
 
     @Override

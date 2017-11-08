@@ -109,12 +109,14 @@ public class Kyoko {
         commandManager.registerCommand(new InviteCommand(this));
 
         commandManager.registerCommand(new BannerCommand(this));
-        commandManager.registerCommand(new HugCommand(this));
-        commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new BananaCommand(this));
+        commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new FigletCommand(this));
+        commandManager.registerCommand(new HugCommand(this));
+        commandManager.registerCommand(new SpinnerCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
+        //commandManager.registerCommand(new RomajiCommand(this));
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new StatsCommand(this));
     }

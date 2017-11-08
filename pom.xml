@@ -17,6 +17,10 @@
             <name>jcenter-bintray</name>
             <url>http://jcenter.bintray.com</url>
         </repository>
+        <repository>
+            <id>Atilika Open Source repository</id>
+            <url>http://www.atilika.org/nexus/content/repositories/atilika</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -71,6 +75,18 @@
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>1.2.42</version>
+        </dependency>
+        <dependency>
+            <groupId>com.atilika.kuromoji</groupId>
+            <artifactId>kuromoji</artifactId>
+            <version>0.9.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atilika.kuromoji</groupId>
+            <artifactId>kuromoji-naist-jdic</artifactId>
+            <version>0.9.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
