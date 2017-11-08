@@ -11,5 +11,5 @@ public class Constants {
     public static final String DISCORDBOTS_URL = "https://discordbots.org/bot/375750637540868107";
     public static final String HUG_URL = "http://gabixdev.me/kyoko/api/hug/";
     //public static final int PERMISSIONS = 1207434304;
-    public static final int PERMISSIONS = 8;
+    public static final int PERMISSIONS = 2117598334;
 }
