@@ -4,18 +4,27 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import me.gabixdev.kyoko.Kyoko;
+import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.StringUtil;
+import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
+    private final MusicManager m;
+    private final Kyoko kyoko;
 
-    public TrackScheduler(AudioPlayer player) {
+    public TrackScheduler(AudioPlayer player, Kyoko kyoko, MusicManager m) {
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
+        this.m = m;
+        this.kyoko = kyoko;
     }
 
     public void queue(AudioTrack track) {
@@ -25,9 +34,19 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void nextTrack() {
-        // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
-        // giving null to startTrack, which is a valid argument and will simply stop the player.
-        player.startTrack(queue.poll(), false);
+        AudioTrack track = queue.poll();
+
+        if (m.outChannel != null) {
+            Language l = kyoko.getI18n().getLanguage(m.guild);
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.playing"), track.getInfo().title, StringUtil.prettyPeriod(track.getDuration())), false);
+            m.outChannel.sendMessage(err.build()).queue();
+        }
+        player.startTrack(track, false);
+    }
+
+    public Queue<AudioTrack> getQueue() {
+        return queue;
     }
 
     public ArrayList<AudioTrack> getTracks() {

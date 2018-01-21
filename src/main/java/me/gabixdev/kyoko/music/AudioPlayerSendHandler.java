@@ -15,8 +15,6 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 
     @Override
     public boolean canProvide() {
-        if (stop) return false;
-
         if (lastFrame == null) {
             lastFrame = audioPlayer.provide();
         }
@@ -39,13 +37,5 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     @Override
     public boolean isOpus() {
         return true;
-    }
-
-    public AudioPlayer getAudioPlayer() {
-        return audioPlayer;
-    }
-
-    public void setStop(boolean stop) {
-        this.stop = stop;
     }
 }

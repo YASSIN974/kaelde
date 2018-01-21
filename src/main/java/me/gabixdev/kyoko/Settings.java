@@ -27,6 +27,9 @@ public class Settings {
     @SerializedName("blinking-shit")
     private String blinkingShit = "none";
 
+    @SerializedName("allow-unsafe-sources")
+    private boolean allowUnsafeSources = false;
+
     @SerializedName("normal-color")
     @JsonAdapter(ColorTypeAdapter.class)
     private Color normalColor = new Color(230, 126, 34);
@@ -69,5 +72,9 @@ public class Settings {
 
     public Color getErrorColor() {
         return errorColor;
+    }
+
+    public boolean isAllowUnsafeSources() {
+        return allowUnsafeSources;
     }
 }

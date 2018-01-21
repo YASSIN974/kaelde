@@ -1,6 +1,5 @@
 package me.gabixdev.kyoko;
 
-import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.util.command.Command;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
@@ -81,11 +80,7 @@ public class EventHandler implements EventListener {
             List<Member> members = ((GuildVoiceLeaveEvent) event).getChannelLeft().getMembers();
             if (members.size() == 1) {
                 if (members.get(0).getUser().getIdLong() == kyoko.getJda().getSelfUser().getIdLong()) {
-                    MusicManager m = kyoko.getMusicManager(((GuildVoiceLeaveEvent) event).getGuild());
-
-                    m.getSendHandler().setStop(true);
-                    m.getSendHandler().getAudioPlayer().destroy();
-
+                    ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().setSendingHandler(null);
                     ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().closeAudioConnection();
                 }
             }

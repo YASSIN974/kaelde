@@ -4,12 +4,19 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.music.JoinCommand;
 import me.gabixdev.kyoko.command.music.PlayCommand;
+import me.gabixdev.kyoko.command.music.SkipCommand;
 import me.gabixdev.kyoko.command.util.PingCommand;
 import me.gabixdev.kyoko.command.util.SayCommand;
 import me.gabixdev.kyoko.command.util.StatsCommand;
@@ -72,8 +79,15 @@ public class Kyoko {
         this.musicManagers = new HashMap<>();
 
         this.playerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        if (settings.isAllowUnsafeSources()) {
+            playerManager.registerSourceManager(new HttpAudioSourceManager());
+            playerManager.registerSourceManager(new LocalAudioSourceManager());
+        }
     }
 
     public void start() throws LoginException, InterruptedException, RateLimitedException {
@@ -163,6 +177,7 @@ public class Kyoko {
 
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
+        commandManager.registerCommand(new SkipCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
@@ -226,7 +241,7 @@ public class Kyoko {
         MusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
-            musicManager = new MusicManager(playerManager);
+            musicManager = new MusicManager(playerManager, guild, this);
             musicManagers.put(guildId, musicManager);
         }
 
