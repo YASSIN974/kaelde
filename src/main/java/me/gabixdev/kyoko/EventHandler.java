@@ -1,9 +1,14 @@
 package me.gabixdev.kyoko;
 
+import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.util.command.Command;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+
+import java.util.List;
 
 /*
  * @author ProgrammingWizzard
@@ -27,6 +32,8 @@ public class EventHandler implements EventListener {
 
     @Override
     public void onEvent(Event event) {
+        if (!kyoko.isInitialized()) return;
+
         if (event instanceof MessageReceivedEvent) {
             MessageReceivedEvent e = (MessageReceivedEvent) event;
             if (e.getAuthor().isBot()) return;
@@ -68,6 +75,18 @@ public class EventHandler implements EventListener {
                         // TODO: i18n
                         e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField("Error", "Something bad happened, please report to bot authors.", true).build()).queue();
                     }
+                }
+            }
+        } else if (event instanceof GuildVoiceLeaveEvent) {
+            List<Member> members = ((GuildVoiceLeaveEvent) event).getChannelLeft().getMembers();
+            if (members.size() == 1) {
+                if (members.get(0).getUser().getIdLong() == kyoko.getJda().getSelfUser().getIdLong()) {
+                    MusicManager m = kyoko.getMusicManager(((GuildVoiceLeaveEvent) event).getGuild());
+
+                    m.getSendHandler().setStop(true);
+                    m.getSendHandler().getAudioPlayer().destroy();
+
+                    ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().closeAudioConnection();
                 }
             }
         }

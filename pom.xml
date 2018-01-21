@@ -88,6 +88,12 @@
             <version>0.9.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>1.2.45</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

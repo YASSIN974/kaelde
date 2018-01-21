@@ -1,5 +1,5 @@
 package me.gabixdev.kyoko.util.command;
 
 public enum CommandType {
-    BASIC, FUN, UTILITY, IMAGES;
+    BASIC, FUN, UTILITY, MUSIC, IMAGES;
 }

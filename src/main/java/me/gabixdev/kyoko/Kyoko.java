@@ -2,13 +2,19 @@ package me.gabixdev.kyoko;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
+import me.gabixdev.kyoko.command.music.JoinCommand;
+import me.gabixdev.kyoko.command.music.PlayCommand;
 import me.gabixdev.kyoko.command.util.PingCommand;
 import me.gabixdev.kyoko.command.util.SayCommand;
 import me.gabixdev.kyoko.command.util.StatsCommand;
 import me.gabixdev.kyoko.i18n.I18n;
+import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
 import me.gabixdev.kyoko.util.command.CommandManager;
@@ -25,6 +31,8 @@ import org.fusesource.jansi.AnsiConsole;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -45,11 +53,14 @@ public class Kyoko {
     private final AbstractEmbedBuilder abstractEmbedBuilder;
 
     private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private final AudioPlayerManager playerManager;
+    private final Map<Long, MusicManager> musicManagers;
 
     private JDA jda;
     private Logger log;
 
     private boolean running;
+    private boolean initialized;
 
     public Kyoko(Settings settings) {
         this.settings = settings;
@@ -57,6 +68,12 @@ public class Kyoko {
         this.abstractEmbedBuilder = new AbstractEmbedBuilder(this);
         this.commandManager = new CommandManager(this);
         this.i18n = new I18n(this);
+
+        this.musicManagers = new HashMap<>();
+
+        this.playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
     }
 
     public void start() throws LoginException, InterruptedException, RateLimitedException {
@@ -119,7 +136,14 @@ public class Kyoko {
             } else {
                 log.warning("Requested avatar change, but file does not exists. Place it as \"avatar.png\"");
             }
+        } else if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("listGuilds")) {
+            System.out.println("I am on " + jda.getGuilds().size() + " guilds:");
+            for (Guild g : jda.getGuilds()) {
+                System.out.println(g.getName() + " (" + g.getId() + ") " + g.getMembers().size() + " members");
+            }
         }
+
+        initialized = true;
     }
 
     private void registerCommands() {
@@ -134,9 +158,11 @@ public class Kyoko {
         commandManager.registerCommand(new SpinnerCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
-        //commandManager.registerCommand(new RomajiCommand(this));
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new StatsCommand(this));
+
+        commandManager.registerCommand(new JoinCommand(this));
+        commandManager.registerCommand(new PlayCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
@@ -191,6 +217,28 @@ public class Kyoko {
         }
     }
 
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public synchronized MusicManager getMusicManager(Guild guild) {
+        long guildId = Long.parseLong(guild.getId());
+        MusicManager musicManager = musicManagers.get(guildId);
+
+        if (musicManager == null) {
+            musicManager = new MusicManager(playerManager);
+            musicManagers.put(guildId, musicManager);
+        }
+
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+
+        return musicManager;
+    }
+
+    public AudioPlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
     private class BlinkThread implements Runnable {
 
         @Override
@@ -205,7 +253,7 @@ public class Kyoko {
                             jda.getPresence().setStatus(OnlineStatus.ONLINE);
                             jda.getPresence().setGame(Game.of(Game.GameType.STREAMING, settings.getGame(), "https://twitch.tv/#"));
                             Thread.sleep(10000);
-                            jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), "https://gabixdev.me/#"));
+                            jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), settings.getGameUrl()));
                             Thread.sleep(10000);
                             jda.getPresence().setStatus(OnlineStatus.IDLE);
                             Thread.sleep(10000);
@@ -227,6 +275,24 @@ public class Kyoko {
                             // nothing
                         }
                     }
+                    break;
+                case "listening-ry":
+                    log.info("Blinking shit set to \"listening-ry\".");
+                    jda.getPresence().setGame(Game.of(Game.GameType.LISTENING, settings.getGame(), settings.getGameUrl()));
+                    while (running) {
+                        try {
+                            jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+                            Thread.sleep(2000);
+                            jda.getPresence().setStatus(OnlineStatus.IDLE);
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            // nothing
+                        }
+                    }
+                    break;
+                case "listening":
+                    log.info("Blinking shit set to \"listening\".");
+                    jda.getPresence().setGame(Game.of(Game.GameType.LISTENING, settings.getGame(), settings.getGameUrl()));
                     break;
                 case "twitch":
                     log.info("Blinking shit set to \"twitch\".");
