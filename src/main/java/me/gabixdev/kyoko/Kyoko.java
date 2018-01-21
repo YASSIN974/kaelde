@@ -18,10 +18,13 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -104,7 +107,18 @@ public class Kyoko {
         registerCommands();
 
         if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("avatarUpdate")) {
-
+            File f = new File("avatar.png");
+            if (f.exists()) {
+                try {
+                    jda.getSelfUser().getManager().setAvatar(Icon.from(f));
+                    log.info("Avatar changed!");
+                } catch (IOException e) {
+                    log.severe("Can't read avatar file!");
+                    e.printStackTrace();
+                }
+            } else {
+                log.warning("Requested avatar change, but file does not exists. Place it as \"avatar.png\"");
+            }
         }
     }
 
