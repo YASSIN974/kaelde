@@ -103,7 +103,7 @@ public class Kyoko {
 
         registerCommands();
 
-        if (System.getProperty("kyoko.icommand").equalsIgnoreCase("avatarUpdate")) {
+        if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("avatarUpdate")) {
 
         }
     }
