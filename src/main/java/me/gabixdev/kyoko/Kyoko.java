@@ -110,7 +110,7 @@ public class Kyoko {
             File f = new File("avatar.png");
             if (f.exists()) {
                 try {
-                    jda.getSelfUser().getManager().setAvatar(Icon.from(f));
+                    jda.getSelfUser().getManager().setAvatar(Icon.from(f)).complete();
                     log.info("Avatar changed!");
                 } catch (IOException e) {
                     log.severe("Can't read avatar file!");
