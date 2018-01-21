@@ -33,7 +33,7 @@ public class EventHandler implements EventListener {
 
             if (mention == null) mention = kyoko.getJda().getSelfUser().getAsMention();
 
-            String[] bits = e.getMessage().getRawContent().split(" ");
+            String[] bits = e.getMessage().getContentRaw().split(" ");
 
             if (bits.length == 0) return;
 

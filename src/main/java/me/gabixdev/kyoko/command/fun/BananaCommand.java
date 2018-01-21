@@ -65,8 +65,8 @@ public class BananaCommand extends Command {
         } else if (args.length >= 2) {
             boolean skipme = false;
 
-            if (message.getRawContent().startsWith(kyoko.getJda().getSelfUser().getAsMention())) {
-                if (StringUtil.getOccurencies(message.getRawContent(), kyoko.getJda().getSelfUser().getAsMention()) == 1)
+            if (message.getContentRaw().startsWith(kyoko.getJda().getSelfUser().getAsMention())) {
+                if (StringUtil.getOccurencies(message.getContentRaw(), kyoko.getJda().getSelfUser().getAsMention()) == 1)
                     skipme = true;
             }
 

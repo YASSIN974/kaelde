@@ -84,7 +84,7 @@ public class Kyoko {
         boolean gameEnabled = false;
         if (settings.getGame() != null && !settings.getGame().isEmpty()) {
             gameEnabled = true;
-            builder.setGame(Game.of("booting..."));
+            builder.setGame(Game.of(Game.GameType.DEFAULT, "booting..."));
         }
 
         builder.setAutoReconnect(true);
@@ -102,6 +102,10 @@ public class Kyoko {
         }
 
         registerCommands();
+
+        if (System.getProperty("kyoko.icommand").equalsIgnoreCase("avatarUpdate")) {
+
+        }
     }
 
     private void registerCommands() {
@@ -185,9 +189,9 @@ public class Kyoko {
                             jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
                             Thread.sleep(10000);
                             jda.getPresence().setStatus(OnlineStatus.ONLINE);
-                            jda.getPresence().setGame(Game.of(settings.getGame(), "https://twitch.tv/#"));
+                            jda.getPresence().setGame(Game.of(Game.GameType.STREAMING, settings.getGame(), "https://twitch.tv/#"));
                             Thread.sleep(10000);
-                            jda.getPresence().setGame(Game.of(settings.getGame(), "https://gabixdev.me/#"));
+                            jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), "https://gabixdev.me/#"));
                             Thread.sleep(10000);
                             jda.getPresence().setStatus(OnlineStatus.IDLE);
                             Thread.sleep(10000);
@@ -198,7 +202,7 @@ public class Kyoko {
                     break;
                 case "redyellow":
                     log.info("Blinking shit set to \"redyellow\".");
-                    jda.getPresence().setGame(Game.of(settings.getGame(), settings.getGameUrl()));
+                    jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), settings.getGameUrl()));
                     while (running) {
                         try {
                             jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
@@ -212,7 +216,7 @@ public class Kyoko {
                     break;
                 case "twitch":
                     log.info("Blinking shit set to \"twitch\".");
-                    jda.getPresence().setGame(Game.of(settings.getGame(), "https://twitch.tv/#"));
+                    jda.getPresence().setGame(Game.of(Game.GameType.STREAMING, settings.getGame(), "https://twitch.tv/#"));
                     break;
                 default:
                     log.info("No blinking shit set.");

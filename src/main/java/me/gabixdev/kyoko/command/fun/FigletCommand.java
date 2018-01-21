@@ -101,8 +101,8 @@ public class FigletCommand extends Command {
                 return;
             }
 
-            String msg = message.getContent();
-            if (message.getRawContent().startsWith(mention)) {
+            String msg = message.getContentDisplay();
+            if (message.getContentRaw().startsWith(mention)) {
                 msg = msg.substring(name.length()).trim().substring(args[0].length()).trim().substring(args[1].length());
             } else {
                 msg = msg.substring(kyoko.getSettings().getPrefix().length() + args[0].length()).trim().substring(args[1].length());

@@ -46,7 +46,7 @@ public class SayCommand extends Command {
             return;
         }
 
-        String msg = message.getRawContent();
+        String msg = message.getContentRaw();
         String mention = kyoko.getJda().getSelfUser().getAsMention();
         if (msg.startsWith(mention)) {
             msg = msg.substring(mention.length()).trim().substring(args[0].length());

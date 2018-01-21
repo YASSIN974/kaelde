@@ -9,7 +9,6 @@ import java.io.File;
  * @date 04.02.2017
  */
 public class Main {
-
     public static void main(String[] args) throws Exception {
         Settings settings = GsonUtil.readConfiguration(Settings.class, new File("config.json"));
         Kyoko kyoko = new Kyoko(settings);
