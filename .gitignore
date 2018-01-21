@@ -1,5 +1,6 @@
 # Prevent aciddental data leak
 config.json
+avatar.png
 
 # ----------------------------------- #
 # ----- Java Language Gitignore ----- #
