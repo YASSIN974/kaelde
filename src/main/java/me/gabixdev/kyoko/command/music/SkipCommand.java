@@ -66,8 +66,8 @@ public class SkipCommand extends Command {
         }
 
         musicManager.scheduler.nextTrack();
-        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+        /*EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.skipped"), false);
-        message.getChannel().sendMessage(err.build()).queue();
+        message.getChannel().sendMessage(err.build()).queue();*/
     }
 }
