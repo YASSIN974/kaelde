@@ -17,6 +17,7 @@ import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.music.JoinCommand;
 import me.gabixdev.kyoko.command.music.PlayCommand;
 import me.gabixdev.kyoko.command.music.SkipCommand;
+import me.gabixdev.kyoko.command.util.CryptoTopCommand;
 import me.gabixdev.kyoko.command.util.PingCommand;
 import me.gabixdev.kyoko.command.util.SayCommand;
 import me.gabixdev.kyoko.command.util.StatsCommand;
@@ -174,6 +175,7 @@ public class Kyoko {
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new StatsCommand(this));
+        commandManager.registerCommand(new CryptoTopCommand(this));
 
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
