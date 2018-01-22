@@ -14,6 +14,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
+import me.gabixdev.kyoko.command.music.ClearCommand;
 import me.gabixdev.kyoko.command.music.JoinCommand;
 import me.gabixdev.kyoko.command.music.PlayCommand;
 import me.gabixdev.kyoko.command.music.SkipCommand;
@@ -180,6 +181,7 @@ public class Kyoko {
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
         commandManager.registerCommand(new SkipCommand(this));
+        commandManager.registerCommand(new ClearCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {
