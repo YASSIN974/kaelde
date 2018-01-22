@@ -36,7 +36,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void nextTrack() {
         AudioTrack track = queue.poll();
 
-        if (m.outChannel != null) {
+        if (m.outChannel != null && track != null) {
             Language l = kyoko.getI18n().getLanguage(m.guild);
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.playing"), track.getInfo().title, StringUtil.prettyPeriod(track.getDuration())), false);
