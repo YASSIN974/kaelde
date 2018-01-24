@@ -9,20 +9,17 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.LinkedList;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
-    private final BlockingQueue<AudioTrack> queue;
+    private final LinkedList<AudioTrack> queue;
     private final MusicManager m;
     private final Kyoko kyoko;
 
     public TrackScheduler(AudioPlayer player, Kyoko kyoko, MusicManager m) {
         this.player = player;
-        this.queue = new LinkedBlockingQueue<>();
+        this.queue = new LinkedList<>();
         this.m = m;
         this.kyoko = kyoko;
     }
@@ -45,12 +42,8 @@ public class TrackScheduler extends AudioEventAdapter {
         player.startTrack(track, false);
     }
 
-    public Queue<AudioTrack> getQueue() {
+    public LinkedList<AudioTrack> getQueue() {
         return queue;
-    }
-
-    public ArrayList<AudioTrack> getTracks() {
-        return new ArrayList<>(queue);
     }
 
     @Override
