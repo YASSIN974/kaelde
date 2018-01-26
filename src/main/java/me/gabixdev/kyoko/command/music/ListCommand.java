@@ -48,9 +48,18 @@ public class ListCommand extends Command {
 
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
-
+        AudioTrack currTrack = musicManager.player.getPlayingTrack();
         if (musicManager.scheduler.getQueue().isEmpty()) {
-            musicManager.player.stopTrack();
+            if(currTrack != null)
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
+                builder.append(String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix()));
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                err.addField(kyoko.getI18n().get(l, "music.title"), builder.toString(), false);
+                message.getChannel().sendMessage(err.build()).queue();
+                return;
+            }
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
@@ -81,7 +90,6 @@ public class ListCommand extends Command {
 
         StringBuilder list = new StringBuilder();
 
-        AudioTrack currTrack = musicManager.player.getPlayingTrack();
         list.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
 
         List<AudioTrack> tli = PageUtil.getPage(musicManager.scheduler.getQueue(), i, 10);
