@@ -180,6 +180,8 @@ public class Kyoko {
         commandManager.registerCommand(new SkipCommand(this));
         commandManager.registerCommand(new ClearCommand(this));
         commandManager.registerCommand(new ListCommand(this));
+        commandManager.registerCommand(new StopCommand(this));
+        commandManager.registerCommand(new PauseCommand(this));
     }
 
     public void run(Guild guild, Runnable runnable) {

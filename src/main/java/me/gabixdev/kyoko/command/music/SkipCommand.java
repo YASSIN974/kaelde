@@ -45,7 +45,6 @@ public class SkipCommand extends Command {
         musicManager.outChannel = message.getTextChannel();
 
         if (musicManager.scheduler.getQueue().isEmpty()) {
-            musicManager.player.stopTrack();
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
