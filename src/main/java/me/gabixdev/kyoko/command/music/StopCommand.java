@@ -52,6 +52,7 @@ public class StopCommand extends Command
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
                 err.addField(kyoko.getI18n().get(language, "music.title"), kyoko.getI18n().get(language, "music.msg.stopped"), false);
                 message.getChannel().sendMessage(err.build()).queue();
+                message.getGuild().getAudioManager().closeAudioConnection();
                 return;
             }
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
@@ -64,6 +65,7 @@ public class StopCommand extends Command
         musicManager.scheduler.getQueue().clear();
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         err.addField(kyoko.getI18n().get(language, "music.title"), kyoko.getI18n().get(language, "music.msg.stopped"), false);
+        message.getGuild().getAudioManager().closeAudioConnection();
         message.getChannel().sendMessage(err.build()).queue();
 
 
