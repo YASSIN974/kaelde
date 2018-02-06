@@ -54,7 +54,7 @@ public class ListCommand extends Command {
             {
                 StringBuilder builder = new StringBuilder();
                 builder.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
-                builder.append(String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix()));
+                builder.append(String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()));
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
                 err.addField(kyoko.getI18n().get(l, "music.title"), builder.toString(), false);
                 message.getChannel().sendMessage(err.build()).queue();
