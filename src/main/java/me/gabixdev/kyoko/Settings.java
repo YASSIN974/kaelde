@@ -13,14 +13,17 @@ import java.awt.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class Settings {
 
+    @SerializedName("owner")
+    private String owner = "219067402174988290";
+
     @SerializedName("token")
     private String token = "Change me";
 
     @SerializedName("game")
-    private String game = "dev";
+    private String game = "development";
 
     @SerializedName("game-url")
-    private String gameUrl = "https://gabixdev.me";
+    private String gameUrl = "https://kyoko.gabixdev.me";
 
     private String prefix = "ky!";
 
@@ -42,6 +45,19 @@ public class Settings {
     @JsonAdapter(ColorTypeAdapter.class)
     private Color errorColor = new Color(231, 76, 60);
 
+    @SerializedName("enable-nicovideo")
+    private boolean enableNicovideo = false;
+
+    @SerializedName("nico-mail")
+    private String nicoMail = "nico@example.com";
+
+    @SerializedName("nico-password")
+    private String nicoPassword = "password";
+
+    public String getOwner() {
+        return owner;
+    }
+
     public String getToken() {
         return token;
     }
@@ -62,6 +78,10 @@ public class Settings {
         return blinkingShit;
     }
 
+    public boolean isAllowUnsafeSources() {
+        return allowUnsafeSources;
+    }
+
     public Color getNormalColor() {
         return normalColor;
     }
@@ -74,7 +94,15 @@ public class Settings {
         return errorColor;
     }
 
-    public boolean isAllowUnsafeSources() {
-        return allowUnsafeSources;
+    public boolean isNicovideoEnabled() {
+        return enableNicovideo;
+    }
+
+    public String getNicoMail() {
+        return nicoMail;
+    }
+
+    public String getNicoPassword() {
+        return nicoPassword;
     }
 }
