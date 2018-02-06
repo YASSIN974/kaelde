@@ -149,11 +149,20 @@ public class Kyoko {
             } else {
                 log.warning("Requested avatar change, but file does not exists. Place it as \"avatar.png\"");
             }
+            System.exit(0);
+            return;
+        } else if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("nameUpdate")) {
+            jda.getSelfUser().getManager().setName(System.getProperty("kyoko.newname", "Kyoko")).queue();
+            log.info("Name updated!");
+            System.exit(0);
+            return;
         } else if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("listGuilds")) {
             System.out.println("I am on " + jda.getGuilds().size() + " guilds:");
             for (Guild g : jda.getGuilds()) {
                 System.out.println(g.getName() + " (" + g.getId() + ") " + g.getMembers().size() + " members");
             }
+            System.exit(0);
+            return;
         }
 
         initialized = true;
