@@ -1,11 +1,16 @@
 package me.gabixdev.kyoko.command.music;
 
+import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.music.MusicUtil;
+import me.gabixdev.kyoko.music.SearchResult;
+import me.gabixdev.kyoko.music.YoutubeSearch;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.exception.APIException;
+import me.gabixdev.kyoko.util.exception.NotFoundException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -13,11 +18,11 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
-public class PlayCommand extends Command {
+public class PlayYoutubeCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[]{"play"};
+    private final String[] aliases = new String[]{"playyoutube", "ytplay", "playyt"};
 
-    public PlayCommand(Kyoko kyoko) {
+    public PlayYoutubeCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
 
@@ -33,7 +38,7 @@ public class PlayCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "music.play.description";
+        return "music.playyoutube.description";
     }
 
     @Override
@@ -43,7 +48,7 @@ public class PlayCommand extends Command {
 
     @Override
     public String getUsage() {
-        return "music.play.usage";
+        return "music.playsearch.usage";
     }
 
     @Override
@@ -54,28 +59,41 @@ public class PlayCommand extends Command {
         musicManager.outChannel = message.getTextChannel();
 
         if (args.length == 1) {
-            if (musicManager.player.isPaused()) {
-                musicManager.player.setPaused(false);
-
-                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.resumed"), false);
-                message.getChannel().sendMessage(err.build()).queue();
-            } else if (musicManager.player.getPlayingTrack() != null) {
-                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.alreadyplaying"), false);
-                message.getChannel().sendMessage(err.build()).queue();
-            } else if (musicManager.scheduler.getQueue().isEmpty()) {
-                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
-                message.getChannel().sendMessage(err.build()).queue();
-            }
-            //printUsage(kyoko, l, message.getTextChannel());
+            printUsage(kyoko, l, message.getTextChannel());
             return;
         }
 
         String[] mp = new String[args.length - 1];
         System.arraycopy(args, 1, mp, 0, args.length - 1);
-        String url = String.join(" ", mp);
+        String search = String.join(" ", mp);
+        String url = "";
+
+        try {
+            SearchResult sr = YoutubeSearch.search(search);
+            if (sr.getEntries().isEmpty()) {
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.notfound"), search), false);
+                message.getChannel().sendMessage(err.build()).queue();
+                return;
+            } else {
+                url = sr.getEntries().get(0).getURL();
+            }
+        } catch (NotFoundException ex) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.notfound"), search), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            return;
+        } catch (Exception ex) {
+            kyoko.getLog().severe(ex.getMessage());
+            ex.printStackTrace();
+
+            if (ex instanceof APIException) {
+                kyoko.getLog().severe("Data: " + ((APIException) ex).getRaw());
+            }
+            message.getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
+            message.getTextChannel().sendMessage(Constants.DISCORD_URL).queue();
+            return;
+        }
 
         for (VoiceChannel voiceChannel : message.getGuild().getVoiceChannels()) {
             if (voiceChannel.getMembers().contains(message.getMember())) {

@@ -1,6 +1,9 @@
 package me.gabixdev.kyoko;
 
+import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
+import me.gabixdev.kyoko.util.command.DebugCommands;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
@@ -37,6 +40,12 @@ public class EventHandler implements EventListener {
             MessageReceivedEvent e = (MessageReceivedEvent) event;
             if (e.getAuthor().isBot()) return;
 
+            if (e.getChannelType() == ChannelType.PRIVATE) {
+                if (e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
+                    DebugCommands.handle(kyoko, e);
+                }
+            }
+
             if (mention == null) mention = kyoko.getJda().getSelfUser().getAsMention();
 
             String[] bits = e.getMessage().getContentRaw().split(" ");
@@ -57,8 +66,11 @@ public class EventHandler implements EventListener {
                         c.handle(e.getMessage(), e, args);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
-                        // TODO: i18n
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().setTitle("Kyoko").addField("Error", "Something bad happened, please report to bot authors.", false).build());
+                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+
+                        // REKLAMA KURWAAA
+                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
+                        e.getMessage().getTextChannel().sendMessage(Constants.DISCORD_URL).queue();
                     }
                 }
             } else if (bits[0].toLowerCase().startsWith(pref)) {
@@ -71,8 +83,11 @@ public class EventHandler implements EventListener {
                         c.handle(e.getMessage(), e, bits);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
-                        // TODO: i18n
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField("Error", "Something bad happened, please report to bot authors.", true).build()).queue();
+                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+
+                        // REKLAMA KURWAAA
+                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
+                        e.getMessage().getTextChannel().sendMessage(Constants.DISCORD_URL).queue();
                     }
                 }
             }

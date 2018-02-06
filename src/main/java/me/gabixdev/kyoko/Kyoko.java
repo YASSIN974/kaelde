@@ -22,6 +22,7 @@ import me.gabixdev.kyoko.command.util.SayCommand;
 import me.gabixdev.kyoko.command.util.StatsCommand;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.music.MusicManager;
+import me.gabixdev.kyoko.music.YoutubeSearch;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
 import me.gabixdev.kyoko.util.command.CommandManager;
@@ -52,7 +53,7 @@ import java.util.logging.Logger;
  * @date 27.02.2017
  */
 public class Kyoko {
-    private final Settings settings;
+    private Settings settings;
     private final EventHandler eventHandler;
     private final CommandManager commandManager;
     private final I18n i18n;
@@ -62,6 +63,8 @@ public class Kyoko {
     private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private final AudioPlayerManager playerManager;
     private final Map<Long, MusicManager> musicManagers;
+    private String supportedSources;
+    private Thread blinkThread;
 
     private JDA jda;
     private Logger log;
@@ -85,13 +88,17 @@ public class Kyoko {
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
 
+        supportedSources = "YouTube, SoundCloud, Bandcamp, Vimeo, Twitch";
+
         if (settings.isNicovideoEnabled()) {
             playerManager.registerSourceManager(new NicoAudioSourceManager(settings.getNicoMail(), settings.getNicoPassword()));
+            supportedSources += ", NicoNico";
         }
 
         if (settings.isAllowUnsafeSources()) {
             playerManager.registerSourceManager(new HttpAudioSourceManager());
             playerManager.registerSourceManager(new LocalAudioSourceManager());
+            supportedSources += ", direct HTTP link, local filesystem";
         }
     }
 
@@ -136,8 +143,8 @@ public class Kyoko {
         log.info("Invite link: " + "https://discordapp.com/oauth2/authorize?&client_id=" + jda.getSelfUser().getId() + "&scope=bot&permissions=" + Constants.PERMISSIONS);
 
         if (gameEnabled) {
-            Thread t = new Thread(new Kyoko.BlinkThread());
-            t.start();
+            blinkThread = new Thread(new BlinkThread(this));
+            blinkThread.start();
         }
 
         registerCommands();
@@ -197,6 +204,11 @@ public class Kyoko {
         commandManager.registerCommand(new ListCommand(this));
         commandManager.registerCommand(new StopCommand(this));
         commandManager.registerCommand(new PauseCommand(this));
+
+        if (settings.isYoutubeSearchEnabled()) {
+            new YoutubeSearch(this);
+            commandManager.registerCommand(new PlayYoutubeCommand(this));
+        }
     }
 
     public void run(Guild guild, Runnable runnable) {
@@ -215,6 +227,14 @@ public class Kyoko {
         return eventHandler;
     }
 
+    public Thread getBlinkThread() {
+        return blinkThread;
+    }
+
+    public void setBlinkThread(Thread blinkThread) {
+        this.blinkThread = blinkThread;
+    }
+
     public CommandManager getCommandManager() {
         return commandManager;
     }
@@ -225,6 +245,10 @@ public class Kyoko {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
     public Logger getLog() {
@@ -273,68 +297,11 @@ public class Kyoko {
         return playerManager;
     }
 
-    private class BlinkThread implements Runnable {
+    public String getSupportedSources() {
+        return supportedSources;
+    }
 
-        @Override
-        public void run() {
-            switch (settings.getBlinkingShit().toLowerCase()) {
-                case "4color":
-                    log.info("Blinking shit set to \"4color\".");
-                    while (running) {
-                        try {
-                            jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-                            Thread.sleep(10000);
-                            jda.getPresence().setStatus(OnlineStatus.ONLINE);
-                            jda.getPresence().setGame(Game.of(Game.GameType.STREAMING, settings.getGame(), "https://twitch.tv/#"));
-                            Thread.sleep(10000);
-                            jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), settings.getGameUrl()));
-                            Thread.sleep(10000);
-                            jda.getPresence().setStatus(OnlineStatus.IDLE);
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            // nothing
-                        }
-                    }
-                    break;
-                case "redyellow":
-                    log.info("Blinking shit set to \"redyellow\".");
-                    jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, settings.getGame(), settings.getGameUrl()));
-                    while (running) {
-                        try {
-                            jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-                            Thread.sleep(2000);
-                            jda.getPresence().setStatus(OnlineStatus.IDLE);
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            // nothing
-                        }
-                    }
-                    break;
-                case "listening-ry":
-                    log.info("Blinking shit set to \"listening-ry\".");
-                    jda.getPresence().setGame(Game.of(Game.GameType.LISTENING, settings.getGame(), settings.getGameUrl()));
-                    while (running) {
-                        try {
-                            jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
-                            Thread.sleep(2000);
-                            jda.getPresence().setStatus(OnlineStatus.IDLE);
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            // nothing
-                        }
-                    }
-                    break;
-                case "listening":
-                    log.info("Blinking shit set to \"listening\".");
-                    jda.getPresence().setGame(Game.of(Game.GameType.LISTENING, settings.getGame(), settings.getGameUrl()));
-                    break;
-                case "twitch":
-                    log.info("Blinking shit set to \"twitch\".");
-                    jda.getPresence().setGame(Game.of(Game.GameType.STREAMING, settings.getGame(), "https://twitch.tv/#"));
-                    break;
-                default:
-                    log.info("No blinking shit set.");
-            }
-        }
+    public boolean isRunning() {
+        return running;
     }
 }

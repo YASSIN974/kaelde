@@ -48,11 +48,17 @@ public class Settings {
     @SerializedName("enable-nicovideo")
     private boolean enableNicovideo = false;
 
+    @SerializedName("enable-ytsearch")
+    private boolean enableYoutubeSearch = false;
+
     @SerializedName("nico-mail")
     private String nicoMail = "nico@example.com";
 
     @SerializedName("nico-password")
     private String nicoPassword = "password";
+
+    @SerializedName("youtube-apikey")
+    private String youtubeApiKey = "nico@example.com";
 
     public String getOwner() {
         return owner;
@@ -104,5 +110,13 @@ public class Settings {
 
     public String getNicoPassword() {
         return nicoPassword;
+    }
+
+    public boolean isYoutubeSearchEnabled() {
+        return enableYoutubeSearch;
+    }
+
+    public String getYoutubeApiKey() {
+        return youtubeApiKey;
     }
 }
