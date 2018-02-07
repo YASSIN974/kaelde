@@ -16,10 +16,7 @@ import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.music.*;
-import me.gabixdev.kyoko.command.util.CryptoTopCommand;
-import me.gabixdev.kyoko.command.util.PingCommand;
-import me.gabixdev.kyoko.command.util.SayCommand;
-import me.gabixdev.kyoko.command.util.StatsCommand;
+import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.music.YoutubeSearch;
@@ -196,6 +193,8 @@ public class Kyoko {
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new StatsCommand(this));
         commandManager.registerCommand(new CryptoTopCommand(this));
+        commandManager.registerCommand(new Base64Command(this));
+        commandManager.registerCommand(new UnBase64Command(this));
 
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
@@ -204,6 +203,7 @@ public class Kyoko {
         commandManager.registerCommand(new ListCommand(this));
         commandManager.registerCommand(new StopCommand(this));
         commandManager.registerCommand(new PauseCommand(this));
+        commandManager.registerCommand(new VolumeCommand(this));
 
         if (settings.isYoutubeSearchEnabled()) {
             new YoutubeSearch(this);
