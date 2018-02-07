@@ -4,8 +4,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.exception.APIException;
+import me.gabixdev.kyoko.util.exception.NotFoundException;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -13,6 +16,10 @@ import java.util.List;
 
 public class MusicUtil {
     public static void loadAndPlay(Kyoko kyoko, Language l, MusicManager mm, String url, final boolean addPlaylist) {
+        loadAndPlay(kyoko, l, mm, url, addPlaylist, false);
+    }
+
+    public static void loadAndPlay(Kyoko kyoko, Language l, MusicManager mm, String url, final boolean addPlaylist, boolean triedYt) {
         TextChannel channel = mm.outChannel;
         final String trackUrl;
 
@@ -56,9 +63,21 @@ public class MusicUtil {
 
             @Override
             public void noMatches() {
-                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.notfound"), url), false);
-                channel.sendMessage(err.build()).queue();
+                if (triedYt) {
+                    EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                    err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.cantload"), url, kyoko.getSettings().getPrefix()), false);
+                    channel.sendMessage(err.build()).queue();
+                } else { // try to search and play
+                    String link = getFirstLink(channel, l, kyoko, url);
+                    if (link == null) {
+                        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.cantload"), url, kyoko.getSettings().getPrefix()), false);
+                        channel.sendMessage(err.build()).queue();
+                        return;
+                    } else {
+                        loadAndPlay(kyoko, l, mm, link, addPlaylist, true);
+                    }
+                }
             }
 
             @Override
@@ -68,5 +87,34 @@ public class MusicUtil {
                 channel.sendMessage(err.build()).queue();
             }
         });
+    }
+
+    private static String getFirstLink(TextChannel channel, Language l, Kyoko kyoko, String query) {
+        try {
+            SearchResult sr = YoutubeSearch.search(query);
+            if (sr.getEntries().isEmpty()) {
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.notfound"), query), false);
+                channel.sendMessage(err.build()).queue();
+                return null;
+            } else {
+                return sr.getEntries().get(0).getURL();
+            }
+        } catch (NotFoundException ex) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.notfound"), query), false);
+            channel.sendMessage(err.build()).queue();
+            return null;
+        } catch (Exception ex) {
+            kyoko.getLog().severe(ex.getMessage());
+            ex.printStackTrace();
+
+            if (ex instanceof APIException) {
+                kyoko.getLog().severe("Data: " + ((APIException) ex).getRaw());
+            }
+            channel.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
+            channel.sendMessage(Constants.DISCORD_URL).queue();
+            return null;
+        }
     }
 }
