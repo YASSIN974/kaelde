@@ -195,6 +195,8 @@ public class Kyoko {
         commandManager.registerCommand(new CryptoTopCommand(this));
         commandManager.registerCommand(new Base64Command(this));
         commandManager.registerCommand(new UnBase64Command(this));
+        commandManager.registerCommand(new DecancerCommand(this));
+        commandManager.registerCommand(new AvatarCommand(this));
 
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));

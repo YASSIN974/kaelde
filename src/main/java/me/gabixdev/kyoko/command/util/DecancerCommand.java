@@ -12,14 +12,14 @@ import net.dv8tion.jda.core.events.Event;
 
 import java.util.List;
 
-public class RomajiCommand extends Command {
+public class DecancerCommand extends Command {
     private final String mention;
     private final String name;
-    private final String[] aliases = new String[]{"romaji"};
+    private final String[] aliases = new String[]{"decancer", "romaji"};
     private Tokenizer tokenizer;
     private Kyoko kyoko;
 
-    public RomajiCommand(Kyoko kyoko) {
+    public DecancerCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
         mention = kyoko.getJda().getSelfUser().getAsMention();
         name = kyoko.getJda().getSelfUser().getName();
