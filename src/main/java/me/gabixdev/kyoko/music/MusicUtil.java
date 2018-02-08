@@ -90,6 +90,8 @@ public class MusicUtil {
     }
 
     private static String getFirstLink(TextChannel channel, Language l, Kyoko kyoko, String query) {
+        if (query.startsWith("http://") || query.startsWith("https://")) return query;
+
         try {
             SearchResult sr = YoutubeSearch.search(query);
             if (sr.getEntries().isEmpty()) {
