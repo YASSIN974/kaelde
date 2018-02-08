@@ -3,10 +3,12 @@ package me.gabixdev.kyoko.command.music;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.music.MusicManager;
+import me.gabixdev.kyoko.music.MusicUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 
 public class SkipCommand extends Command {
@@ -40,6 +42,14 @@ public class SkipCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getGuild());
+
+        VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
+        if (vc == null) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            return;
+        }
 
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();

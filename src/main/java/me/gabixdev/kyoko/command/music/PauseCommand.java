@@ -4,10 +4,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.music.MusicManager;
+import me.gabixdev.kyoko.music.MusicUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 
 public class PauseCommand extends Command {
@@ -40,27 +42,34 @@ public class PauseCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-
-        Language language = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getGuild());
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
+
+        VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
+        if (vc == null) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            return;
+        }
 
         AudioTrack audioTrack = musicManager.player.getPlayingTrack();
         if(audioTrack == null) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(language, "music.title"), String.format(kyoko.getI18n().get(language, "music.msg.empty"), kyoko.getSettings().getPrefix()), false);
+            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }
         if(musicManager.player.isPaused()) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(language, "music.title"), String.format(kyoko.getI18n().get(language, "music.msg.ispaused"), kyoko.getSettings().getPrefix()), false);
+            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.ispaused"), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }
         musicManager.player.setPaused(true);
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        err.addField(kyoko.getI18n().get(language, "music.title"), String.format(kyoko.getI18n().get(language, "music.msg.paused"), kyoko.getSettings().getPrefix()), false);
+        err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.paused"), kyoko.getSettings().getPrefix()), false);
         message.getChannel().sendMessage(err.build()).queue();
 
     }

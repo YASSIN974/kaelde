@@ -55,6 +55,14 @@ public class PlayYoutubeCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getGuild());
 
+        VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
+        if (vc == null) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            return;
+        }
+
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
 

@@ -50,8 +50,17 @@ public class PlayCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getGuild());
 
+        VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
+        if (vc == null) {
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            return;
+        }
+
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
+
 
         if (args.length == 1) {
             if (musicManager.player.isPaused()) {
@@ -77,23 +86,16 @@ public class PlayCommand extends Command {
         System.arraycopy(args, 1, mp, 0, args.length - 1);
         String url = String.join(" ", mp);
 
-        for (VoiceChannel voiceChannel : message.getGuild().getVoiceChannels()) {
-            if (voiceChannel.getMembers().contains(message.getMember())) {
-                try {
-                    message.getGuild().getAudioManager().openAudioConnection(voiceChannel);
-                    MusicUtil.loadAndPlay(kyoko, l, musicManager, url, true);
-                } catch (PermissionException e) {
-                    if (e.getPermission() == Permission.VOICE_CONNECT) {
-                        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                        err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.botnoperm"), false);
-                        message.getChannel().sendMessage(err.build()).queue();
-                    }
-                }
-                return;
+        try {
+            message.getGuild().getAudioManager().openAudioConnection(vc);
+            MusicUtil.loadAndPlay(kyoko, l, musicManager, url, true);
+        } catch (PermissionException e) {
+            if (e.getPermission() == Permission.VOICE_CONNECT) {
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.botnoperm"), false);
+                message.getChannel().sendMessage(err.build()).queue();
             }
         }
-        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-        err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
-        message.getChannel().sendMessage(err.build()).queue();
+
     }
 }

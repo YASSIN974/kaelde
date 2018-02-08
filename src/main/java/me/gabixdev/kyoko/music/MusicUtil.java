@@ -10,7 +10,10 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.exception.APIException;
 import me.gabixdev.kyoko.util.exception.NotFoundException;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import java.util.List;
 
@@ -118,5 +121,14 @@ public class MusicUtil {
             channel.sendMessage(Constants.DISCORD_URL).queue();
             return null;
         }
+    }
+
+    public static VoiceChannel getCurrentMemberChannel(Guild guild, Member member) {
+        for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
+            if (voiceChannel.getMembers().contains(member)) {
+                return voiceChannel;
+            }
+        }
+        return null;
     }
 }
