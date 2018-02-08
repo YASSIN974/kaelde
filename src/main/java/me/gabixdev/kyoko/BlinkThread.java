@@ -59,6 +59,20 @@ public class BlinkThread implements Runnable {
                     }
                 }
                 break;
+            case "listening-rg":
+                kyoko.getLog().info("Blinking shit set to \"listening-rg\".");
+                kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.LISTENING, kyoko.getSettings().getGame(), kyoko.getSettings().getGameUrl()));
+                while (kyoko.isRunning()) {
+                    try {
+                        kyoko.getJda().getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+                        Thread.sleep(2000);
+                        kyoko.getJda().getPresence().setStatus(OnlineStatus.ONLINE);
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
+                }
+                break;
             case "listening":
                 kyoko.getLog().info("Blinking shit set to \"listening\".");
                 kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.LISTENING, kyoko.getSettings().getGame(), kyoko.getSettings().getGameUrl()));
