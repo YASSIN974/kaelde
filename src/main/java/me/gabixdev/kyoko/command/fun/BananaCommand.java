@@ -92,7 +92,6 @@ public class BananaCommand extends Command {
                         builder.setTitle(String.format(kyoko.getI18n().get(l, "banana.else"), u.getName(), 9 + u.getIdLong() % 20));
                     }
                 }
-
             }
         }
 
