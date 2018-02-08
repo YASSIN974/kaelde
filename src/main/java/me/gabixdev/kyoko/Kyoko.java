@@ -15,6 +15,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.fun.*;
+import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.i18n.I18n;
@@ -213,6 +214,7 @@ public class Kyoko {
 
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
+            commandManager.registerCommand(new PruneCommand(this));
         }
     }
 

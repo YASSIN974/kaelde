@@ -63,6 +63,12 @@ public class Settings {
     @SerializedName("youtube-apikey")
     private String youtubeApiKey = "nico@example.com";
 
+    @SerializedName("min-remove")
+    private int minRemove = 2;
+
+    @SerializedName("max-remove")
+    private int maxRemove = 1000;
+
     public String getOwner() {
         return owner;
     }
@@ -125,5 +131,13 @@ public class Settings {
 
     public String getYoutubeApiKey() {
         return youtubeApiKey;
+    }
+
+    public int getMinRemove() {
+        return minRemove;
+    }
+
+    public int getMaxRemove() {
+        return maxRemove;
     }
 }
