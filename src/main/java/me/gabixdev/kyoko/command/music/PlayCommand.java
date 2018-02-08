@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 
 public class PlayCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[]{"play"};
+    private final String[] aliases = new String[]{"play", "p"};
 
     public PlayCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
