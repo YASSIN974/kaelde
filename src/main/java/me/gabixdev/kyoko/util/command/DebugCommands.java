@@ -4,6 +4,7 @@ import me.gabixdev.kyoko.BlinkThread;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.Settings;
 import me.gabixdev.kyoko.util.GsonUtil;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
@@ -16,6 +17,7 @@ public class DebugCommands {
                     "help - display help\n" +
                     "reload - reload config\n" +
                     "setname - set bot name\n" +
+                    "prune - emergency server cleanup" +
                     "```"
             ).queue();
         } else if (e.getMessage().getContentRaw().startsWith("reload")) {
@@ -40,6 +42,36 @@ public class DebugCommands {
             String name = e.getMessage().getContentRaw().substring(8);
             kyoko.getJda().getSelfUser().getManager().setName(name).queue();
             e.getChannel().sendMessage("Bot name set to: `" + name + "`").queue();
+        } else if (e.getMessage().getContentRaw().startsWith("prune ")) {
+            String[] args = e.getMessage().getContentRaw().split(" ");
+            if (args.length != 3) {
+                e.getChannel().sendMessage("prune <guild id> <author id>").queue();
+                return;
+            }
+
+            long guild = Long.parseLong(args[1]);
+            long author = Long.parseLong(args[2]);
+
+            if (true) { // clean up
+                for (TextChannel t : kyoko.getJda().getGuildById(guild).getTextChannels()) {
+                    kyoko.getLog().info("Cleaning up: " + t.getName());
+                    try {
+                        e.getChannel().sendMessage("Cleaning up: #" + t.getName()).queue();
+                        t.getHistory().retrievePast(100).queue(suc -> {
+                            suc.forEach(message -> {
+                                if (message.getAuthor().getIdLong() == author) {
+                                    message.delete().queue();
+                                }
+                            });
+                        });
+                        e.getChannel().sendMessage("done!").queue();
+                    } catch (Exception ex) {
+                        e.getChannel().sendMessage("Clean up error, no permission?").queue();
+                        ex.printStackTrace();
+                    }
+                }
+                return;
+            }
         }
     }
 }
