@@ -118,7 +118,7 @@ public class Kyoko {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         if (settings.getToken() != null) {
             if (settings.getToken().equalsIgnoreCase("Change me")) {
-                System.out.println("No token specified, please set it in config.json");
+                log.severe("No token specified, please set it in config.json");
                 System.exit(1);
             }
             builder.setToken(settings.getToken());
