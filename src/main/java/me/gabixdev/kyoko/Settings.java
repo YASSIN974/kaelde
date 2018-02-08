@@ -27,6 +27,9 @@ public class Settings {
 
     private String prefix = "ky!";
 
+    @SerializedName("wip-features")
+    private boolean wipFeaturesEnabled = false;
+
     @SerializedName("blinking-shit")
     private String blinkingShit = "none";
 
@@ -46,10 +49,10 @@ public class Settings {
     private Color errorColor = new Color(231, 76, 60);
 
     @SerializedName("enable-nicovideo")
-    private boolean enableNicovideo = false;
+    private boolean nicoEnabled = false;
 
     @SerializedName("enable-ytsearch")
-    private boolean enableYoutubeSearch = false;
+    private boolean youtubeSearchEnabled = false;
 
     @SerializedName("nico-mail")
     private String nicoMail = "nico@example.com";
@@ -80,6 +83,10 @@ public class Settings {
         return prefix;
     }
 
+    public boolean isWipFeaturesEnabled() {
+        return wipFeaturesEnabled;
+    }
+
     public String getBlinkingShit() {
         return blinkingShit;
     }
@@ -101,7 +108,7 @@ public class Settings {
     }
 
     public boolean isNicovideoEnabled() {
-        return enableNicovideo;
+        return nicoEnabled;
     }
 
     public String getNicoMail() {
@@ -113,7 +120,7 @@ public class Settings {
     }
 
     public boolean isYoutubeSearchEnabled() {
-        return enableYoutubeSearch;
+        return youtubeSearchEnabled;
     }
 
     public String getYoutubeApiKey() {

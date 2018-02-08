@@ -50,7 +50,7 @@ public class HelpCommand extends Command {
 
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         Language l = kyoko.getI18n().getLanguage(message.getGuild());
-        normal.addField(String.format(kyoko.getI18n().get(l, "help.header.title"), kyoko.getJda().getSelfUser().getName()), String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.WIKI_URL), false);
+        normal.addField(String.format(kyoko.getI18n().get(l, "help.header.title"), kyoko.getJda().getSelfUser().getName()), String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.WIKI_URL, Constants.DISCORD_URL), false);
 
         for (String s : cached.keySet()) {
             normal.addField(kyoko.getI18n().get(l, s), cached.get(s), false);
