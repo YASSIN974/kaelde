@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.events.Event;
 
 public class SkipCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[]{"skip"};
+    private final String[] aliases = new String[]{"skip", ">>"};
 
     public SkipCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
