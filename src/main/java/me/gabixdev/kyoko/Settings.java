@@ -67,7 +67,7 @@ public class Settings {
     private int minRemove = 2;
 
     @SerializedName("max-remove")
-    private int maxRemove = 1000;
+    private int maxRemove = 200;
 
     public String getOwner() {
         return owner;
