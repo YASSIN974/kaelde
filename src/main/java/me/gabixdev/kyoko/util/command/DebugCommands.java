@@ -17,6 +17,7 @@ public class DebugCommands {
                     "help - display help\n" +
                     "reload - reload config\n" +
                     "setname - set bot name\n" +
+                    "eval - eval js code\n" +
                     "prune - emergency server cleanup" +
                     "```"
             ).queue();
@@ -24,6 +25,7 @@ public class DebugCommands {
             try {
                 Settings settings = GsonUtil.readConfiguration(Settings.class, new File("config.json"));
                 kyoko.setSettings(settings);
+                kyoko.initJS();
                 kyoko.getBlinkThread().interrupt();
 
                 if (settings.getGame() != null && !settings.getGame().isEmpty()) {
@@ -52,25 +54,34 @@ public class DebugCommands {
             long guild = Long.parseLong(args[1]);
             long author = Long.parseLong(args[2]);
 
-            if (true) { // clean up
-                for (TextChannel t : kyoko.getJda().getGuildById(guild).getTextChannels()) {
-                    kyoko.getLog().info("Cleaning up: " + t.getName());
-                    try {
-                        e.getChannel().sendMessage("Cleaning up: #" + t.getName()).queue();
-                        t.getHistory().retrievePast(100).queue(suc -> {
-                            suc.forEach(message -> {
-                                if (message.getAuthor().getIdLong() == author) {
-                                    message.delete().queue();
-                                }
-                            });
+            for (TextChannel t : kyoko.getJda().getGuildById(guild).getTextChannels()) {
+                kyoko.getLog().info("Cleaning up: " + t.getName());
+                try {
+                    e.getChannel().sendMessage("Cleaning up: #" + t.getName()).queue();
+                    t.getHistory().retrievePast(100).queue(suc -> {
+                        suc.forEach(message -> {
+                            if (message.getAuthor().getIdLong() == author) {
+                                message.delete().queue();
+                            }
                         });
-                        e.getChannel().sendMessage("done!").queue();
-                    } catch (Exception ex) {
-                        e.getChannel().sendMessage("Clean up error, no permission?").queue();
-                        ex.printStackTrace();
-                    }
+                    });
+                    e.getChannel().sendMessage("done!").queue();
+                } catch (Exception ex) {
+                    e.getChannel().sendMessage("Clean up error, no permission?").queue();
+                    ex.printStackTrace();
                 }
-                return;
+            }
+        } else if (kyoko.getSettings().isEvalEnabled() && e.getMessage().getContentRaw().startsWith("eval ")) {
+            String code = e.getMessage().getContentRaw().substring(5);
+            try {
+                Object out = kyoko.getScriptEngine().eval(code);
+                if (out == null) {
+                    e.getChannel().sendMessage("Null output").queue();
+                } else {
+                    e.getChannel().sendMessage("```\n" + out.toString() + "\n```").queue();
+                }
+            } catch (Exception ex) {
+                e.getChannel().sendMessage("**Error:** " + ex.getMessage()).queue();
             }
         }
     }

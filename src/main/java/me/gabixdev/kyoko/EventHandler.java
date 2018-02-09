@@ -56,6 +56,14 @@ public class EventHandler implements EventListener {
             if (bits[0].toLowerCase().startsWith(mention)) {
                 if (bits.length == 1) return;
 
+                if (kyoko.getSettings().isLimitExecution()) {
+                    if (!e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
+                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
+                        return;
+                    }
+                }
+
                 String[] args = new String[bits.length - 1];
                 System.arraycopy(bits, 1, args, 0, args.length);
 
@@ -74,6 +82,14 @@ public class EventHandler implements EventListener {
                     }
                 }
             } else if (bits[0].toLowerCase().startsWith(pref)) {
+                if (kyoko.getSettings().isLimitExecution()) {
+                    if (!e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
+                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
+                        return;
+                    }
+                }
+
                 bits[0] = bits[0].substring(prefLen).trim();
 
                 Command c = kyoko.getCommandManager().getHandler(bits[0]);

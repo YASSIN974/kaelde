@@ -15,9 +15,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 
 public class StatsCommand extends Command {
-
     private final RuntimeMXBean rb;
-
 
     private final String[] aliases = new String[]{"stats", "statistics"};
     private Kyoko kyoko;

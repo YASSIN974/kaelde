@@ -34,6 +34,9 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.fusesource.jansi.AnsiConsole;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +60,7 @@ public class Kyoko {
     private final I18n i18n;
 
     private final AbstractEmbedBuilder abstractEmbedBuilder;
+    private ScriptEngine scriptEngine;
 
     private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private final AudioPlayerManager playerManager;
@@ -72,14 +76,14 @@ public class Kyoko {
 
     public Kyoko(Settings settings) {
         this.settings = settings;
-        this.eventHandler = new EventHandler(this);
-        this.abstractEmbedBuilder = new AbstractEmbedBuilder(this);
-        this.commandManager = new CommandManager(this);
-        this.i18n = new I18n(this);
+        eventHandler = new EventHandler(this);
+        abstractEmbedBuilder = new AbstractEmbedBuilder(this);
+        commandManager = new CommandManager(this);
+        i18n = new I18n(this);
 
-        this.musicManagers = new HashMap<>();
+        musicManagers = new HashMap<>();
 
-        this.playerManager = new DefaultAudioPlayerManager();
+        playerManager = new DefaultAudioPlayerManager();
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
         playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -146,6 +150,8 @@ public class Kyoko {
         }
 
         registerCommands();
+
+        initJS();
 
         if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("avatarUpdate")) {
             File f = new File("avatar.png");
@@ -230,6 +236,18 @@ public class Kyoko {
         service.execute(runnable);
     }
 
+    public void initJS() {
+        scriptEngine = new ScriptEngineManager().getEngineByName("js");
+        if (settings.isEvalEnabled()) {
+            try {
+                scriptEngine.eval("load(\"nashorn:mozilla_compat.js\");importPackage(java.lang);importPackage(java.io);importPackage(java.util);");
+                scriptEngine.put("kyoko", this);
+            } catch (ScriptException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     public EventHandler getEventHandler() {
         return eventHandler;
     }
@@ -310,5 +328,9 @@ public class Kyoko {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public ScriptEngine getScriptEngine() {
+        return scriptEngine;
     }
 }

@@ -16,6 +16,21 @@ public class Settings {
     @SerializedName("owner")
     private String owner = "219067402174988290";
 
+    @SerializedName("mysql-host")
+    private String mysqlHost = "localhost";
+
+    @SerializedName("mysql-port")
+    private int mysqlPort = 3306;
+
+    @SerializedName("mysql-db")
+    private String mysqlDatabase = "kyoko";
+
+    @SerializedName("mysql-user")
+    private String mysqlUser = "root";
+
+    @SerializedName("mysql-password")
+    private String mysqlPassword = "";
+
     @SerializedName("token")
     private String token = "Change me";
 
@@ -26,6 +41,8 @@ public class Settings {
     private String gameUrl = "https://kyoko.gabixdev.me";
 
     private String prefix = "ky!";
+
+    private boolean eval = false; // for testing/development purposes only. DO NOT ENABLE ON PRODUCTION!
 
     @SerializedName("wip-features")
     private boolean wipFeaturesEnabled = false;
@@ -69,6 +86,9 @@ public class Settings {
     @SerializedName("max-remove")
     private int maxRemove = 200;
 
+    @SerializedName("execution-limit")
+    private boolean limitExecution = false;
+
     public String getOwner() {
         return owner;
     }
@@ -87,6 +107,10 @@ public class Settings {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public boolean isEvalEnabled() {
+        return eval;
     }
 
     public boolean isWipFeaturesEnabled() {
@@ -139,5 +163,9 @@ public class Settings {
 
     public int getMaxRemove() {
         return maxRemove;
+    }
+
+    public boolean isLimitExecution() {
+        return limitExecution;
     }
 }
