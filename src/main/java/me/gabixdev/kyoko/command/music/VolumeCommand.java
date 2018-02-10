@@ -77,7 +77,7 @@ public class VolumeCommand extends Command {
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }
-        if (vol < 0 || vol > 100) {
+        if (vol < 0 || vol > 150) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.outofrange"), false);
             message.getChannel().sendMessage(err.build()).queue();
