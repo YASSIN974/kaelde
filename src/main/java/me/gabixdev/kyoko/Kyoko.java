@@ -218,6 +218,8 @@ public class Kyoko {
         commandManager.registerCommand(new UnBase64Command(this));
         commandManager.registerCommand(new AvatarCommand(this));
 
+        commandManager.registerCommand(new PruneCommand(this));
+
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
         commandManager.registerCommand(new SkipCommand(this));
@@ -234,7 +236,6 @@ public class Kyoko {
 
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
-            commandManager.registerCommand(new PruneCommand(this));
         }
     }
 
