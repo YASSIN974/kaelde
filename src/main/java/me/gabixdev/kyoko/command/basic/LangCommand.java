@@ -1,6 +1,5 @@
 package me.gabixdev.kyoko.command.basic;
 
-import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
@@ -41,8 +40,21 @@ public class LangCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-        eb.addField("Select language:", Constants.DISCORD_URL, false);
-
-        message.getChannel().sendMessage(eb.build()).queue();
+        if (args.length == 1) {
+            eb.addField("Select language:", langoptions, false);
+            message.getChannel().sendMessage(eb.build()).queue();
+        } else {
+            for (Language l : Language.values()) {
+                if (l.getShortName().equalsIgnoreCase(args[1])
+                        || l.getEmoji().equalsIgnoreCase(args[1])
+                        || l.getLocalized().equalsIgnoreCase(args[1])) {
+                    kyoko.getDatabaseManager().getUser(message.getMember().getUser()).setLanguage(l);
+                    message.getChannel().sendMessage(String.format(kyoko.getI18n().get(l, "language.set"), l.getLocalized())).queue();
+                    return;
+                }
+            }
+            eb.addField("Select language:", langoptions, false);
+            message.getChannel().sendMessage(eb.build()).queue();
+        }
     }
 }
