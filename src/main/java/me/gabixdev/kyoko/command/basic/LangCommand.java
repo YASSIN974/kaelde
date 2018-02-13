@@ -49,6 +49,7 @@ public class LangCommand extends Command {
                         || l.getEmoji().equalsIgnoreCase(args[1])
                         || l.getLocalized().equalsIgnoreCase(args[1])) {
                     kyoko.getDatabaseManager().getUser(message.getMember().getUser()).setLanguage(l);
+                    kyoko.getDatabaseManager().saveUser(message.getMember().getUser());
                     message.getChannel().sendMessage(String.format(kyoko.getI18n().get(l, "language.set"), l.getLocalized())).queue();
                     return;
                 }

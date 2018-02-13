@@ -1,6 +1,7 @@
 package me.gabixdev.kyoko.database;
 
 import com.dieselpoint.norm.Database;
+import com.dieselpoint.norm.sqlmakers.MySqlMaker;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.Settings;
 import me.gabixdev.kyoko.i18n.Language;
@@ -29,6 +30,7 @@ public class DatabaseManager {
         System.setProperty("norm.user", settings.getMysqlUser());
         System.setProperty("norm.password", settings.getMysqlPassword());
         db = new Database();
+        db.setSqlMaker(new MySqlMaker());
     }
 
     public void cleanCache() {
@@ -48,5 +50,14 @@ public class DatabaseManager {
             userCache.put(user, uc);
             return uc;
         }
+    }
+
+    public void saveUser(User user) {
+        if (!userCache.containsKey(user)) return;
+        UserConfig u = userCache.get(user);
+        u.setUserId(user.getIdLong());
+        db.table("users").where("userid=?", user.getIdLong()).update(u);
+        userCache.remove(user);
+        kyoko.getLog().info("User saved: " + user.getName() + " (" + user.getId() + ")");
     }
 }
