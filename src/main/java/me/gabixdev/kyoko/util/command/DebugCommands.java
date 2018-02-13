@@ -82,6 +82,7 @@ public class DebugCommands {
                 }
             } catch (Exception ex) {
                 e.getChannel().sendMessage("**Error:** " + ex.getMessage()).queue();
+                ex.printStackTrace();
             }
         }
     }

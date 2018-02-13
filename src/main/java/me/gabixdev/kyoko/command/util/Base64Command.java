@@ -50,7 +50,7 @@ public class Base64Command extends Command {
 
         String based = Base64.encodeBase64String(data.getBytes("UTF-8"));
         if (based.length() > 2000) {
-            Language l = kyoko.getI18n().getLanguage(message.getGuild());
+            Language l = kyoko.getI18n().getLanguage(message.getMember());
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
             err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.toolong"), false);
             message.getChannel().sendMessage(err.build()).queue();

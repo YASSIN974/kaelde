@@ -39,7 +39,7 @@ public class PingCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
         normal.addField(kyoko.getI18n().get(l, "ping.message"), kyoko.getJda().getPing() + " ms", true);
         message.getTextChannel().sendMessage(normal.build()).queue();
     }

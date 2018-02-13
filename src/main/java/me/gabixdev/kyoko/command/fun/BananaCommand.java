@@ -51,7 +51,7 @@ public class BananaCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
         /*if (!message.getTextChannel().isNSFW()) {
             printNSFW(kyoko, l, message.getTextChannel());
             return;

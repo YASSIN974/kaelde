@@ -78,24 +78,24 @@ public class FigletCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         if (args.length == 1) {
-            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getGuild()), message.getTextChannel());
+            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());
             return;
         } else if (args.length == 2) {
             if (args[1].equalsIgnoreCase("list")) {
                 // print list
                 EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                Language l = kyoko.getI18n().getLanguage(message.getGuild());
+                Language l = kyoko.getI18n().getLanguage(message.getMember());
                 normal.addField(kyoko.getI18n().get(l, "figlet.msg.list"), cachedList, false);
                 message.getChannel().sendMessage(normal.build()).queue();
                 return;
             } else {
-                printUsage(kyoko, kyoko.getI18n().getLanguage(message.getGuild()), message.getTextChannel());
+                printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());
                 return;
             }
         } else {
             if (!fontList.contains(args[1].toLowerCase())) {
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                Language l = kyoko.getI18n().getLanguage(message.getGuild());
+                Language l = kyoko.getI18n().getLanguage(message.getMember());
                 err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "figlet.msg.unknownfont"), kyoko.getSettings().getPrefix()), false);
                 message.getChannel().sendMessage(err.build()).queue();
                 return;
@@ -109,7 +109,7 @@ public class FigletCommand extends Command {
             }
 
             if (msg.trim().isEmpty()) {
-                printUsage(kyoko, kyoko.getI18n().getLanguage(message.getGuild()), message.getTextChannel());
+                printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());
                 return;
             }
 
@@ -117,7 +117,7 @@ public class FigletCommand extends Command {
 
             if (gened.length() > 2000) {
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                Language l = kyoko.getI18n().getLanguage(message.getGuild());
+                Language l = kyoko.getI18n().getLanguage(message.getMember());
                 err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "figlet.msg.toolong"), false);
                 message.getChannel().sendMessage(err.build()).queue();
                 return;

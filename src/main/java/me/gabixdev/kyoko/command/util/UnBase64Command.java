@@ -51,7 +51,7 @@ public class UnBase64Command extends Command {
         byte[] based = Base64.decodeBase64(data);
 
         if (based.length == 0) {
-            Language l = kyoko.getI18n().getLanguage(message.getGuild());
+            Language l = kyoko.getI18n().getLanguage(message.getMember());
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
             err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "unbase64.error"), false);
             message.getChannel().sendMessage(err.build()).queue();

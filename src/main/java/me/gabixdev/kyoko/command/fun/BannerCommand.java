@@ -43,7 +43,7 @@ public class BannerCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         StringBuilder builder = new StringBuilder();
         if (args.length == 1) {

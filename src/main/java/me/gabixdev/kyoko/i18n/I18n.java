@@ -2,6 +2,7 @@ package me.gabixdev.kyoko.i18n;
 
 import me.gabixdev.kyoko.Kyoko;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,7 +43,16 @@ public class I18n {
         }
     }
 
-    public Language getLanguage(Guild g) {
+    public Language getLanguage(Guild guild) {
         return Language.ENGLISH;
+    }
+
+    public Language getLanguage(Member member) {
+        try {
+            return kyoko.getDatabaseManager().getUser(member.getUser()).getLanguage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Language.ENGLISH;
+        }
     }
 }

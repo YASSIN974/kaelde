@@ -51,7 +51,7 @@ public class PruneCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         if (args.length < 2) {
             printUsage(kyoko, l, message.getTextChannel());

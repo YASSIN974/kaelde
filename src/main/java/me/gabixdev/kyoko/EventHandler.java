@@ -57,8 +57,8 @@ public class EventHandler implements EventListener {
                 if (bits.length == 1) return;
 
                 if (kyoko.getSettings().isLimitExecution()) {
-                    if (!e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
-                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                    if (!kyoko.getSettings().getDevs().contains(e.getAuthor().getId())) {
+                        Language l = kyoko.getI18n().getLanguage(e.getMember());
                         e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
                         return;
                     }
@@ -74,7 +74,7 @@ public class EventHandler implements EventListener {
                         c.handle(e.getMessage(), e, args);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
-                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                        Language l = kyoko.getI18n().getLanguage(e.getMember());
 
                         // REKLAMA KURWAAA
                         e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
@@ -83,8 +83,8 @@ public class EventHandler implements EventListener {
                 }
             } else if (bits[0].toLowerCase().startsWith(pref)) {
                 if (kyoko.getSettings().isLimitExecution()) {
-                    if (!e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
-                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                    if (!kyoko.getSettings().getDevs().contains(e.getAuthor().getId())) {
+                        Language l = kyoko.getI18n().getLanguage(e.getMember());
                         e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
                         return;
                     }
@@ -99,7 +99,7 @@ public class EventHandler implements EventListener {
                         c.handle(e.getMessage(), e, bits);
                     } catch (Throwable ex) {
                         ex.printStackTrace();
-                        Language l = kyoko.getI18n().getLanguage(e.getMessage().getGuild());
+                        Language l = kyoko.getI18n().getLanguage(e.getMember());
 
                         // REKLAMA KURWAAA
                         e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();

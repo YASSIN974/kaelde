@@ -35,7 +35,7 @@ public class InviteCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         String clientId = kyoko.getJda().getSelfUser().getId();
         EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         eb.addField(kyoko.getI18n().get(l, "invite.msg.inviteurl"), new StringBuilder().append("https://discordapp.com/oauth2/authorize?&client_id=").append(clientId).append("&scope=bot&permissions=" + Constants.PERMISSIONS).toString(), false);
         eb.addField(kyoko.getI18n().get(l, "invite.msg.discordurl"), Constants.DISCORD_URL, false);

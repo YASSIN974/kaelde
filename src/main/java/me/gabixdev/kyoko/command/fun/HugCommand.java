@@ -46,7 +46,7 @@ public class HugCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         if (args.length == 1) {
             normal.setTitle(kyoko.getI18n().get(l, "hug.description"));

@@ -14,10 +14,12 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
+import me.gabixdev.kyoko.command.basic.LangCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
+import me.gabixdev.kyoko.database.DatabaseManager;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.music.YoutubeSearch;
@@ -57,6 +59,7 @@ public class Kyoko {
     private Settings settings;
     private final EventHandler eventHandler;
     private final CommandManager commandManager;
+    private final DatabaseManager databaseManager;
     private final I18n i18n;
 
     private final AbstractEmbedBuilder abstractEmbedBuilder;
@@ -79,6 +82,7 @@ public class Kyoko {
         eventHandler = new EventHandler(this);
         abstractEmbedBuilder = new AbstractEmbedBuilder(this);
         commandManager = new CommandManager(this);
+        databaseManager = new DatabaseManager(this);
         i18n = new I18n(this);
 
         musicManagers = new HashMap<>();
@@ -118,7 +122,16 @@ public class Kyoko {
 
         log.info("Kyoko v" + Constants.VERSION + " is starting...");
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.severe("Cannot find MySQL JDBC driver!");
+            e.printStackTrace();
+            return;
+        }
+
         i18n.loadMessages();
+        databaseManager.load(settings);
 
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         if (settings.getToken() != null) {
@@ -188,6 +201,7 @@ public class Kyoko {
     private void registerCommands() {
         commandManager.registerCommand(new HelpCommand(this));
         commandManager.registerCommand(new InviteCommand(this));
+        commandManager.registerCommand(new LangCommand(this));
 
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new BananaCommand(this));
@@ -246,6 +260,10 @@ public class Kyoko {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public EventHandler getEventHandler() {

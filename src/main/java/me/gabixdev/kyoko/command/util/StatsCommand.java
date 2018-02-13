@@ -47,7 +47,7 @@ public class StatsCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder()
                 .setAuthor(kyoko.getI18n().get(l, "stats.title"), Constants.SITE_URL, kyoko.getJda().getSelfUser().getAvatarUrl())

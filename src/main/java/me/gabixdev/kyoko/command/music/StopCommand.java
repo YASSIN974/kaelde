@@ -42,7 +42,7 @@ public class StopCommand extends Command
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
         if (vc == null) {

@@ -41,7 +41,7 @@ public class SpinnerCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        Language l = kyoko.getI18n().getLanguage(message.getGuild());
+        Language l = kyoko.getI18n().getLanguage(message.getMember());
         normal.setTitle(kyoko.getI18n().get(l, "spinner.title"));
         normal.setImage(gifurl);
         message.getTextChannel().sendMessage(normal.build()).queue();

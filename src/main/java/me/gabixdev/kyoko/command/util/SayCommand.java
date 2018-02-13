@@ -42,7 +42,7 @@ public class SayCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         if (args.length == 1) {
-            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getGuild()), message.getTextChannel());
+            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());
             return;
         }
 
@@ -55,7 +55,7 @@ public class SayCommand extends Command {
         }
 
         if (msg.trim().isEmpty()) {
-            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getGuild()), message.getTextChannel());
+            printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());
             return;
         }
 

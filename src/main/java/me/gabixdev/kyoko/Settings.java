@@ -16,6 +16,9 @@ public class Settings {
     @SerializedName("owner")
     private String owner = "219067402174988290";
 
+    @SerializedName("devs")
+    private String devs = "219067402174988290";
+
     @SerializedName("mysql-host")
     private String mysqlHost = "localhost";
 
@@ -91,6 +94,30 @@ public class Settings {
 
     public String getOwner() {
         return owner;
+    }
+
+    public String getDevs() {
+        return devs;
+    }
+
+    public String getMysqlHost() {
+        return mysqlHost;
+    }
+
+    public int getMysqlPort() {
+        return mysqlPort;
+    }
+
+    public String getMysqlDatabase() {
+        return mysqlDatabase;
+    }
+
+    public String getMysqlUser() {
+        return mysqlUser;
+    }
+
+    public String getMysqlPassword() {
+        return mysqlPassword;
     }
 
     public String getToken() {
