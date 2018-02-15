@@ -10,6 +10,7 @@ public class Constants {
     public static final String DISCORD_URL = "https://discord.gg/ZvDRQf7";
     public static final String DISCORDBOTS_URL = "https://discordbots.org/bot/375750637540868107";
     public static final String HUG_URL = "https://gabixdev.me/kyoko/api/hug/";
+    public static final String NEKOS_URL = "https://nekos.life/api/v2/img/";
     //public static final int PERMISSIONS = 1207434304;
     public static final int PERMISSIONS = 2117598334;
 }
