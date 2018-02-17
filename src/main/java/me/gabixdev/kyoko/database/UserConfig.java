@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.database;
 import me.gabixdev.kyoko.i18n.Language;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Table(name = "users")
 public class UserConfig {
@@ -10,13 +11,14 @@ public class UserConfig {
     public UserConfig() {
     }
 
-    public UserConfig(long userId, String language, int level, int money, int xp) {
+    public UserConfig(long userId, String language, int level, int money, int xp, Timestamp lastdaily) {
         this.userId = userId;
         this.strlanguage = language;
         this.language = Language.valueOf(strlanguage);
         this.level = level;
         this.money = money;
         this.xp = xp;
+        this.lastdaily = lastdaily;
     }
 
     @Id
@@ -29,6 +31,7 @@ public class UserConfig {
     private String strlanguage;
     private int level;
     private int money;
+    private Timestamp lastdaily;
     private int xp;
 
     @Column(name = "userid")
@@ -38,6 +41,15 @@ public class UserConfig {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public void setLastDaily(Timestamp lastdaily)
+    {
+        this.lastdaily = lastdaily;
+    }
+    @Column(name = "lastdaily")
+    public Timestamp getLastDaily() {
+        return lastdaily;
     }
 
     @Column(name = "lang")
