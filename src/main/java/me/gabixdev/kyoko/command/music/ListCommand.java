@@ -44,63 +44,65 @@ public class ListCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        Language l = kyoko.getI18n().getLanguage(message.getMember());
+        new Thread(() -> {
+            Language l = kyoko.getI18n().getLanguage(message.getMember());
 
-        MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
-        musicManager.outChannel = message.getTextChannel();
-        AudioTrack currTrack = musicManager.player.getPlayingTrack();
-        if (musicManager.scheduler.getQueue().isEmpty()) {
-            if(currTrack != null)
-            {
-                StringBuilder builder = new StringBuilder();
-                builder.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
-                builder.append(String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()));
+            MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
+            musicManager.outChannel = message.getTextChannel();
+            AudioTrack currTrack = musicManager.player.getPlayingTrack();
+            if (musicManager.scheduler.getQueue().isEmpty()) {
+                if(currTrack != null)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
+                    builder.append(String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()));
+                    EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                    err.addField(kyoko.getI18n().get(l, "music.title"), builder.toString(), false);
+                    message.getChannel().sendMessage(err.build()).queue();
+                    return;
+                }
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                err.addField(kyoko.getI18n().get(l, "music.title"), builder.toString(), false);
+                err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
                 message.getChannel().sendMessage(err.build()).queue();
                 return;
             }
-            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
-            message.getChannel().sendMessage(err.build()).queue();
-            return;
-        }
 
-        int i = 1;
-        int pc = PageUtil.getPageCount(musicManager.scheduler.getQueue(), 10);
+            int i = 1;
+            int pc = PageUtil.getPageCount(musicManager.scheduler.getQueue(), 10);
 
-        if (args.length == 2) {
-            boolean succ = true;
-            try {
-                i = Integer.parseUnsignedInt(args[1]);
+            if (args.length == 2) {
+                boolean succ = true;
+                try {
+                    i = Integer.parseUnsignedInt(args[1]);
 
-                if (i == 0 || i > pc)
+                    if (i == 0 || i > pc)
+                        succ = false;
+                } catch (NumberFormatException e) {
                     succ = false;
-            } catch (NumberFormatException e) {
-                succ = false;
+                }
+
+                if (!succ) {
+                    EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                    err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.outrange"), pc), false);
+                    message.getChannel().sendMessage(err.build()).queue();
+                    return;
+                }
             }
 
-            if (!succ) {
-                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "music.msg.outrange"), pc), false);
-                message.getChannel().sendMessage(err.build()).queue();
-                return;
+            StringBuilder list = new StringBuilder();
+
+            list.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
+
+            List<AudioTrack> tli = PageUtil.getPage(musicManager.scheduler.getQueue(), i, 10);
+            for (int tid = 0; tid < tli.size(); tid++) {
+                list.append("**").append(tid + 1 + ((i - 1) * 10)).append(".** ").append(tli.get(tid).getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(tli.get(tid).getDuration())).append("]`").append("\n");
             }
-        }
+            list.append("\n").append(String.format(kyoko.getI18n().get(l, "music.msg.skiptip"), kyoko.getSettings().getPrefix()));
 
-        StringBuilder list = new StringBuilder();
-
-        list.append("**").append(kyoko.getI18n().get(l, "music.msg.currplaying")).append("** ").append(currTrack.getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(currTrack.getPosition())).append("/").append(StringUtil.prettyPeriod(currTrack.getDuration())).append("]`").append("\n\n");
-
-        List<AudioTrack> tli = PageUtil.getPage(musicManager.scheduler.getQueue(), i, 10);
-        for (int tid = 0; tid < tli.size(); tid++) {
-            list.append("**").append(tid + 1 + ((i - 1) * 10)).append(".** ").append(tli.get(tid).getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(tli.get(tid).getDuration())).append("]`").append("\n");
-        }
-        list.append("\n").append(String.format(kyoko.getI18n().get(l, "music.msg.skiptip"), kyoko.getSettings().getPrefix()));
-
-        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        err.addField(String.format(kyoko.getI18n().get(l, "music.msg.tracklist"), i, pc), list.toString(), false);
-        message.getChannel().sendMessage(err.build()).queue();
-        System.gc(); // free memory
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+            err.addField(String.format(kyoko.getI18n().get(l, "music.msg.tracklist"), i, pc), list.toString(), false);
+            message.getChannel().sendMessage(err.build()).queue();
+            System.gc(); // free memory
+        }).start();
     }
 }

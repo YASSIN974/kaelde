@@ -209,6 +209,7 @@ public class Kyoko {
         commandManager.registerCommand(new FigletCommand(this));
         commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new SpinnerCommand(this));
+        commandManager.registerCommand(new NekosCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
