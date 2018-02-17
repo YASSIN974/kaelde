@@ -47,14 +47,19 @@ public class EventHandler implements EventListener {
             }
 
             if (mention == null) mention = kyoko.getJda().getSelfUser().getAsMention();
-
             String[] bits = e.getMessage().getContentRaw().split(" ");
-
-            if (bits.length == 0) return;
-
-            // TODO: per-guild prefix
-            if (bits[0].toLowerCase().startsWith(mention)) {
-                if (bits.length == 1) return;
+            if (bits.length != 0) {
+                if (e.getMessage().getContentRaw().startsWith(mention)) {
+                    if (bits.length == 1)
+                        bits = new String[]{"help"};
+                    else {
+                        String[] args = new String[bits.length - 1];
+                        System.arraycopy(bits, 1, args, 0, args.length);
+                        bits = args;
+                    }
+                } else if (bits[0].toLowerCase().startsWith(pref)) {
+                    bits[0] = bits[0].substring(prefLen).trim();
+                }
 
                 if (kyoko.getSettings().isLimitExecution()) {
                     if (!kyoko.getSettings().getDevs().contains(e.getAuthor().getId())) {
@@ -63,34 +68,6 @@ public class EventHandler implements EventListener {
                         return;
                     }
                 }
-
-                String[] args = new String[bits.length - 1];
-                System.arraycopy(bits, 1, args, 0, args.length);
-
-                Command c = kyoko.getCommandManager().getHandler(args[0]);
-                if (c != null) {
-                    try {
-                        kyoko.getCommandManager().incrementRunCount();
-                        c.handle(e.getMessage(), e, args);
-                    } catch (Throwable ex) {
-                        ex.printStackTrace();
-                        Language l = kyoko.getI18n().getLanguage(e.getMember());
-
-                        // REKLAMA KURWAAA
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
-                        e.getMessage().getTextChannel().sendMessage(Constants.DISCORD_URL).queue();
-                    }
-                }
-            } else if (bits[0].toLowerCase().startsWith(pref)) {
-                if (kyoko.getSettings().isLimitExecution()) {
-                    if (!kyoko.getSettings().getDevs().contains(e.getAuthor().getId())) {
-                        Language l = kyoko.getI18n().getLanguage(e.getMember());
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
-                        return;
-                    }
-                }
-
-                bits[0] = bits[0].substring(prefLen).trim();
 
                 Command c = kyoko.getCommandManager().getHandler(bits[0]);
                 if (c != null) {
