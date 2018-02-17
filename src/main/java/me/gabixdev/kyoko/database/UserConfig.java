@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.database;
 import me.gabixdev.kyoko.i18n.Language;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Table(name = "users")
 public class UserConfig {

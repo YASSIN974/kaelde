@@ -229,6 +229,7 @@ public class Kyoko {
         commandManager.registerCommand(new StopCommand(this));
         commandManager.registerCommand(new PauseCommand(this));
         commandManager.registerCommand(new VolumeCommand(this));
+        commandManager.registerCommand(new ShuffleCommand(this));
 
         if (settings.isYoutubeSearchEnabled()) {
             new YoutubeSearch(this);
