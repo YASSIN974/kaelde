@@ -2,6 +2,7 @@ package me.gabixdev.kyoko.i18n;
 
 public enum Language {
     ENGLISH("en", "English", "\uD83C\uDDFA\uD83C\uDDF8"),
+    GERMAN("de", "Deutsch", "\uD83C\uDDE9\uD83C\uDDEA"),
     POLISH("pl", "Polski", "\uD83C\uDDF5\uD83C\uDDF1");
 
     private String shortName;
