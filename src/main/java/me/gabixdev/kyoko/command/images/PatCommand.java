@@ -72,7 +72,7 @@ public class PatCommand extends Command {
             }
         }
 
-        String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(NekosCommand.NEKOS_URL + "hug")).getAsJsonObject().get("url").getAsString();
+        String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(NekosCommand.NEKOS_URL + "pat")).getAsJsonObject().get("url").getAsString();
 
         normal.setImage(url);
 
