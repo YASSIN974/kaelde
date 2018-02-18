@@ -59,7 +59,7 @@ public class PatCommand extends Command {
             }
 
             if (message.getMentionedUsers().isEmpty()) {
-                normal.setTitle(String.format(kyoko.getI18n().get(l, "pat.someone"), args[1], message.getAuthor().getName()));
+                normal.setTitle(String.format(kyoko.getI18n().get(l, "pat.someone"), message.getAuthor().getName(), args[1]));
             } else {
                 List<String> userlist = new ArrayList<>();
                 for (User u : message.getMentionedUsers()) {
@@ -68,7 +68,7 @@ public class PatCommand extends Command {
                             continue;
                     userlist.add(u.getName());
                 }
-                normal.setTitle(String.format(kyoko.getI18n().get(l, "pat.someone"), String.join(", ", userlist), message.getAuthor().getName()));
+                normal.setTitle(String.format(kyoko.getI18n().get(l, "pat.someone"), message.getAuthor().getName(), String.join(", ", userlist)));
             }
         }
 
