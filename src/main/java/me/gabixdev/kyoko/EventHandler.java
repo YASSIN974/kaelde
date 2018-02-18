@@ -1,6 +1,7 @@
 package me.gabixdev.kyoko;
 
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.DebugCommands;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -59,6 +60,8 @@ public class EventHandler implements EventListener {
                     }
                 } else if (bits[0].toLowerCase().startsWith(pref)) {
                     bits[0] = bits[0].substring(prefLen).trim();
+                } else {
+                    return;
                 }
 
                 if (kyoko.getSettings().isLimitExecution()) {
@@ -79,6 +82,7 @@ public class EventHandler implements EventListener {
                         Language l = kyoko.getI18n().getLanguage(e.getMember());
 
                         // REKLAMA KURWAAA
+                        CommonErrorUtil.exception(kyoko, l, e.getTextChannel());
                     }
                 }
             }
