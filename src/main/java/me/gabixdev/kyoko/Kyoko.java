@@ -19,10 +19,7 @@ import me.gabixdev.kyoko.command.fun.BananaCommand;
 import me.gabixdev.kyoko.command.fun.BannerCommand;
 import me.gabixdev.kyoko.command.fun.FigletCommand;
 import me.gabixdev.kyoko.command.fun.SpinnerCommand;
-import me.gabixdev.kyoko.command.images.CatCommand;
-import me.gabixdev.kyoko.command.images.HugCommand;
-import me.gabixdev.kyoko.command.images.NekosCommand;
-import me.gabixdev.kyoko.command.images.PatCommand;
+import me.gabixdev.kyoko.command.images.*;
 import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
@@ -218,6 +215,7 @@ public class Kyoko {
         commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new PatCommand(this));
         commandManager.registerCommand(new NekosCommand(this));
+        commandManager.registerCommand(new DogCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
