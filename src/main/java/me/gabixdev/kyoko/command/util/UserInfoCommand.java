@@ -65,9 +65,10 @@ public class UserInfoCommand extends Command {
             Member mem = member.get();
             EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             if (mem.getUser().getAvatarUrl() != null) normal.setThumbnail(mem.getUser().getAvatarUrl());
-
-            normal.addField(kyoko.getI18n().get(l, "userinfo.tag"), mem.getUser().getName() + "#" + mem.getUser().getDiscriminator(), false);
-            normal.addField(kyoko.getI18n().get(l, "userinfo.id"), mem.getUser().getId(), false);
+            StringBuilder desc = new StringBuilder();
+            desc.append(kyoko.getI18n().get(l, "userinfo.tag")).append(": `").append(mem.getUser().getName()).append("#").append(mem.getUser().getDiscriminator()).append("`\n");
+            desc.append(kyoko.getI18n().get(l, "userinfo.id")).append(": `").append(mem.getUser().getId()).append("`");
+            normal.addField(kyoko.getI18n().get(l, "userinfo.title"), desc.toString(), false);
             message.getTextChannel().sendMessage(normal.build()).queue();
         } else {
             CommonErrorUtil.noUserFound(kyoko, l, message.getTextChannel(), args[1]);

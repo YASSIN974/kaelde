@@ -2,6 +2,7 @@ package me.gabixdev.kyoko.command.util;
 
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
@@ -11,6 +12,9 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
+
+import java.io.IOException;
+import java.util.Optional;
 
 public class AvatarCommand extends Command {
     private final String[] aliases = new String[]{"avatar"};
@@ -55,21 +59,28 @@ public class AvatarCommand extends Command {
             return;
         }
 
-        for (Member mem : message.getGuild().getMembers()) {
-            if (mem.getAsMention().equals(args[1])
-                    || mem.getUser().getName().equalsIgnoreCase(args[1])
-                    || mem.getEffectiveName().equalsIgnoreCase(args[1])) {
+        Optional<Member> member = message.getGuild().getMembers().stream().parallel().filter(
+                mem -> mem.getAsMention().equals(args[1])
+                        || mem.getUser().getName().equalsIgnoreCase(args[1])
+                        || mem.getEffectiveName().equalsIgnoreCase(args[1])).findFirst();
 
-                if (mem.getUser().getAvatarUrl() == null) {
-                    EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                    normal.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "avatar.null"), false);
-                    message.getTextChannel().sendMessage(normal.build()).queue();
-                } else {
+        if (member.isPresent()) {
+            Member mem = member.get();
+            if (mem.getUser().getAvatarUrl() == null) {
+                EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                normal.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "avatar.null"), false);
+                message.getTextChannel().sendMessage(normal.build()).queue();
+            } else {
+                try {
                     byte[] data = URLUtil.readUrlBytes(mem.getUser().getAvatarUrl());
                     message.getChannel().sendFile(data, "avatar.png", new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "avatar.user"), mem.getEffectiveName())).build()).queue();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
                 }
-                return;
             }
+        } else {
+            CommonErrorUtil.noUserFound(kyoko, l, message.getTextChannel(), args[1]);
         }
     }
 }

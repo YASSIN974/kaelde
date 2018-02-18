@@ -1,5 +1,6 @@
 package me.gabixdev.kyoko.util;
 
+import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -16,5 +17,16 @@ public class CommonErrorUtil {
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
         err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.botnoperm"), false);
         chan.sendMessage(err.build()).queue();
+    }
+
+    public static void noUserFound(Kyoko kyoko, Language l, TextChannel chan, String user) {
+        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.usernotfound"), user), false);
+        chan.sendMessage(err.build()).queue();
+    }
+
+    public static void exception(Kyoko kyoko, Language l, TextChannel chan) {
+        chan.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
+        chan.sendMessage(Constants.DISCORD_URL).queue();
     }
 }

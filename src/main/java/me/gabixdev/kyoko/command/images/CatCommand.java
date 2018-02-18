@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.command.fun;
+package me.gabixdev.kyoko.command.images;
 
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
@@ -36,7 +36,7 @@ public class CatCommand extends Command {
 
     @Override
     public CommandType getType() {
-        return CommandType.FUN;
+        return CommandType.IMAGES;
     }
 
     @Override

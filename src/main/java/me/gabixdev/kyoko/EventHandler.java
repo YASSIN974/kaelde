@@ -79,8 +79,6 @@ public class EventHandler implements EventListener {
                         Language l = kyoko.getI18n().getLanguage(e.getMember());
 
                         // REKLAMA KURWAAA
-                        e.getMessage().getTextChannel().sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
-                        e.getMessage().getTextChannel().sendMessage(Constants.DISCORD_URL).queue();
                     }
                 }
             }
