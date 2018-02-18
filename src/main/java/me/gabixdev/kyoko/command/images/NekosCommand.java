@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class NekosCommand extends Command {
     private Kyoko kyoko;
-    private static final String[] types = new String[]{"neko", "kiss", "hug", "pat", "cuddle", "lizard", "lewd"};
+    private static final String[] types = new String[]{"neko", "kiss", "hug", "pat", "cuddle", "lewd"};
     private static final String[] aliases = new String[]{"nekos", "neko"};
     public static final String NEKOS_URL = "https://nekos.life/api/v2/img/";
 
