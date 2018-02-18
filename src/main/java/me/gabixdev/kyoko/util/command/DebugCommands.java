@@ -78,7 +78,16 @@ public class DebugCommands {
                 if (out == null) {
                     e.getChannel().sendMessage("Null output").queue();
                 } else {
-                    e.getChannel().sendMessage("```\n" + out.toString() + "\n```").queue();
+                    String dat = out.toString();
+                    dat = dat.replace(kyoko.getSettings().getToken(), "[censored]")
+                            .replace(kyoko.getSettings().getMysqlDatabase(), "[censored]")
+                            .replace(kyoko.getSettings().getMysqlHost(), "[censored]")
+                            .replace(kyoko.getSettings().getMysqlUser(), "[censored]")
+                            .replace(kyoko.getSettings().getMysqlPassword(), "[censored]")
+                            .replace(kyoko.getSettings().getNicoMail(), "[censored]")
+                            .replace(kyoko.getSettings().getNicoPassword(), "[censored]")
+                            .replace(kyoko.getSettings().getYoutubeApiKey(), "[censored]");
+                    e.getChannel().sendMessage("```\n" + dat + "\n```").queue();
                 }
             } catch (Exception ex) {
                 e.getChannel().sendMessage("**Error:** " + ex.getMessage()).queue();
