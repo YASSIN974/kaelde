@@ -1,8 +1,8 @@
-package me.gabixdev.kyoko.command.fun;
+package me.gabixdev.kyoko.command.images;
 
-import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.GsonUtil;
 import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HugCommand extends Command {
-    private final String[] aliases = new String[]{"hug"};
+    private static final String[] aliases = new String[]{"hug"};
     private Kyoko kyoko;
 
     public HugCommand(Kyoko kyoko) {
@@ -40,7 +40,7 @@ public class HugCommand extends Command {
 
     @Override
     public CommandType getType() {
-        return CommandType.FUN;
+        return CommandType.IMAGES;
     }
 
     @Override
@@ -72,7 +72,10 @@ public class HugCommand extends Command {
                 normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), String.join(", ", userlist), message.getAuthor().getName()));
             }
         }
-        normal.setImage(URLUtil.readUrl(Constants.HUG_URL));
+
+        String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(NekosCommand.NEKOS_URL + "hug")).getAsJsonObject().get("url").getAsString();
+
+        normal.setImage(url);
 
         message.getTextChannel().sendMessage(normal.build()).queue();
     }

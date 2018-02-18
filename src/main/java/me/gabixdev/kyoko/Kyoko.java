@@ -15,7 +15,14 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.basic.LangCommand;
-import me.gabixdev.kyoko.command.fun.*;
+import me.gabixdev.kyoko.command.fun.BananaCommand;
+import me.gabixdev.kyoko.command.fun.BannerCommand;
+import me.gabixdev.kyoko.command.fun.FigletCommand;
+import me.gabixdev.kyoko.command.fun.SpinnerCommand;
+import me.gabixdev.kyoko.command.images.CatCommand;
+import me.gabixdev.kyoko.command.images.HugCommand;
+import me.gabixdev.kyoko.command.images.NekosCommand;
+import me.gabixdev.kyoko.command.images.PatCommand;
 import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
@@ -30,7 +37,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -145,7 +151,7 @@ public class Kyoko {
         boolean gameEnabled = false;
         if (settings.getGame() != null && !settings.getGame().isEmpty()) {
             gameEnabled = true;
-            builder.setGame(Game.of(Game.GameType.DEFAULT, "booting..."));
+            //builder.setGame(Game.of(Game.GameType.DEFAULT, "booting..."));
         }
 
         builder.setAutoReconnect(true);
@@ -205,10 +211,12 @@ public class Kyoko {
 
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new BananaCommand(this));
-        commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new FigletCommand(this));
-        commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new SpinnerCommand(this));
+
+        commandManager.registerCommand(new CatCommand(this));
+        commandManager.registerCommand(new HugCommand(this));
+        commandManager.registerCommand(new PatCommand(this));
         commandManager.registerCommand(new NekosCommand(this));
 
         commandManager.registerCommand(new PingCommand(this));
@@ -218,6 +226,7 @@ public class Kyoko {
         commandManager.registerCommand(new Base64Command(this));
         commandManager.registerCommand(new UnBase64Command(this));
         commandManager.registerCommand(new AvatarCommand(this));
+        commandManager.registerCommand(new UserInfoCommand(this));
 
         commandManager.registerCommand(new PruneCommand(this));
 
