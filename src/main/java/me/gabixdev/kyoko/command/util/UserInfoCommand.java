@@ -59,7 +59,8 @@ public class UserInfoCommand extends Command {
         Optional<Member> member = message.getGuild().getMembers().stream().parallel().filter(
                 mem -> mem.getAsMention().equals(args[1])
                         || mem.getUser().getName().equalsIgnoreCase(args[1])
-                        || mem.getEffectiveName().equalsIgnoreCase(args[1])).findFirst();
+                        || mem.getEffectiveName().equalsIgnoreCase(args[1])
+                        || mem.getUser().getIdLong() == Long.parseLong(args[1])).findFirst();
 
         if (member.isPresent()) {
             Member mem = member.get();
