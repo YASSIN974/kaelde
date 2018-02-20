@@ -1,7 +1,5 @@
 package me.gabixdev.kyoko.command.images;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
