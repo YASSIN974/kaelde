@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.command.images;
 import com.google.gson.JsonObject;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.GsonUtil;
 import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
@@ -70,18 +71,19 @@ public class DogCommand extends Command
         if (args.length == 1) {
             String breed = breeds.get(RandomUtils.nextInt(0, breeds.size()));
             JsonObject imgObject = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(String.format(dogUrl, breed))).getAsJsonObject();
-            if (!imgObject.get("status").getAsString().equals("success")) {
-                EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                builder.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "dog.error"), false);
+            if (imgObject.get("status").getAsString().equals("success"))
+            {
+                String imgUrl = imgObject.get("message").getAsString();
+                EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + breed + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
+                builder.setImage(imgUrl);
                 message.getChannel().sendMessage(builder.build()).queue();
-                return;
             }
-            String imgUrl = imgObject.get("message").getAsString();
-            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + breed + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
-            builder.setImage(imgUrl);
-            message.getChannel().sendMessage(builder.build()).queue();
-            return;
+            else
+            {
+                CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
+            }
+
         }
         if(args[1].equalsIgnoreCase("list"))
         {
@@ -101,16 +103,16 @@ public class DogCommand extends Command
             return;
         }
         JsonObject imgObject = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(String.format(dogUrl, args[1].toLowerCase()))).getAsJsonObject();
-        if (!imgObject.get("status").getAsString().equals("success")) {
-            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-            builder.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "dog.error"), false);
+        if (imgObject.get("status").getAsString().equals("success")) {
+            String imgUrl = imgObject.get("message").getAsString();
+            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+            builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + args[1].toLowerCase() + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
+            builder.setImage(imgUrl);
             message.getChannel().sendMessage(builder.build()).queue();
-            return;
         }
-        String imgUrl = imgObject.get("message").getAsString();
-        EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + args[1].toLowerCase() + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
-        builder.setImage(imgUrl);
-        message.getChannel().sendMessage(builder.build()).queue();
+        else
+        {
+            CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
+        }
     }
 }
