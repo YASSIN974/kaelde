@@ -83,8 +83,7 @@ public class CommandManager {
     }
 
     private Command getHandler(String label) {
-        label = label.toLowerCase();
-        return handlers.getOrDefault(label, null);
+        return handlers.getOrDefault(label.toLowerCase(), null);
     }
 
     public long getRuns() {
