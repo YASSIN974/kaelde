@@ -60,7 +60,7 @@ public class CommandManager {
             } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) { // check for prefix
                 bits[0] = bits[0].substring(kyoko.getSettings().getPrefix().length()).trim(); // remove prefix from command label
             } else return;
-            
+
             Command c = getHandler(bits[0]);
             if (c != null) {
                 if (kyoko.getSettings().isLimitExecution() && !kyoko.getSettings().getDevs().contains(event.getAuthor().getId())) {

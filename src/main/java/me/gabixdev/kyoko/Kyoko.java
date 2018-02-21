@@ -27,6 +27,7 @@ import me.gabixdev.kyoko.database.DatabaseManager;
 import me.gabixdev.kyoko.i18n.I18n;
 import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.music.YoutubeSearch;
+import me.gabixdev.kyoko.util.APICommands;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
 import me.gabixdev.kyoko.util.command.CommandManager;
@@ -35,7 +36,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -43,8 +43,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -140,64 +138,29 @@ public class Kyoko {
         if (settings.getToken() != null) {
             if (settings.getToken().equalsIgnoreCase("Change me")) {
                 log.severe("No token specified, please set it in config.json");
-                System.exit(1);
+                Runtime.getRuntime().exit(1);
             }
             builder.setToken(settings.getToken());
         }
 
-        boolean gameEnabled = false;
-        if (settings.getGame() != null && !settings.getGame().isEmpty()) {
-            gameEnabled = true;
-            //builder.setGame(Game.of(Game.GameType.DEFAULT, "booting..."));
-        }
-
-        builder.setAutoReconnect(true);
-        builder.setBulkDeleteSplittingEnabled(false);
-        builder.addEventListener(eventHandler);
-        builder.setAudioEnabled(true);
-        builder.setStatus(OnlineStatus.IDLE);
+        builder.setAutoReconnect(true)
+                .setBulkDeleteSplittingEnabled(false)
+                .addEventListener(eventHandler)
+                .setAudioEnabled(true)
+                .setStatus(OnlineStatus.IDLE);
         jda = builder.buildBlocking();
 
         log.info("Invite link: " + "https://discordapp.com/oauth2/authorize?&client_id=" + jda.getSelfUser().getId() + "&scope=bot&permissions=" + Constants.PERMISSIONS);
 
-        if (gameEnabled) {
+        if (settings.getGame() != null && !settings.getGame().isEmpty()) {
             blinkThread = new Thread(new BlinkThread(this));
             blinkThread.start();
         }
 
         registerCommands();
-
         initJS();
 
-        if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("avatarUpdate")) {
-            File f = new File("avatar.png");
-            if (f.exists()) {
-                try {
-                    jda.getSelfUser().getManager().setAvatar(Icon.from(f)).complete();
-                    log.info("Avatar changed!");
-                } catch (IOException e) {
-                    log.severe("Can't read avatar file!");
-                    e.printStackTrace();
-                }
-            } else {
-                log.warning("Requested avatar change, but file does not exists. Place it as \"avatar.png\"");
-            }
-            System.exit(0);
-            return;
-        } else if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("nameUpdate")) {
-            jda.getSelfUser().getManager().setName(System.getProperty("kyoko.newname", "Kyoko")).queue();
-            log.info("Name updated!");
-            System.exit(0);
-            return;
-        } else if (System.getProperty("kyoko.icommand", "").equalsIgnoreCase("listGuilds")) {
-            System.out.println("I am on " + jda.getGuilds().size() + " guilds:");
-            for (Guild g : jda.getGuilds()) {
-                System.out.println(g.getName() + " (" + g.getId() + ") " + g.getMembers().size() + " members");
-            }
-            System.exit(0);
-            return;
-        }
-
+        if (System.getProperty("kyoko.apicommand") != null) APICommands.execCommand(this);
         initialized = true;
     }
 
