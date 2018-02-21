@@ -59,14 +59,14 @@ public class ListCommand extends Command {
                 if(currTrack != null)
                 {
                     String builder = "**" + kyoko.getI18n().get(l, "music.msg.currplaying") + "** " + currTrack.getInfo().title + "\t`[" + StringUtil.prettyPeriod(currTrack.getPosition()) + "/" + StringUtil.prettyPeriod(currTrack.getDuration()) + "]`" + "\n\n" +
-                            String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix());
+                            String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix());
                     EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
                     err.addField(kyoko.getI18n().get(l, "music.title"), builder, false);
                     message.getChannel().sendMessage(err.build()).queue();
                     return;
                 }
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-                err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
+                err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
                 message.getChannel().sendMessage(err.build()).queue();
                 return;
             }

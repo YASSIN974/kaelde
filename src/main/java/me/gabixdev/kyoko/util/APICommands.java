@@ -35,6 +35,8 @@ public class APICommands {
                 System.out.println("I am on " + kyoko.getJda().getGuilds().size() + " guilds:");
                 kyoko.getJda().getGuilds().forEach(g -> System.out.println(g.getName() + " (" + g.getId() + ") " + g.getMembers().size() + " members"));
                 break;
+            default:
+                break;
         }
     }
 }

@@ -67,7 +67,7 @@ public class StopCommand extends Command
                 return;
             }
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.getSupportedSources(), kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
+            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }

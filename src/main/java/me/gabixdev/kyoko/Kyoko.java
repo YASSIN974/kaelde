@@ -69,7 +69,7 @@ public class Kyoko {
     private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private final AudioPlayerManager playerManager;
     private final Map<Long, MusicManager> musicManagers;
-    private String supportedSources;
+    public String supportedSources;
     private Thread blinkThread;
 
     private JDA jda;
@@ -128,6 +128,7 @@ public class Kyoko {
         } catch (ClassNotFoundException e) {
             log.severe("Cannot find MySQL JDBC driver!");
             e.printStackTrace();
+            running = false;
             return;
         }
 
@@ -138,7 +139,8 @@ public class Kyoko {
         if (settings.getToken() != null) {
             if (settings.getToken().equalsIgnoreCase("Change me")) {
                 log.severe("No token specified, please set it in config.json");
-                Runtime.getRuntime().exit(1);
+                running = false;
+                return;
             }
             builder.setToken(settings.getToken());
         }
@@ -316,10 +318,6 @@ public class Kyoko {
 
     public AudioPlayerManager getPlayerManager() {
         return playerManager;
-    }
-
-    public String getSupportedSources() {
-        return supportedSources;
     }
 
     public boolean isRunning() {
