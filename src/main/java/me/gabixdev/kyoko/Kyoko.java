@@ -160,7 +160,12 @@ public class Kyoko {
         registerCommands();
         initJS();
 
-        if (System.getProperty("kyoko.apicommand") != null) APICommands.execCommand(this);
+        if (System.getProperty("kyoko.apicommand") != null) {
+            APICommands.execCommand(this);
+            running = false;
+            return;
+        }
+
         initialized = true;
     }
 
