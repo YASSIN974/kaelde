@@ -23,26 +23,26 @@ public class EventHandler implements EventListener {
 
     @Override
     public void onEvent(Event event) {
-        if (!kyoko.isInitialized()) return;
+        if (kyoko.isInitialized())
+            if (event instanceof MessageReceivedEvent) {
+                MessageReceivedEvent e = (MessageReceivedEvent) event;
+                if (e.getAuthor().isBot()) return;
 
-        if (event instanceof MessageReceivedEvent) {
-            MessageReceivedEvent e = (MessageReceivedEvent) event;
-            if (e.getAuthor().isBot()) return;
-            if (e.getChannelType() == ChannelType.PRIVATE) {
-                if (e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
-                    DebugCommands.handle(kyoko, e);
+                if (e.getChannelType() == ChannelType.PRIVATE) {
+                    if (e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
+                        DebugCommands.handle(kyoko, e);
+                    }
+                } else {
+                    kyoko.getCommandManager().parseAndExecute(e);
                 }
-            } else {
-                kyoko.getCommandManager().parseAndExecute(e);
-            }
-        } else if (event instanceof GuildVoiceLeaveEvent) {
-            List<Member> members = ((GuildVoiceLeaveEvent) event).getChannelLeft().getMembers();
-            if (members.size() == 1) {
-                if (members.get(0).getUser().getIdLong() == kyoko.getJda().getSelfUser().getIdLong()) {
-                    ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().setSendingHandler(null);
-                    ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().closeAudioConnection();
+            } else if (event instanceof GuildVoiceLeaveEvent) {
+                List<Member> members = ((GuildVoiceLeaveEvent) event).getChannelLeft().getMembers();
+                if (members.size() == 1) {
+                    if (members.get(0).getUser().getIdLong() == kyoko.getJda().getSelfUser().getIdLong()) {
+                        ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().setSendingHandler(null);
+                        ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().closeAudioConnection();
+                    }
                 }
             }
-        }
     }
 }

@@ -13,9 +13,7 @@ import java.util.HashSet;
 public class CommandManager {
     private Kyoko kyoko;
 
-    private final String pref;
     private String mention;
-    private int prefLen;
     private long runs;
 
     private HashSet<Command> commands;
@@ -23,8 +21,6 @@ public class CommandManager {
 
     public CommandManager(Kyoko kyoko) {
         this.kyoko = kyoko;
-        this.pref = kyoko.getSettings().getPrefix();
-        this.prefLen = this.pref.length();
         this.commands = new HashSet<>();
         this.handlers = new HashMap<>();
         this.runs = 0;
@@ -55,26 +51,26 @@ public class CommandManager {
         if (content.isEmpty()) return;
 
         if (content.startsWith(mention)) {
-            if (content.equalsIgnoreCase(mention)) { // print help on mention
+            if (content.equalsIgnoreCase(mention))// print help on mention
                 bits = new String[]{"help"};
-            } else { // handle command if it's specified after mention
+            else { // handle command if it's specified after mention
                 String[] args = new String[bits.length - 1];
                 System.arraycopy(bits, 1, args, 0, args.length);
                 bits = args;
             }
-        } else if (content.toLowerCase().startsWith(pref)) { // check for prefix
-            bits[0] = bits[0].substring(prefLen).trim(); // remove prefix from command label
-        } else {
-            return;
-        }
+        } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) { // check for prefix
+            bits[0] = bits[0].substring(kyoko.getSettings().getPrefix().length()).trim(); // remove prefix from command label
+        } else return;
 
-        Command c = kyoko.getCommandManager().getHandler(bits[0]);
-        if (c != null) {
-            if (kyoko.getSettings().isLimitExecution()) {
-                if (!kyoko.getSettings().getDevs().contains(event.getAuthor().getId())) {
-                    CommonErrorUtil.devOnly(kyoko, l, channel);
-                }
-            } else {
+        if (bits.length != 0) {
+            Command c = getHandler(bits[0]);
+            if (c != null) {
+                if (kyoko.getSettings().isLimitExecution())
+                    if (!kyoko.getSettings().getDevs().contains(event.getAuthor().getId())) {
+                        CommonErrorUtil.devOnly(kyoko, l, channel);
+                        return;
+                    }
+
                 try {
                     runs++;
                     c.handle(event.getMessage(), event, bits);
