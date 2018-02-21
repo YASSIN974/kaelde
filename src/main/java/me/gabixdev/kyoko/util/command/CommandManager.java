@@ -48,28 +48,25 @@ public class CommandManager {
         Language l = kyoko.getI18n().getLanguage(event.getMember());
         String[] bits = content.split(" ");
 
-        if (content.isEmpty()) return;
-
-        if (content.startsWith(mention)) {
-            if (content.equalsIgnoreCase(mention))// print help on mention
-                bits = new String[]{"help"};
-            else { // handle command if it's specified after mention
-                String[] args = new String[bits.length - 1];
-                System.arraycopy(bits, 1, args, 0, args.length);
-                bits = args;
-            }
-        } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) { // check for prefix
-            bits[0] = bits[0].substring(kyoko.getSettings().getPrefix().length()).trim(); // remove prefix from command label
-        } else return;
-
-        if (bits.length != 0) {
+        if (!content.isEmpty() && bits.length != 0) {
+            if (content.startsWith(mention)) {
+                if (content.equalsIgnoreCase(mention))// print help on mention
+                    bits = new String[]{"help"};
+                else { // handle command if it's specified after mention
+                    String[] args = new String[bits.length - 1];
+                    System.arraycopy(bits, 1, args, 0, args.length);
+                    bits = args;
+                }
+            } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) { // check for prefix
+                bits[0] = bits[0].substring(kyoko.getSettings().getPrefix().length()).trim(); // remove prefix from command label
+            } else return;
+            
             Command c = getHandler(bits[0]);
             if (c != null) {
-                if (kyoko.getSettings().isLimitExecution())
-                    if (!kyoko.getSettings().getDevs().contains(event.getAuthor().getId())) {
-                        CommonErrorUtil.devOnly(kyoko, l, channel);
-                        return;
-                    }
+                if (kyoko.getSettings().isLimitExecution() && !kyoko.getSettings().getDevs().contains(event.getAuthor().getId())) {
+                    CommonErrorUtil.devOnly(kyoko, l, channel);
+                    return;
+                }
 
                 try {
                     runs++;
