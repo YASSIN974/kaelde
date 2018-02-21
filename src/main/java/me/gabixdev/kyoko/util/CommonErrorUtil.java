@@ -25,6 +25,10 @@ public class CommonErrorUtil {
         chan.sendMessage(err.build()).queue();
     }
 
+    public static void devOnly(Kyoko kyoko, Language l, TextChannel chan) {
+        chan.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.execlimit"), false).build()).queue();
+    }
+
     public static void exception(Kyoko kyoko, Language l, TextChannel chan) {
         chan.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
         chan.sendMessage(Constants.DISCORD_URL).queue();

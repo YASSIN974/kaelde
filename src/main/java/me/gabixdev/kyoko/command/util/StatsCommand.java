@@ -59,7 +59,7 @@ public class StatsCommand extends Command {
                 .addField(kyoko.getI18n().get(l, "stats.field.servers"), Integer.toString(kyoko.getJda().getGuilds().size()), true)
                 .addField(kyoko.getI18n().get(l, "stats.field.textchans"), Integer.toString(kyoko.getJda().getTextChannels().size()), true)
                 .addField(kyoko.getI18n().get(l, "stats.field.voicechans"), Integer.toString(kyoko.getJda().getVoiceChannels().size()), true)
-                .addField(kyoko.getI18n().get(l, "stats.field.cmdsran"), Long.toString(kyoko.getCommandManager().getCommandRunCount()), true)
+                .addField(kyoko.getI18n().get(l, "stats.field.cmdsran"), Long.toString(kyoko.getCommandManager().getRuns()), true)
                 .addField(kyoko.getI18n().get(l, "stats.field.github"), Constants.GITHUB_URL_MD, true)
                 .addField(kyoko.getI18n().get(l, "stats.field.website"), Constants.SITE_URL_MD, true)
                 .addField(kyoko.getI18n().get(l, "stats.field.donate"), "*soon*", true)
