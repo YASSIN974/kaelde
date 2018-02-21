@@ -28,12 +28,7 @@ public class DogCommand extends Command
         this.kyoko = kyoko;
         try {
             JsonObject breed = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("https://dog.ceo/api/breeds/list/all")).getAsJsonObject().get("message").getAsJsonObject();
-
-            for(String object: breed.keySet())
-            {
-                breeds.add(object);
-            }
-            System.out.println(breeds);
+            breeds.addAll(breed.keySet());
         } catch (IOException e) {
             e.printStackTrace();
         }

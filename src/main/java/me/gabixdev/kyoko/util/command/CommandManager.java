@@ -70,6 +70,8 @@ public class CommandManager {
 
                 try {
                     runs++;
+                    // only for debugging purposes, I respect your privacy.
+                    kyoko.getLog().info("User " + event.getAuthor().getName() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed: " + content);
                     c.handle(event.getMessage(), event, bits);
                 } catch (Throwable ex) {
                     ex.printStackTrace();
