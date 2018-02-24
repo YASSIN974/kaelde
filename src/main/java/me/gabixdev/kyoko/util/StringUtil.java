@@ -1,5 +1,7 @@
 package me.gabixdev.kyoko.util;
 
+import me.gabixdev.kyoko.Kyoko;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -166,5 +168,14 @@ public class StringUtil {
             }
         }
         return t.toString();
+    }
+
+    public static String stripPrefix(Kyoko kyoko, String label, String msg) {
+        String mention = kyoko.getJda().getSelfUser().getAsMention();
+        if (msg.startsWith(mention)) {
+            return msg.substring(mention.length() + label.length() + 2);
+        } else {
+            return msg.substring(kyoko.getSettings().getPrefix().length() + label.length() + 1);
+        }
     }
 }

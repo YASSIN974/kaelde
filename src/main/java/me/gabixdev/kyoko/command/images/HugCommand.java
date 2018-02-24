@@ -60,7 +60,7 @@ public class HugCommand extends Command {
 
             if (message.getMentionedUsers().isEmpty()) {
                 //normal.setTitle(kyoko.getI18n().get(l, "hug.description"));
-                normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), args[1]));
+                normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), StringUtil.stripPrefix(kyoko, args[0], message.getContentRaw())));
             } else {
                 List<String> userlist = new ArrayList<>();
                 for (User u : message.getMentionedUsers()) {
