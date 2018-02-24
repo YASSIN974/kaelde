@@ -1,5 +1,7 @@
 package me.gabixdev.kyoko.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -166,5 +168,13 @@ public class StringUtil {
             }
         }
         return t.toString();
+    }
+
+    public static boolean equalsID(String arg, long id) {
+        if(!StringUtils.isNumeric(arg)) {
+            return false;
+        }
+        long lId = Long.parseLong(arg);
+        return id == lId;
     }
 }

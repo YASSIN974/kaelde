@@ -58,12 +58,10 @@ public class AvatarCommand extends Command {
             printUsage(kyoko, l, message.getTextChannel());
             return;
         }
-
         Optional<Member> member = message.getGuild().getMembers().stream().parallel().filter(
                 mem -> mem.getAsMention().equals(args[1])
                         || mem.getUser().getName().equalsIgnoreCase(args[1])
                         || mem.getEffectiveName().equalsIgnoreCase(args[1])).findFirst();
-
         if (member.isPresent()) {
             Member mem = member.get();
             if (mem.getUser().getAvatarUrl() == null) {

@@ -33,4 +33,16 @@ public class CommonErrorUtil {
         chan.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
         chan.sendMessage(Constants.DISCORD_URL).queue();
     }
+
+    public static void notANumber(Kyoko kyoko, Language l, TextChannel chan, String arg) {
+        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.notanumber"), arg), false);
+        chan.sendMessage(err.build()).queue();
+    }
+
+    public static void noBanFound(Kyoko kyoko, Language l, TextChannel chan, String arg) {
+        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.bannotfound"), arg), false);
+        chan.sendMessage(err.build()).queue();
+    }
 }

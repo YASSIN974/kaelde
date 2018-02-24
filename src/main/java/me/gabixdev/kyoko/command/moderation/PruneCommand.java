@@ -60,44 +60,47 @@ public class PruneCommand extends Command {
 
         if (message.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             try {
-                int messageAmount = Integer.parseInt(args[1]);
-
-                if (messageAmount < kyoko.getSettings().getMinRemove()) {
-                    EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                    err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "mod.prune.minremove"), kyoko.getSettings().getMinRemove()), false);
-                    message.getTextChannel().sendMessage(err.build()).queue();
-                    return;
-                }
-
-                if (messageAmount > kyoko.getSettings().getMaxRemove()) {
-                    EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
-                    err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "mod.prune.maxremove"), kyoko.getSettings().getMaxRemove()), false);
-                    message.getTextChannel().sendMessage(err.build()).queue();
-                    return;
-                }
-
-                int deleted = 0;
-                List<Message> msgs;
-                while (messageAmount != 0) {
-                    if (messageAmount > 100) {
-                        msgs = message.getTextChannel().getHistory().retrievePast(100).complete();
-                        messageAmount -= 100;
-                    } else {
-                        msgs = message.getTextChannel().getHistory().retrievePast(messageAmount).complete();
-                        messageAmount = 0;
+                try {
+                    int messageAmount = Integer.parseInt(args[1]);
+                    if (messageAmount < kyoko.getSettings().getMinRemove()) {
+                        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "mod.prune.minremove"), kyoko.getSettings().getMinRemove()), false);
+                        message.getTextChannel().sendMessage(err.build()).queue();
+                        return;
                     }
-                    msgs = msgs.stream().filter(msg -> !msg.getCreationTime().isBefore(OffsetDateTime.now().minusWeeks(2))).collect(Collectors.toList());
 
-                    deleted += msgs.size();
-                    if (msgs.size() > 1) {
-                        final int d = deleted;
-                        message.getTextChannel().deleteMessages(msgs).queue(success -> {
-                            message.getTextChannel().sendMessage(String.format(kyoko.getI18n().get(l, "mod.prune.cleared"), d)).queue(completeMsg -> {
-                                completeMsg.delete().completeAfter(5, TimeUnit.SECONDS);
+                    if (messageAmount > kyoko.getSettings().getMaxRemove()) {
+                        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "mod.prune.maxremove"), kyoko.getSettings().getMaxRemove()), false);
+                        message.getTextChannel().sendMessage(err.build()).queue();
+                        return;
+                    }
+
+                    int deleted = 0;
+                    List<Message> msgs;
+                    while (messageAmount != 0) {
+                        if (messageAmount > 100) {
+                            msgs = message.getTextChannel().getHistory().retrievePast(100).complete();
+                            messageAmount -= 100;
+                        } else {
+                            msgs = message.getTextChannel().getHistory().retrievePast(messageAmount).complete();
+                            messageAmount = 0;
+                        }
+                        msgs = msgs.stream().filter(msg -> !msg.getCreationTime().isBefore(OffsetDateTime.now().minusWeeks(2))).collect(Collectors.toList());
+
+                        deleted += msgs.size();
+                        if (msgs.size() > 1) {
+                            final int d = deleted;
+                            message.getTextChannel().deleteMessages(msgs).queue(success -> {
+                                message.getTextChannel().sendMessage(String.format(kyoko.getI18n().get(l, "mod.prune.cleared"), d)).queue(completeMsg -> {
+                                    completeMsg.delete().completeAfter(5, TimeUnit.SECONDS);
+                                });
+
                             });
-
-                        });
-                    } else return;
+                        } else return;
+                    }
+                } catch (NumberFormatException exception) {
+                    CommonErrorUtil.notANumber(kyoko, l, message.getTextChannel(), args[1]);
                 }
             } catch (PermissionException e) {
                 CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());

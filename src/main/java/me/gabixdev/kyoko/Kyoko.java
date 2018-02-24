@@ -20,7 +20,10 @@ import me.gabixdev.kyoko.command.fun.BannerCommand;
 import me.gabixdev.kyoko.command.fun.FigletCommand;
 import me.gabixdev.kyoko.command.fun.SpinnerCommand;
 import me.gabixdev.kyoko.command.images.*;
+import me.gabixdev.kyoko.command.moderation.BanCommand;
+import me.gabixdev.kyoko.command.moderation.KickCommand;
 import me.gabixdev.kyoko.command.moderation.PruneCommand;
+import me.gabixdev.kyoko.command.moderation.UnbanCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.database.DatabaseManager;
@@ -197,6 +200,9 @@ public class Kyoko {
         commandManager.registerCommand(new UserInfoCommand(this));
 
         commandManager.registerCommand(new PruneCommand(this));
+        commandManager.registerCommand(new KickCommand(this));
+        commandManager.registerCommand(new BanCommand(this));
+        commandManager.registerCommand(new UnbanCommand(this));
 
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
