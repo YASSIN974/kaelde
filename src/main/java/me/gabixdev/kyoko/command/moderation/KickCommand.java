@@ -53,9 +53,7 @@ public class KickCommand extends Command
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
-        System.out.println(message.getAuthor().getId());
-        System.out.println(message.getAuthor().getName());
-        System.out.println(message.getAuthor().getDiscriminator());
+
         if(args.length < 2)
         {
             printUsage(kyoko, l, message.getTextChannel());
