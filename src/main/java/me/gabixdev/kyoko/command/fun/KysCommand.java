@@ -42,11 +42,6 @@ public class KysCommand extends Command {
     }
 
     @Override
-    public String getUsage() {
-        return "kys.usage";
-    }
-
-    @Override
     public CommandType getType() {
         return CommandType.FUN;
     }
