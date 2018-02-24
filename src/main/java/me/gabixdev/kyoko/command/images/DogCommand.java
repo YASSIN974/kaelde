@@ -23,12 +23,14 @@ public class DogCommand extends Command
     private final String[] aliases = new String[] {"dog"};
     private final List<String> breeds = new ArrayList<>();
     private final String dogUrl = "https://dog.ceo/api/breed/%s/images/random";
+    private String cachedBreeds = "";
     public DogCommand(Kyoko kyoko)
     {
         this.kyoko = kyoko;
         try {
             JsonObject breed = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("https://dog.ceo/api/breeds/list/all")).getAsJsonObject().get("message").getAsJsonObject();
             breeds.addAll(breed.keySet());
+            cachedBreeds = "`" + String.join("`, `", breeds) + "`";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,36 +80,29 @@ public class DogCommand extends Command
             {
                 CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
             }
-
-        }
-        if(args[1].equalsIgnoreCase("list"))
-        {
-            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            List<String> breedList = new ArrayList<>();
-            for(String breed : breeds)
-            {
-                breedList.add("`" + breed + "`");
+        } else {
+            if (args[1].equalsIgnoreCase("list")) {
+                EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), ""), String.format(kyoko.getI18n().get(l, "dog.breedlist"), cachedBreeds), false);
+                message.getTextChannel().sendMessage(builder.build()).queue();
+                return;
             }
-            String bL = String.join(", ", breedList);
-            builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), ""), String.format(kyoko.getI18n().get(l, "dog.breedlist"), bL), false);
-            message.getTextChannel().sendMessage(builder.build()).queue();
-            return;
-        }
-        if (!breeds.contains(args[1].toLowerCase())) {
-            printUsage(kyoko, l, message.getTextChannel());
-            return;
-        }
-        JsonObject imgObject = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(String.format(dogUrl, args[1].toLowerCase()))).getAsJsonObject();
-        if (imgObject.get("status").getAsString().equals("success")) {
-            String imgUrl = imgObject.get("message").getAsString();
-            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + args[1].toLowerCase() + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
-            builder.setImage(imgUrl);
-            message.getChannel().sendMessage(builder.build()).queue();
-        }
-        else
-        {
-            CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
+
+            if (!breeds.contains(args[1].toLowerCase())) {
+                printUsage(kyoko, l, message.getTextChannel());
+                return;
+            }
+
+            JsonObject imgObject = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(String.format(dogUrl, args[1].toLowerCase()))).getAsJsonObject();
+            if (imgObject.get("status").getAsString().equals("success")) {
+                String imgUrl = imgObject.get("message").getAsString();
+                EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                builder.addField(String.format(kyoko.getI18n().get(l, "dog.title"), "(" + args[1].toLowerCase() + ")"), kyoko.getI18n().get(l, "dog.subtitle"), true);
+                builder.setImage(imgUrl);
+                message.getChannel().sendMessage(builder.build()).queue();
+            } else {
+                CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
+            }
         }
     }
 }
