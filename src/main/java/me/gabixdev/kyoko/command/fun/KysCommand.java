@@ -1,16 +1,11 @@
 package me.gabixdev.kyoko.command.fun;
 
-import com.github.lalyos.jfiglet.FigletFont;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandType;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * @author Marvin W. (NurMarvin)
