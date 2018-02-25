@@ -11,25 +11,15 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import me.gabixdev.kyoko.command.basic.HelpCommand;
-import me.gabixdev.kyoko.command.basic.InviteCommand;
-import me.gabixdev.kyoko.command.basic.LangCommand;
-import me.gabixdev.kyoko.command.fun.BananaCommand;
-import me.gabixdev.kyoko.command.fun.BannerCommand;
-import me.gabixdev.kyoko.command.fun.FigletCommand;
-import me.gabixdev.kyoko.command.fun.SpinnerCommand;
+import me.gabixdev.kyoko.command.basic.*;
+import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.images.*;
-import me.gabixdev.kyoko.command.moderation.BanCommand;
-import me.gabixdev.kyoko.command.moderation.KickCommand;
-import me.gabixdev.kyoko.command.moderation.PruneCommand;
-import me.gabixdev.kyoko.command.moderation.UnbanCommand;
+import me.gabixdev.kyoko.command.moderation.*;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.database.DatabaseManager;
 import me.gabixdev.kyoko.i18n.I18n;
-import me.gabixdev.kyoko.music.MusicManager;
-import me.gabixdev.kyoko.music.NicoAudioSourceManager;
-import me.gabixdev.kyoko.music.YoutubeSearch;
+import me.gabixdev.kyoko.music.*;
 import me.gabixdev.kyoko.util.APICommands;
 import me.gabixdev.kyoko.util.ColoredFormatter;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
@@ -183,6 +173,7 @@ public class Kyoko {
         commandManager.registerCommand(new BananaCommand(this));
         commandManager.registerCommand(new FigletCommand(this));
         commandManager.registerCommand(new SpinnerCommand(this));
+        commandManager.registerCommand(new KysCommand(this));
 
         commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new HugCommand(this));
