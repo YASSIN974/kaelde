@@ -18,6 +18,7 @@ public class CommandManager {
 
     private HashSet<Command> commands;
     private HashMap<String, Command> handlers;
+    private HashMap<Command, String> disabled;
 
     public CommandManager(Kyoko kyoko) {
         this.kyoko = kyoko;

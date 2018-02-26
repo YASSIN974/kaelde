@@ -34,6 +34,10 @@ public class CommonErrorUtil {
         chan.sendMessage(Constants.DISCORD_URL).queue();
     }
 
+    public static void commandDisabled(Kyoko kyoko, Language l, TextChannel chan, String reason) {
+        if (reason == null) reason = "(not specified)";
+    }
+
     public static void notANumber(Kyoko kyoko, Language l, TextChannel chan, String arg) {
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
         err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.notanumber"), arg), false);

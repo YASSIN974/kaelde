@@ -64,7 +64,7 @@ public class KickCommand extends Command
             try {
                 String reason = "none";
                 if(args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
-                Member member = UserUtil.getMember(kyoko, l, message.getTextChannel(), args[1]);
+                Member member = UserUtil.getMember(message.getGuild(), args[1]);
                 if(member == null) return;
                 Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.kick.kicked"),message.getMember().getAsMention(), member.getAsMention()))
                         .append("\n" + String.format(kyoko.getI18n().get(l, "mod.kick.reason"), "`" + reason + "`")).build();

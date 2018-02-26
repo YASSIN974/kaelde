@@ -58,8 +58,10 @@ public class UnbanCommand extends Command
         if(message.getMember().hasPermission(Permission.BAN_MEMBERS))
         {
             try {
-                User banned = UserUtil.getBannedUser(kyoko, l, message.getTextChannel(), args[1]);
-                if(banned == null) return;
+                User banned = UserUtil.getBannedUser(message.getGuild(), args[1]);
+                if (banned == null) {
+                    return;
+                }
                 Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.unban.unbanned"), message.getMember().getAsMention(), banned.getAsMention())).build();
                 message.getTextChannel().sendMessage(msg).queue();
                 message.getGuild().getController().unban(banned).queue();
