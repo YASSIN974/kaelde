@@ -4,6 +4,8 @@ import me.gabixdev.kyoko.util.command.DebugCommands;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
@@ -43,6 +45,10 @@ public class EventHandler implements EventListener {
                         ((GuildVoiceLeaveEvent) event).getGuild().getAudioManager().closeAudioConnection();
                     }
                 }
+            } else if (event instanceof GuildJoinEvent) {
+                kyoko.getLog().info("Joined guild " + ((GuildJoinEvent) event).getGuild());
+            } else if (event instanceof GuildLeaveEvent) {
+                kyoko.getLog().info("Left guild " + ((GuildLeaveEvent) event).getGuild());
             }
     }
 }

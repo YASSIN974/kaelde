@@ -3,7 +3,6 @@ package me.gabixdev.kyoko.database;
 import me.gabixdev.kyoko.i18n.Language;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Table(name = "users")
 public class UserConfig {
@@ -11,13 +10,14 @@ public class UserConfig {
     public UserConfig() {
     }
 
-    public UserConfig(long userId, String language, int level, int money, int xp) {
+    public UserConfig(long userId, String language, int level, int money, int xp, long claim) {
         this.userId = userId;
         this.strlanguage = language;
         this.language = Language.valueOf(strlanguage);
         this.level = level;
         this.money = money;
         this.xp = xp;
+        this.claim = claim;
     }
 
     @Id
@@ -31,6 +31,7 @@ public class UserConfig {
     private int level;
     private int money;
     private int xp;
+    private long claim;
 
     @Column(name = "userid")
     public long getUserId() {
@@ -75,6 +76,15 @@ public class UserConfig {
         this.xp = xp;
     }
 
+    public long getClaim() {
+        return claim;
+    }
+
+    public void setClaim(Long claim) {
+        this.claim = claim;
+    }
+
+
     @Transient
     public Language getLanguage() {
         if (language == null) {
@@ -93,6 +103,6 @@ public class UserConfig {
     }
 
     public String toString() {
-        return id + " " + userId + " " + language + " " + level + " " + money + " " + xp;
+        return id + " " + userId + " " + language + " " + level + " " + money + " " + xp + " " + claim;
     }
 }

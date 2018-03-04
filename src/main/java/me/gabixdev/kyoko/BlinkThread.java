@@ -81,6 +81,17 @@ public class BlinkThread implements Runnable {
                 kyoko.getLog().info("Blinking shit set to \"twitch\".");
                 kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.STREAMING, kyoko.getSettings().getGame(), "https://twitch.tv/#"));
                 break;
+            case "guildcount":
+                kyoko.getLog().info("Blinking shit set to \"guildcount\".");
+                while (kyoko.isRunning()) {
+                    try {
+                        kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.WATCHING, kyoko.getJda().getGuilds().size() + " guilds", kyoko.getSettings().getGameUrl()));
+                        Thread.sleep(1800000);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
+                }
+                break;
             default:
                 kyoko.getLog().info("No blinking shit set.");
         }

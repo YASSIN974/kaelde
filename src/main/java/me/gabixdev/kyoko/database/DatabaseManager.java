@@ -43,7 +43,7 @@ public class DatabaseManager {
         UserConfig uc = db.table("users").where("userid=?", user.getIdLong()).first(UserConfig.class);
         if (uc == null) {
             kyoko.getLog().info("Creating new user configuration for " + user.getName() + " (" + user.getId() + ")");
-            uc = new UserConfig(user.getIdLong(), Language.ENGLISH.name(), 0, 0, 0);
+            uc = new UserConfig(user.getIdLong(), Language.ENGLISH.name(), 0, 0, 0, 0);
             db.table("users").insert(uc);
             return uc;
         } else {

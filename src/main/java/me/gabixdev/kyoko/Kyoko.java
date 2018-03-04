@@ -20,6 +20,7 @@ import me.gabixdev.kyoko.command.moderation.BanCommand;
 import me.gabixdev.kyoko.command.moderation.KickCommand;
 import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.moderation.UnbanCommand;
+import me.gabixdev.kyoko.command.money.MoneyCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.database.DatabaseManager;
@@ -162,6 +163,7 @@ public class Kyoko {
         registerCommands();
         initJS();
 
+        //System.setProperty("kyoko.apicommand", "avatarUpdate");
         if (System.getProperty("kyoko.apicommand") != null) {
             APICommands.execCommand(this);
             running = false;
@@ -220,6 +222,7 @@ public class Kyoko {
 
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
+            commandManager.registerCommand(new MoneyCommand(this));
         }
     }
 

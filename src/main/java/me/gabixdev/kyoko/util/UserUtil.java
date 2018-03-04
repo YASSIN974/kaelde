@@ -12,7 +12,9 @@ public class UserUtil {
         Optional<Member> member = guild.getMembers().stream().parallel().filter(ftr ->
                 ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
+                        || ftr.getNickname().equalsIgnoreCase(arg)
                         || arg.equals(ftr.getUser().getId())
+                        || arg.equals("<@!" + ftr.getUser().getId() + ">")
                         || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
         if (!member.isPresent()) {
             //CommonErrorUtil.noUserFound(kyoko, language, channel, arg); // NO!
@@ -28,6 +30,7 @@ public class UserUtil {
                 ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
                         || arg.equals(ftr.getUser().getId())
+                        || arg.equals("<@!" + ftr.getUser().getId() + ">")
                         || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
         if (!ban.isPresent()) {
             //CommonErrorUtil.noBanFound(kyoko, language, channel, arg);
