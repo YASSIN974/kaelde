@@ -16,12 +16,11 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class KickCommand extends Command
-{
+public class KickCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[] {"kick"};
-    public KickCommand(Kyoko kyoko)
-    {
+    private final String[] aliases = new String[]{"kick"};
+
+    public KickCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
 
@@ -54,30 +53,25 @@ public class KickCommand extends Command
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
-        if(args.length < 2)
-        {
+        if (args.length < 2) {
             printUsage(kyoko, l, message.getTextChannel());
-            return;
-        }
-        if(message.getMember().hasPermission(Permission.KICK_MEMBERS))
-        {
-            try {
-                String reason = "none";
-                if(args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
-                Member member = UserUtil.getMember(message.getGuild(), args[1]);
-                if(member == null) return;
-                Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.kick.kicked"),message.getMember().getAsMention(), member.getAsMention()))
-                        .append("\n" + String.format(kyoko.getI18n().get(l, "mod.kick.reason"), "`" + reason + "`")).build();
-                message.getTextChannel().sendMessage(msg).queue();
-                message.getGuild().getController().kick(member).reason(reason).queue();
-            } catch (PermissionException e) {
-                CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());
+        } else {
+            if (message.getMember().hasPermission(Permission.KICK_MEMBERS)) {
+                try {
+                    String reason = "none";
+                    if (args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
+                    Member member = UserUtil.getMember(message.getGuild(), args[1]);
+                    if (member == null) return;
+                    Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.kick.kicked"), message.getMember().getAsMention(), member.getAsMention()))
+                            .append("\n" + String.format(kyoko.getI18n().get(l, "mod.kick.reason"), "`" + reason + "`")).build();
+                    message.getTextChannel().sendMessage(msg).queue();
+                    message.getGuild().getController().kick(member).reason(reason).queue();
+                } catch (PermissionException e) {
+                    CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());
+                }
+            } else {
+                CommonErrorUtil.noPermissionUser(kyoko, l, message.getTextChannel());
             }
         }
-        else {
-            CommonErrorUtil.noPermissionUser(kyoko, l, message.getTextChannel());
-        }
-
-
     }
 }

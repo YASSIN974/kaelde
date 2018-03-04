@@ -16,12 +16,11 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class BanCommand extends Command
-{
+public class BanCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[] {"ban"};
-    public BanCommand(Kyoko kyoko)
-    {
+    private final String[] aliases = new String[]{"ban"};
+
+    public BanCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
 
@@ -51,31 +50,28 @@ public class BanCommand extends Command
     }
 
     @Override
-    public void handle(Message message, Event event, String[] args) throws Throwable
-    {
+    public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
-        if(args.length < 2)
-        {
+        if (args.length < 2) {
             printUsage(kyoko, l, message.getTextChannel());
-            return;
-        }
-        if(message.getMember().hasPermission(Permission.BAN_MEMBERS))
-        {
-            try {
-                String reason = "none";
-                if(args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
-                Member member = UserUtil.getMember(message.getGuild(), args[1]);
-                if(member == null) return;
-                Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.ban.banned"), message.getMember().getAsMention(), member.getAsMention()))
-                        .append("\n").append(String.format(kyoko.getI18n().get(l, "mod.ban.reason"), reason)).build();
-                message.getTextChannel().sendMessage(msg).queue();
-                message.getGuild().getController().ban(member, 0, reason).queue();
-            } catch (PermissionException e) {
-                CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());
-            }
         } else {
-            CommonErrorUtil.noPermissionUser(kyoko, l, message.getTextChannel());
+            if (message.getMember().hasPermission(Permission.BAN_MEMBERS)) {
+                try {
+                    String reason = "none";
+                    if (args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
+                    Member member = UserUtil.getMember(message.getGuild(), args[1]);
+                    if (member == null) return;
+                    Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.ban.banned"), message.getMember().getAsMention(), member.getAsMention()))
+                            .append("\n").append(String.format(kyoko.getI18n().get(l, "mod.ban.reason"), reason)).build();
+                    message.getTextChannel().sendMessage(msg).queue();
+                    message.getGuild().getController().ban(member, 0, reason).queue();
+                } catch (PermissionException e) {
+                    CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());
+                }
+            } else {
+                CommonErrorUtil.noPermissionUser(kyoko, l, message.getTextChannel());
+            }
         }
     }
 }

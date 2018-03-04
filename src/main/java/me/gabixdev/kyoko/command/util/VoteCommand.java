@@ -6,11 +6,11 @@ import me.gabixdev.kyoko.util.command.CommandType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
-public class SayCommand extends Command {
-    private final String[] aliases = new String[]{"say", "print"};
+public class VoteCommand extends Command {
+    private final String[] aliases = new String[]{"vote"};
     private Kyoko kyoko;
 
-    public SayCommand(Kyoko kyoko) {
+    public VoteCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
 
@@ -26,12 +26,12 @@ public class SayCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "say.description";
+        return "vote.description";
     }
 
     @Override
     public String getUsage() {
-        return "say.usage";
+        return "vote.usage";
     }
 
     @Override
@@ -54,6 +54,9 @@ public class SayCommand extends Command {
             return;
         }
 
-        message.getTextChannel().sendMessage(msg).queue();
+        message.getTextChannel().sendMessage(msg).queue(success -> {
+            success.addReaction("\uD83D\uDC4D").queue();
+            success.addReaction("\uD83D\uDC4E").queue();
+        });
     }
 }

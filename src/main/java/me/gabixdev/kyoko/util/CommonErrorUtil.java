@@ -49,4 +49,10 @@ public class CommonErrorUtil {
         err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.bannotfound"), arg), false);
         chan.sendMessage(err.build()).queue();
     }
+
+    public static void cooldown(Kyoko kyoko, Language l, TextChannel chan) {
+        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+        err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.cooldown"), false);
+        chan.sendMessage(err.build()).queue();
+    }
 }
