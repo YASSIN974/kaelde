@@ -49,7 +49,7 @@ public class KysCommand extends Command {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
         Member member = null;
         if (args.length != 1) {
-            String name = message.getContentRaw().substring(args[0].length() + kyoko.getSettings().getPrefix().length());
+            String name = message.getContentRaw().substring(args[0].length() + kyoko.getSettings().getPrefix().length() + 1);
             member = UserUtil.getMember(message.getGuild(), name);
             if (member == null) {
                 CommonErrorUtil.noUserFound(kyoko, l, message.getTextChannel(), name);

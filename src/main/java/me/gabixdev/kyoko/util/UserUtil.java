@@ -7,17 +7,14 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.Optional;
 
-public class UserUtil
-{
-    public static Member getMember(Guild guild, String arg)
-    {
+public class UserUtil {
+    public static Member getMember(Guild guild, String arg) {
         Optional<Member> member = guild.getMembers().stream().parallel().filter(ftr ->
-        ftr.getAsMention().equals(arg)
-        || ftr.getUser().getName().equalsIgnoreCase(arg)
-        || StringUtil.equalsID(arg, ftr.getUser().getIdLong())
-        || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
-        if(!member.isPresent())
-        {
+                ftr.getUser().getAsMention().equals(arg)
+                        || ftr.getUser().getName().equalsIgnoreCase(arg)
+                        || arg.equals(ftr.getUser().getId())
+                        || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
+        if (!member.isPresent()) {
             //CommonErrorUtil.noUserFound(kyoko, language, channel, arg); // NO!
             return null;
         }
@@ -30,7 +27,7 @@ public class UserUtil
         Optional<Guild.Ban> ban = guild.getBanList().complete().stream().parallel().filter(ftr ->
                 ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
-                        || StringUtil.equalsID(arg, ftr.getUser().getIdLong())
+                        || arg.equals(ftr.getUser().getId())
                         || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
         if (!ban.isPresent()) {
             //CommonErrorUtil.noBanFound(kyoko, language, channel, arg);

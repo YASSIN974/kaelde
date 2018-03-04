@@ -1,7 +1,5 @@
 package me.gabixdev.kyoko.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import me.gabixdev.kyoko.Kyoko;
 
 import java.util.HashMap;
@@ -179,13 +177,5 @@ public class StringUtil {
         } else {
             return msg.substring(kyoko.getSettings().getPrefix().length() + label.length() + 1);
         }
-    }
-
-    public static boolean equalsID(String arg, long id) {
-        if(!StringUtils.isNumeric(arg)) {
-            return false;
-        }
-        long lId = Long.parseLong(arg);
-        return id == lId;
     }
 }
