@@ -6,7 +6,7 @@
     <name>Kyoko</name>
     <modules>
         <module>bot</module>
-        <module>musicnode</module>
+        <module>shared</module>
         <module>loader</module>
     </modules>
     <groupId>me.gabixdev</groupId>

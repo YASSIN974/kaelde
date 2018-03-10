@@ -12,12 +12,24 @@ public class Settings {
     @SerializedName("token")
     public String token = "paste token here";
 
-    @SerializedName("manifest-url")
-    public String manifestUrl = "https://kyoko.gabixdev.me/release.json";
+    @SerializedName("update-download-url")
+    public String updateDownloadUrl = "";
+
+    @SerializedName("normal-prefix")
+    public String normalPrefix = "ky!";
+
+    @SerializedName("moderation-prefix")
+    public String moderationPrefix = "ky@";
+
+    @SerializedName("debug-prefix")
+    public String debugPrefix = "kd!";
 
     @SerializedName("shard-mode")
     public String shardMode = "single"; // single, main, slave
 
     @SerializedName("shard-id")
     public int shardId = -1;
+
+    @SerializedName("shard-count")
+    public int shardCount = -1;
 }

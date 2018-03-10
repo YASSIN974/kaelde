@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 
 public class Main {
@@ -55,6 +54,10 @@ public class Main {
         }
 
         JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT);
+
+        if (settings.shardMode.equalsIgnoreCase("main") || settings.shardMode.equalsIgnoreCase("slave"))
+            jdaBuilder.useSharding(settings.shardId, settings.shardCount);
+
         jdaBuilder.setAutoReconnect(true);
         jdaBuilder.setBulkDeleteSplittingEnabled(false);
         jdaBuilder.setToken(settings.token);
@@ -76,13 +79,15 @@ public class Main {
                 jda.getRegisteredListeners().forEach(jda::removeEventListener);
 
                 try {
-                    URLClassLoader kyokoClassLoader = new URLClassLoader(new URL[]{
+                    DelegateURLClassLoader kyokoClassLoader = new DelegateURLClassLoader(new URL[]{
                             kyoko_bot_jar.toURI().toURL(),
                             kyoko_bot_tree.toURI().toURL()
-                    });
-                    Class kyClass = kyokoClassLoader.loadClass(BOT_CLASS);
+                    }, ClassLoader.getSystemClassLoader());
+
+                    Class kyClass = Class.forName(BOT_CLASS, true, kyokoClassLoader);
                     Object kyoko = kyClass.getConstructor(JDA.class, Settings.class).newInstance(jda, settings);
                     Method runMethod = kyClass.getDeclaredMethod("run");
+
                     runMethod.invoke(kyoko);
                 } catch (Exception e) {
                     update = false;
