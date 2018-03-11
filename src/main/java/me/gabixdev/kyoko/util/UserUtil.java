@@ -12,8 +12,8 @@ public class UserUtil {
         Optional<Member> member = guild.getMembers().stream().parallel().filter(ftr ->
                 ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
-                        || ftr.getNickname().equalsIgnoreCase(arg)
                         || arg.equals(ftr.getUser().getId())
+                        || arg.equalsIgnoreCase((ftr.getNickname() == null ? "" : ftr.getNickname()))
                         || arg.equals("<@!" + ftr.getUser().getId() + ">")
                         || arg.equals("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
         if (!member.isPresent()) {
@@ -42,5 +42,7 @@ public class UserUtil {
             return null;
         }*/
     }
+
+
 
 }

@@ -83,6 +83,9 @@ public class Settings {
     @SerializedName("youtube-apikey")
     private String youtubeApiKey = "nico@example.com";
 
+    @SerializedName("saucenao-apikey")
+    private String saucenaoApiKey = "Put your api key here";
+
     @SerializedName("min-remove")
     private int minRemove = 2;
 
@@ -182,6 +185,10 @@ public class Settings {
 
     public String getYoutubeApiKey() {
         return youtubeApiKey;
+    }
+
+    public String getSaucenaoApiKey() {
+        return saucenaoApiKey;
     }
 
     public int getMinRemove() {

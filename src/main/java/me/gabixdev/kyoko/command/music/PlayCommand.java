@@ -50,7 +50,9 @@ public class PlayCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
+
         VoiceChannel vc = MusicUtil.getCurrentMemberChannel(message.getGuild(), message.getMember());
+
         if (vc == null) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
             err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.plsjoin"), false);
@@ -60,7 +62,6 @@ public class PlayCommand extends Command {
 
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
-
 
         if (args.length == 1) {
             if (musicManager.player.isPaused()) {
@@ -81,6 +82,7 @@ public class PlayCommand extends Command {
             //printUsage(kyoko, l, message.getTextChannel());
             return;
         }
+
 
         String[] mp = new String[args.length - 1];
         System.arraycopy(args, 1, mp, 0, args.length - 1);
