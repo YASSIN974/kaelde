@@ -12,20 +12,28 @@ import java.util.function.Consumer;
 
 public class CommandContext {
     private final Kyoko kyoko;
+    private final Command command;
     private final Language language;
     private final MessageReceivedEvent event;
+    private final String prefix;
     private final String label;
     private final String concatArgs;
     private final String[] args;
 
-    public CommandContext(Kyoko kyoko, MessageReceivedEvent event, String label, String concatArgs, String[] args) {
+    public CommandContext(Kyoko kyoko, Command command, MessageReceivedEvent event, String prefix, String label, String concatArgs, String[] args) {
         this.kyoko = kyoko;
+        this.command = command;
+        this.prefix = prefix;
         if (event.getChannelType().isGuild()) this.language = kyoko.getI18n().getLanguage(event.getMember());
         else this.language = kyoko.getI18n().getLanguage(event.getAuthor());
         this.event = event;
         this.label = label;
         this.concatArgs = concatArgs;
         this.args = args;
+    }
+
+    public Command getCommand() {
+        return command;
     }
 
     public User getSender() {
@@ -42,6 +50,10 @@ public class CommandContext {
 
     public MessageReceivedEvent getEvent() {
         return event;
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 
     public String getLabel() {

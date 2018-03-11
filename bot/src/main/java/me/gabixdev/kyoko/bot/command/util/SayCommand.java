@@ -4,6 +4,7 @@ import me.gabixdev.kyoko.bot.Kyoko;
 import me.gabixdev.kyoko.bot.command.Command;
 import me.gabixdev.kyoko.bot.command.CommandCategory;
 import me.gabixdev.kyoko.bot.command.CommandContext;
+import me.gabixdev.kyoko.bot.util.CommonErrors;
 
 public class SayCommand extends Command {
     private final Kyoko kyoko;
@@ -19,7 +20,7 @@ public class SayCommand extends Command {
     @Override
     public void execute(CommandContext context) {
         if (context.getConcatArgs().isEmpty()) {
-            context.send(context.getErrorEmbed().addField("Error", "Message is empty!", false).build());
+            CommonErrors.usage(context);
         } else {
             context.send(context.getConcatArgs());
         }

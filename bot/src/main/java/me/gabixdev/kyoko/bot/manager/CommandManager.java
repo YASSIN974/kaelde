@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.bot.manager;
 import me.gabixdev.kyoko.bot.Kyoko;
 import me.gabixdev.kyoko.bot.command.Command;
 import me.gabixdev.kyoko.bot.command.CommandContext;
+import me.gabixdev.kyoko.bot.util.CommonErrors;
 import me.gabixdev.kyoko.bot.util.StringUtil;
 import me.gabixdev.kyoko.shared.Settings;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -56,11 +57,11 @@ public class CommandManager {
 
         if (content.startsWith(s.normalPrefix)) {
             content = content.trim().substring(s.normalPrefix.length()).trim();
-            handleNormal(event, content);
+            handleNormal(event, s.normalPrefix, content);
         }
     }
 
-    private void handleNormal(MessageReceivedEvent event, String content) {
+    private void handleNormal(MessageReceivedEvent event, String prefix, String content) {
         String[] parts = content.split(" ");
         if (parts.length != 0) {
             Command c = commands.get(parts[0].toLowerCase());
@@ -69,11 +70,16 @@ public class CommandManager {
                 System.arraycopy(parts, 1, args, 0, args.length);
 
                 String concatArgs = String.join(" ", args);
-                CommandContext context = new CommandContext(kyoko, event, parts[0], concatArgs, args);
+                CommandContext context = new CommandContext(kyoko, c, event, prefix, parts[0], concatArgs, args);
 
                 kyoko.getExecutor().submit(() -> {
                     kyoko.getLogger().info("User " + StringUtil.formatDiscrim(event.getAuthor()) + "(" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
-                    c.execute(context);
+                    try {
+                        c.execute(context);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        CommonErrors.exception(context);
+                    }
                 });
             }
         }

@@ -13,7 +13,8 @@ import java.util.*;
 public class HelpCommand extends Command {
     private final Kyoko kyoko;
     private HashMap<CommandCategory, HashSet<Command>> categories;
-    private TreeMap<String, String> cached;
+    private HashMap<String, Integer> cachedCounts;
+    private TreeMap<String, String> cachedLists;
 
     public HelpCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
@@ -37,8 +38,7 @@ public class HelpCommand extends Command {
                     String.format(context.getTranslated("help.header.desc"), Constants.WIKI_URL, kyoko.getSettings().normalPrefix, kyoko.getSettings().moderationPrefix, kyoko.getSettings().moderationPrefix, Constants.DISCORD_URL),
                     false);
 
-            cached.keySet().forEach(s -> eb.addField(context.getTranslated(s), cached.get(s), false));
-
+            cachedLists.keySet().forEach(s -> eb.addField(context.getTranslated(s) + " (" + cachedCounts.get(s) + ")", cachedLists.get(s), false));
         } else {
             if (kyoko.getCommandManager().getCommands().keySet().contains(context.getConcatArgs().toLowerCase())) {
                 Command c = kyoko.getCommandManager().getCommands().get(context.getConcatArgs().toLowerCase());
@@ -55,10 +55,9 @@ public class HelpCommand extends Command {
                 dsc.append(context.getTranslated("generic.usage"))
                         .append(": `")
                         .append(kyoko.getSettings().normalPrefix)
-                        .append(c.getName())
-                        .append(" ")
-                        .append(context.getTranslated(c.getUsage()))
-                        .append("`");
+                        .append(c.getName());
+                if (c.getUsage() != null) dsc.append(" ").append(context.getTranslated(c.getUsage()));
+                dsc.append("`");
 
                 eb.addField(context.getTranslated("help.header.titlealt") + kyoko.getSettings().normalPrefix + c.getName(),
                         dsc.toString(),
@@ -79,7 +78,8 @@ public class HelpCommand extends Command {
             categories.put(t, cmds);
         }
 
-        cached = new TreeMap<>();
+        cachedLists = new TreeMap<>();
+        cachedCounts = new HashMap<>();
 
         for (CommandCategory t : categories.keySet()) {
             HashSet<Command> set = categories.get(t);
@@ -91,7 +91,8 @@ public class HelpCommand extends Command {
                     s.add("`" + c.getName() + "`");
             }
             String listed = String.join(", ", s);
-            cached.put("help.category." + t.name().toLowerCase(), listed);
+            cachedLists.put("help.category." + t.name().toLowerCase(), listed);
+            cachedCounts.put("help.category." + t.name().toLowerCase(), set.size());
         }
     }
 }

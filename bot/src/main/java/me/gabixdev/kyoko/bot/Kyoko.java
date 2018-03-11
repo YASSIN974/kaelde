@@ -2,6 +2,8 @@ package me.gabixdev.kyoko.bot;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import me.gabixdev.kyoko.bot.command.basic.HelpCommand;
+import me.gabixdev.kyoko.bot.command.basic.InviteCommand;
+import me.gabixdev.kyoko.bot.command.util.PingCommand;
 import me.gabixdev.kyoko.bot.command.util.SayCommand;
 import me.gabixdev.kyoko.bot.event.KyokoEventHandler;
 import me.gabixdev.kyoko.bot.i18n.I18n;
@@ -78,8 +80,10 @@ public class Kyoko {
 
     private void registerCommands() {
         commandManager.registerCommand(new HelpCommand(this));
+        commandManager.registerCommand(new InviteCommand(this));
 
         commandManager.registerCommand(new SayCommand(this));
+        commandManager.registerCommand(new PingCommand(this));
     }
 
     public JDA getJda() {
