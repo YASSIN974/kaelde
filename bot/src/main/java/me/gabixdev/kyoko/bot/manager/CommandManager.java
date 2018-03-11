@@ -3,31 +3,46 @@ package me.gabixdev.kyoko.bot.manager;
 import me.gabixdev.kyoko.bot.Kyoko;
 import me.gabixdev.kyoko.bot.command.Command;
 import me.gabixdev.kyoko.bot.command.CommandContext;
+import me.gabixdev.kyoko.bot.util.StringUtil;
 import me.gabixdev.kyoko.shared.Settings;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class CommandManager {
     private final Kyoko kyoko;
 
-    private HashMap<String, Command> commands;
+    private Set<Command> registered;
+    private Map<String, Command> commands;
 
     public CommandManager(Kyoko kyoko) {
+        this.registered = new HashSet<Command>();
         this.commands = new HashMap<>();
         this.kyoko = kyoko;
     }
 
+    public Set<Command> getRegistered() {
+        return registered;
+    }
+
+    public Map<String, Command> getCommands() {
+        return commands;
+    }
+
     public void registerCommand(Command command) {
+        if (command == null) return;
+
         List<String> aliases = Arrays.asList(command.getAliases());
 
-        if (commands.keySet().contains(command.getName()) || commands.keySet().containsAll(Arrays.asList(command.getAliases())))
+        if (commands.keySet().contains(command.getName()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases)))
             throw new IllegalArgumentException("Alias or label is already registered!");
 
+        registered.add(command);
         commands.put(command.getName(), command);
 
+        aliases.forEach(alias -> {
+            commands.put(alias, command);
+        });
     }
 
     public void handlePrivate(MessageReceivedEvent event) {
@@ -54,9 +69,10 @@ public class CommandManager {
                 System.arraycopy(parts, 1, args, 0, args.length);
 
                 String concatArgs = String.join(" ", args);
-                CommandContext context = new CommandContext(event, parts[0], concatArgs, args);
+                CommandContext context = new CommandContext(kyoko, event, parts[0], concatArgs, args);
 
                 kyoko.getExecutor().submit(() -> {
+                    kyoko.getLogger().info("User " + StringUtil.formatDiscrim(event.getAuthor()) + "(" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
                     c.execute(context);
                 });
             }

@@ -1,8 +1,12 @@
 package me.gabixdev.kyoko.bot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import me.gabixdev.kyoko.bot.command.basic.HelpCommand;
+import me.gabixdev.kyoko.bot.command.util.SayCommand;
 import me.gabixdev.kyoko.bot.event.KyokoEventHandler;
+import me.gabixdev.kyoko.bot.i18n.I18n;
 import me.gabixdev.kyoko.bot.manager.CommandManager;
+import me.gabixdev.kyoko.bot.util.CLICommands;
 import me.gabixdev.kyoko.shared.KyokoLogger;
 import me.gabixdev.kyoko.shared.Settings;
 import net.dv8tion.jda.core.JDA;
@@ -19,7 +23,9 @@ public class Kyoko {
     private Logger logger;
     private JDA jda;
 
+    private I18n i18n;
     private KyokoEventHandler eventHandler;
+    private EventWaiter waiter;
     private CommandManager commandManager;
     private ThreadPoolExecutor executor;
 
@@ -31,18 +37,22 @@ public class Kyoko {
 
         logger = new KyokoLogger().getLog();
         eventHandler = new KyokoEventHandler(this);
+        waiter = new EventWaiter();
         commandManager = new CommandManager(this);
         // 32 concurrent commands / shard
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(32);
-        running = true;
+
+        i18n = new I18n(this);
     }
 
     public void run() {
+        running = true;
+
         logger.info("Kyoko v" + Constants.VERSION + " is starting...");
 
-        registerCommands();
+        i18n.init();
 
-        jda.addEventListener(eventHandler);
+        registerCommands();
 
         logger.info("Logged in as " + jda.getSelfUser().getName() + "#" + jda.getSelfUser().getDiscriminator() + " (" + jda.getSelfUser().getId() + ")");
 
@@ -52,37 +62,24 @@ public class Kyoko {
             jda.getPresence().setGame(Game.listening(settings.normalPrefix + "help | " + jda.getGuilds().size() + " guilds"));
         }
 
+        // listen for events when bot is initialized
+        jda.addEventListener(eventHandler);
+        jda.addEventListener(waiter);
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        while (running) {
-            try {
-                //System.out.print("> ");
-                String line = br.readLine();
-                String[] args = line.split(" ");
-                if (args.length != 0) {
-                    switch (args[0].toLowerCase()) {
-                        case "reload":
-                            logger.info("Reloading bot...");
-                            running = false;
-                            break;
-                        case "exit":
-                            logger.info("Bye!");
-                            System.exit(0);
-                            break;
-                    }
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+        CLICommands.runHandler(br, this);
 
         logger.info("Shutting down...");
 
         jda.removeEventListener(eventHandler);
+        jda.removeEventListener(waiter);
     }
 
     private void registerCommands() {
         commandManager.registerCommand(new HelpCommand(this));
+
+        commandManager.registerCommand(new SayCommand(this));
     }
 
     public JDA getJda() {
@@ -93,11 +90,31 @@ public class Kyoko {
         return settings;
     }
 
+    public I18n getI18n() {
+        return i18n;
+    }
+
+    public EventWaiter getWaiter() {
+        return waiter;
+    }
+
     public ThreadPoolExecutor getExecutor() {
         return executor;
     }
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }

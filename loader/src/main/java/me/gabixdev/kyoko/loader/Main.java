@@ -20,7 +20,6 @@ public class Main {
     private static final File cfg = new File("config.json");
     private static final File kyoko_bot_jar = new File("kyoko-bot.jar");
     private static final File kyoko_bot_tree = new File("bot/target/classes");
-    private static final File kyoko_backend_jar = new File("kyoko-backend.jar");
 
     private static Thread kyokoThread;
     private static Settings settings;
@@ -88,7 +87,13 @@ public class Main {
                     Object kyoko = kyClass.getConstructor(JDA.class, Settings.class).newInstance(jda, settings);
                     Method runMethod = kyClass.getDeclaredMethod("run");
 
-                    runMethod.invoke(kyoko);
+                    try {
+                        runMethod.invoke(kyoko);
+                    } catch (Exception e) {
+                        System.out.println("Error while running Kyoko, retrying in 10 seconds...");
+                        e.printStackTrace();
+                        Thread.sleep(10000);
+                    }
                 } catch (Exception e) {
                     update = false;
                     System.out.println("Oops, something gone wrong!");

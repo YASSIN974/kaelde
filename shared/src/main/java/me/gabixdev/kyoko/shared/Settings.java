@@ -1,8 +1,15 @@
 package me.gabixdev.kyoko.shared;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import me.gabixdev.kyoko.shared.util.ColorTypeAdapter;
+
+import java.awt.*;
 
 public class Settings {
+    @SerializedName("bot-brand")
+    public String botBrand = "Kyoko";
+
     @SerializedName("owner")
     public String owner = "219067402174988290";
 
@@ -32,4 +39,16 @@ public class Settings {
 
     @SerializedName("shard-count")
     public int shardCount = -1;
+
+    @SerializedName("normal-color")
+    @JsonAdapter(ColorTypeAdapter.class)
+    public Color normalColor = new Color(201, 145, 84);
+
+    @SerializedName("success-color")
+    @JsonAdapter(ColorTypeAdapter.class)
+    public Color successColor = new Color(46, 204, 113);
+
+    @SerializedName("error-color")
+    @JsonAdapter(ColorTypeAdapter.class)
+    public Color errorColor = new Color(231, 76, 60);
 }
