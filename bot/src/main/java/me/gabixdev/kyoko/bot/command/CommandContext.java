@@ -28,7 +28,7 @@ public class CommandContext {
         else this.language = kyoko.getI18n().getLanguage(event.getAuthor());
         this.event = event;
         this.label = label;
-        this.concatArgs = concatArgs;
+        this.concatArgs = concatArgs.trim();
         this.args = args;
     }
 
@@ -46,6 +46,10 @@ public class CommandContext {
 
     public TextChannel getChannel() {
         return event.getTextChannel();
+    }
+
+    public Guild getGuild() {
+        return event.getGuild();
     }
 
     public MessageReceivedEvent getEvent() {

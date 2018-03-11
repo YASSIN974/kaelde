@@ -14,7 +14,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.5.1_347</version>
+            <version>3.5.1_348</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -45,6 +45,12 @@
             <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities</artifactId>
             <version>2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>jda-nas</artifactId>
+            <version>1.0.5</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

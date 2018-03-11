@@ -2,6 +2,7 @@ package me.gabixdev.kyoko.loader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import me.gabixdev.kyoko.shared.Settings;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -61,6 +62,7 @@ public class Main {
         jdaBuilder.setBulkDeleteSplittingEnabled(false);
         jdaBuilder.setToken(settings.token);
         jdaBuilder.setAudioEnabled(true);
+        jdaBuilder.setAudioSendFactory(new NativeAudioSendFactory());
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
 
         try {
@@ -74,9 +76,6 @@ public class Main {
         kyokoThread = new Thread(() -> {
             boolean update = true;
             while (update) {
-                // clean up listeners (if any)
-                jda.getRegisteredListeners().forEach(jda::removeEventListener);
-
                 try {
                     DelegateURLClassLoader kyokoClassLoader = new DelegateURLClassLoader(new URL[]{
                             kyoko_bot_jar.toURI().toURL(),
