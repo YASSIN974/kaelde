@@ -31,13 +31,40 @@ public class HelpCommand extends Command {
         }
 
         EmbedBuilder eb = context.getNormalEmbed();
-        eb.addField(
-                String.format(context.getTranslated("help.header.title"), kyoko.getJda().getSelfUser().getName()),
-                String.format(context.getTranslated("help.header.desc"), Constants.WIKI_URL, Constants.DISCORD_URL),
-                false);
+        if (context.getArgs().length == 0) {
+            eb.addField(
+                    String.format(context.getTranslated("help.header.title"), kyoko.getSettings().botBrand),
+                    String.format(context.getTranslated("help.header.desc"), Constants.WIKI_URL, kyoko.getSettings().normalPrefix, kyoko.getSettings().moderationPrefix, kyoko.getSettings().moderationPrefix, Constants.DISCORD_URL),
+                    false);
 
-        cached.keySet().forEach(s -> eb.addField(context.getTranslated(s), cached.get(s), false));
+            cached.keySet().forEach(s -> eb.addField(context.getTranslated(s), cached.get(s), false));
 
+        } else {
+            if (kyoko.getCommandManager().getCommands().keySet().contains(context.getConcatArgs().toLowerCase())) {
+                Command c = kyoko.getCommandManager().getCommands().get(context.getConcatArgs().toLowerCase());
+
+                StringBuilder dsc = new StringBuilder();
+
+                dsc.append(context.getTranslated(c.getDescription())).append("\n\n");
+                if (c.getAliases().length != 0) {
+                    dsc.append(context.getTranslated("help.aliases"))
+                            .append(": `")
+                            .append(String.join(", ", c.getAliases()))
+                            .append("`\n\n");
+                }
+                dsc.append(context.getTranslated("generic.usage"))
+                        .append(": `")
+                        .append(kyoko.getSettings().normalPrefix)
+                        .append(c.getName())
+                        .append(" ")
+                        .append(context.getTranslated(c.getUsage()))
+                        .append("`");
+
+                eb.addField(context.getTranslated("help.header.titlealt") + kyoko.getSettings().normalPrefix + c.getName(),
+                        dsc.toString(),
+                        false);
+            }
+        }
         context.send(eb.build());
     }
 
