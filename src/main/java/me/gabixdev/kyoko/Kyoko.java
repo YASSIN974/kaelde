@@ -46,10 +46,7 @@ import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
@@ -68,6 +65,7 @@ public class Kyoko {
     private ScriptEngine scriptEngine;
 
     private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private ThreadPoolExecutor executor;
     private final AudioPlayerManager playerManager;
     private final Map<Long, MusicManager> musicManagers;
     public String supportedSources;
@@ -86,6 +84,7 @@ public class Kyoko {
         commandManager = new CommandManager(this);
         databaseManager = new DatabaseManager(this);
         i18n = new I18n(this);
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(32);
 
         musicManagers = new HashMap<>();
 
@@ -335,5 +334,9 @@ public class Kyoko {
 
     public ScriptEngine getScriptEngine() {
         return scriptEngine;
+    }
+
+    public ThreadPoolExecutor getExecutor() {
+        return executor;
     }
 }

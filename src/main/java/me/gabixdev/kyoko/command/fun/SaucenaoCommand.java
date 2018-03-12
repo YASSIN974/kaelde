@@ -14,11 +14,9 @@ import me.gabixdev.kyoko.util.command.CommandType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
-import sun.rmi.server.InactiveGroupException;
 
-import javax.naming.directory.InvalidAttributesException;
-import java.util.Iterator;
-import java.util.Map;
+import java.awt.image.ImagingOpException;
+import java.io.IOException;
 
 public class SaucenaoCommand extends Command {
 
@@ -58,28 +56,37 @@ public class SaucenaoCommand extends Command {
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
-        if(args.length < 2) {
+        if(args.length < 2 && message.getAttachments().isEmpty()) {
             printUsage(kyoko, l, message.getTextChannel());
             return;
         }
-        String imgUrl = args[1];
+        EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+        builder.addField(kyoko.getI18n().get(l, "saucenao.title"), kyoko.getI18n().get(l, "saucenao.searching"), false);
+        message.getTextChannel().sendMessage(builder.build()).queue(success -> {
         try {
+            builder.clearFields();
+            String imgUrl = args.length >= 2 ? args[1] : message.getAttachments().get(0).getUrl();
             JsonObject jsonObject = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(String.format(urlFormat, kyoko.getSettings().getSaucenaoApiKey(), imgUrl))).getAsJsonObject();
-            EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             JsonArray results = jsonObject.get("results").getAsJsonArray();
             int res = 1;
             builder.addField(kyoko.getI18n().get(l, "saucenao.title"), kyoko.getI18n().get(l, "saucenao.subtitle"), false);
             for(JsonElement result : results) {
                 JsonObject resultt = result.getAsJsonObject();
                 JsonObject data = resultt.get("data").getAsJsonObject();
-                String title = resultt.get("data").getAsJsonObject().keySet().contains("title") ? "Image - " + data.get("title").getAsString() : "Anime - " + data.get("source").getAsString();
-                builder.addField(res++ + ".",  "[" + title + "](" + data.get("ext_urls").getAsJsonArray().get(0).getAsString() + ") \n", false);
+                String title = resultt.get("data").getAsJsonObject().keySet().contains("title") ? kyoko.getI18n().get(l, "saucenao.image") + " - " + data.get("title").getAsString() : "Anime - " + data.get("source").getAsString();
+                String similarity = resultt.get("header").getAsJsonObject().get("similarity").getAsString() + "%";
+                builder.addField(res++ + ".",  "[" + title + "](" + (data.keySet().contains("ext_urls") ? data.get("ext_urls").getAsJsonArray().get(0).getAsString() : resultt.get("header").getAsJsonObject().get("thumbnail").getAsString()) + ") - " + String.format(kyoko.getI18n().get(l, "saucenao.similarity"), similarity), false);
             }
-            message.getTextChannel().sendMessage(builder.build()).queue();
+            success.editMessage(builder.build()).queue();
 
         } catch (JsonParseException e) {
+            EmbedBuilder embedBuilder = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+            embedBuilder.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "saucenao.error"), false);
+            success.editMessage(embedBuilder.build()).queue();
+        } catch (IOException e) {
+            success.delete().queue();
             CommonErrorUtil.exception(kyoko, l, message.getTextChannel());
-        }
+        }});
 
     }
 }

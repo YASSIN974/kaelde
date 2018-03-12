@@ -35,7 +35,9 @@ public class EventHandler implements EventListener {
                         DebugCommands.handle(kyoko, e);
                     }
                 } else {
-                    kyoko.getCommandManager().parseAndExecute(e);
+                    kyoko.getExecutor().submit(() -> {
+                        kyoko.getCommandManager().parseAndExecute(e);
+                    });
                 }
             } else if (event instanceof GuildVoiceLeaveEvent) {
                 List<Member> members = ((GuildVoiceLeaveEvent) event).getChannelLeft().getMembers();
