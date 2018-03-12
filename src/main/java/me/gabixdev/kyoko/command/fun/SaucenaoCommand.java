@@ -71,7 +71,9 @@ public class SaucenaoCommand extends Command {
             builder.addField(kyoko.getI18n().get(l, "saucenao.title"), kyoko.getI18n().get(l, "saucenao.subtitle"), false);
             for(JsonElement result : results) {
                 JsonObject resultt = result.getAsJsonObject();
-                builder.addField(res++ + ".",  "[" + resultt.get("data").getAsJsonObject().get("title").getAsString() + "](" + resultt.get("data").getAsJsonObject().get("ext_urls").getAsJsonArray().get(0).getAsString() + ") \n", false);
+                JsonObject data = resultt.get("data").getAsJsonObject();
+                String title = resultt.get("data").getAsJsonObject().keySet().contains("title") ? "Image - " + data.get("title").getAsString() : "Anime - " + data.get("source").getAsString();
+                builder.addField(res++ + ".",  "[" + title + "](" + data.get("ext_urls").getAsJsonArray().get(0).getAsString() + ") \n", false);
             }
             message.getTextChannel().sendMessage(builder.build()).queue();
 
