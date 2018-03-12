@@ -2,6 +2,7 @@ package me.gabixdev.kyoko;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
@@ -149,6 +150,7 @@ public class Kyoko {
                 .setBulkDeleteSplittingEnabled(false)
                 .addEventListener(eventHandler)
                 .setAudioEnabled(true)
+                .setAudioSendFactory(new NativeAudioSendFactory())
                 .setStatus(OnlineStatus.IDLE);
         jda = builder.buildBlocking();
 

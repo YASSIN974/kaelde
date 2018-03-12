@@ -15,7 +15,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
-import java.awt.image.ImagingOpException;
 import java.io.IOException;
 
 public class SaucenaoCommand extends Command {
