@@ -63,7 +63,7 @@ public class PlayCommand extends Command {
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
 
-        if (args.length == 1) {
+        if (args.length == 1 && message.getAttachments().isEmpty()) {
             if (musicManager.player.isPaused()) {
                 musicManager.player.setPaused(false);
 
@@ -81,6 +81,8 @@ public class PlayCommand extends Command {
             }
             //printUsage(kyoko, l, message.getTextChannel());
             return;
+        } else if (!message.getAttachments().isEmpty()) {
+            args = new String[]{"play", message.getAttachments().get(0).getUrl()};
         }
 
 

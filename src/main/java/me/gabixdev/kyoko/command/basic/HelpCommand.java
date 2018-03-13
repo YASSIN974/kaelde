@@ -67,7 +67,7 @@ public class HelpCommand extends Command {
 
         } else {
             String clabel = String.join(" ", args).substring(args[0].length() + 1);
-            Command c = kyoko.getCommandManager().getCommands().stream().filter(command -> command.getLabel().equalsIgnoreCase(clabel)).findFirst().orElse(null);
+            Command c = kyoko.getCommandManager().getCommands().stream().filter(command -> command.getLabel().equalsIgnoreCase(clabel) || Arrays.asList(command.getAliases()).contains(clabel.toLowerCase())).findFirst().orElse(null);
             if (c != null) {
                 StringBuilder dsc = new StringBuilder();
 
