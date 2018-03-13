@@ -188,7 +188,6 @@ public class Kyoko {
         commandManager.registerCommand(new KysCommand(this));
         commandManager.registerCommand(new SaucenaoCommand(this));
 
-        commandManager.registerCommand(new CatCommand(this));
         commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new PatCommand(this));
         commandManager.registerCommand(new NekosCommand(this));
@@ -203,6 +202,10 @@ public class Kyoko {
         commandManager.registerCommand(new AvatarCommand(this));
         commandManager.registerCommand(new UserInfoCommand(this));
         commandManager.registerCommand(new VoteCommand(this));
+
+        commandManager.registerCommand(new MoneyCommand(this));
+        commandManager.registerCommand(new MoneyTopCommand(this));
+        commandManager.registerCommand(new DailiesCommand(this));
 
         commandManager.registerCommand(new PruneCommand(this));
         commandManager.registerCommand(new KickCommand(this));
@@ -225,10 +228,8 @@ public class Kyoko {
         }
 
         if (settings.isWipFeaturesEnabled()) {
+            commandManager.registerCommand(new CatCommand(this));
             commandManager.registerCommand(new DecancerCommand(this));
-            commandManager.registerCommand(new MoneyCommand(this));
-            commandManager.registerCommand(new MoneyTopCommand(this));
-            commandManager.registerCommand(new DailiesCommand(this));
         }
     }
 
