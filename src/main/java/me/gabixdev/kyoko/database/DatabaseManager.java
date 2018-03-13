@@ -25,7 +25,7 @@ public class DatabaseManager {
     public void load(Settings settings) {
         this.settings = settings;
 
-        String databaseURL = "jdbc:mysql://" + settings.getMysqlHost() + ":" + settings.getMysqlPort() + "/" + settings.getMysqlDatabase() + "?useSSL=false&user=" + settings.getMysqlUser() + "&password=" + settings.getMysqlPassword();
+        String databaseURL = "jdbc:mysql://" + settings.getMysqlHost() + ":" + settings.getMysqlPort() + "/" + settings.getMysqlDatabase() + "?useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" + "&user=" + settings.getMysqlUser() + "&password=" + settings.getMysqlPassword();
         try {
             connectionSource = new JdbcConnectionSource(databaseURL);
             userDao = DaoManager.createDao(connectionSource, UserConfig.class);
