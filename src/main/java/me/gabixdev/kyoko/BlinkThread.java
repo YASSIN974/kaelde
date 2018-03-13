@@ -85,8 +85,8 @@ public class BlinkThread implements Runnable {
                 kyoko.getLog().info("Blinking shit set to \"guildcount\".");
                 while (kyoko.isRunning()) {
                     try {
-                        kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.WATCHING, kyoko.getJda().getGuilds().size() + " guilds", kyoko.getSettings().getGameUrl()));
-                        Thread.sleep(1800000);
+                        kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.LISTENING, kyoko.getSettings().getPrefix() + "help | " + kyoko.getJda().getGuilds().size() + " guilds", kyoko.getSettings().getGameUrl()));
+                        Thread.sleep(120000);
                     } catch (InterruptedException e) {
                         // nothing
                     }

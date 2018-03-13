@@ -63,6 +63,8 @@ public class HelpCommand extends Command {
             for (String s : cachedLists.keySet()) {
                 eb.addField(kyoko.getI18n().get(l, s) + " (" + cachedCounts.get(s) + ")", cachedLists.get(s), false);
             }
+            eb.addField("", String.format(kyoko.getI18n().get(l, "help.footer"), kyoko.getSettings().getPrefix()), false);
+
         } else {
             String clabel = String.join(" ", args).substring(args[0].length() + 1);
             Command c = kyoko.getCommandManager().getCommands().stream().filter(command -> command.getLabel().equalsIgnoreCase(clabel)).findFirst().orElse(null);
