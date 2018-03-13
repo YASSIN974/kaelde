@@ -136,6 +136,7 @@ public class StringUtil {
     }
 
     public static String prettyPeriod(long millis) {
+        if (millis == Long.MAX_VALUE) return "streaming";
         // because java builtin methods sucks...
 
         final long secs = TimeUnit.MILLISECONDS.toSeconds(millis) % 60;

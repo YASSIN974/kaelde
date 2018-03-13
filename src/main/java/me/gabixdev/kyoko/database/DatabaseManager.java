@@ -58,4 +58,8 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+    public Dao<UserConfig, Integer> getUserDao() {
+        return userDao;
+    }
 }

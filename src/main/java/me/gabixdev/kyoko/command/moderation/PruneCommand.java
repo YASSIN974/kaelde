@@ -89,7 +89,7 @@ public class PruneCommand extends Command {
                         return;
                     }
 
-                    message.getTextChannel().getHistory().retrievePast(messageAmount + 1).queue(list -> {
+                    message.getTextChannel().getHistory().retrievePast(messageAmount).queue(list -> {
                         message.getTextChannel().deleteMessages(list).queue(success -> {
                             message.getTextChannel().sendMessage(String.format(kyoko.getI18n().get(l, "mod.prune.cleared"), list.size())).queue(completeMsg -> {
                                 completeMsg.delete().completeAfter(5, TimeUnit.SECONDS);

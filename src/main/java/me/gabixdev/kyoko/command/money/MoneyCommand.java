@@ -5,6 +5,7 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.UserUtil;
 import me.gabixdev.kyoko.util.command.Command;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -31,6 +32,11 @@ public class MoneyCommand extends Command {
     @Override
     public String getDescription() {
         return "money.description";
+    }
+
+    @Override
+    public CommandCategory getCategory() {
+        return CommandCategory.MONEY;
     }
 
     @Override

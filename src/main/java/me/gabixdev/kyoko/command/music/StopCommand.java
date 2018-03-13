@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.events.Event;
 public class StopCommand extends Command
 {
     private Kyoko kyoko;
-    private final String[] aliases = new String[] {"stop"};
+    private final String[] aliases = new String[]{"stop", "left"};
     public StopCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
@@ -60,23 +60,26 @@ public class StopCommand extends Command
         if(musicManager.scheduler.getQueue().isEmpty()) {
             if(audioTrack != null) {
                 musicManager.player.stopTrack();
+                message.getGuild().getAudioManager().closeAudioConnection();
+
                 EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
                 err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.stopped"), false);
                 message.getChannel().sendMessage(err.build()).queue();
+            } else {
                 message.getGuild().getAudioManager().closeAudioConnection();
-                return;
-            }
-            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
-            message.getChannel().sendMessage(err.build()).queue();
-            return;
-        }
 
-        musicManager.player.stopTrack();
-        musicManager.scheduler.getQueue().clear();
-        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.stopped"), false);
-        message.getGuild().getAudioManager().closeAudioConnection();
-        message.getChannel().sendMessage(err.build()).queue();
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
+                message.getChannel().sendMessage(err.build()).queue();
+            }
+        } else {
+            musicManager.player.stopTrack();
+            musicManager.scheduler.getQueue().clear();
+            message.getGuild().getAudioManager().closeAudioConnection();
+
+            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+            err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.stopped"), false);
+            message.getChannel().sendMessage(err.build()).queue();
+        }
     }
 }

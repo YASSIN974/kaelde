@@ -93,7 +93,7 @@ public class ListCommand extends Command {
 
         List<AudioTrack> tli = getPage(queue, i, 10);
         for (int tid = 0; tid < tli.size(); tid++) {
-            list.append("**").append(tid + 1 + ((i - 1) * 10)).append(".** ").append(tli.get(tid).getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(tli.get(tid).getDuration())).append("]`").append("\n");
+            list.append("`").append(tid + 1 + ((i - 1) * 10)).append(".` ").append(tli.get(tid).getInfo().title).append("\t`[").append(StringUtil.prettyPeriod(tli.get(tid).getDuration())).append("]`").append("\n");
         }
         list.append("\n").append(String.format(kyoko.getI18n().get(l, "music.msg.skiptip"), kyoko.getSettings().getPrefix()));
 

@@ -5,6 +5,7 @@ import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.command.Command;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -28,6 +29,11 @@ public class DailiesCommand extends Command {
     }
 
     @Override
+    public CommandCategory getCategory() {
+        return CommandCategory.MONEY;
+    }
+
+    @Override
     public String getDescription() {
         return "dailies.description";
     }
@@ -39,7 +45,6 @@ public class DailiesCommand extends Command {
         long claim = kyoko.getDatabaseManager().getUser(message.getAuthor()).claim;
         int amount = 175 + (int) Math.floor(Math.random() * 50);
         int money = kyoko.getDatabaseManager().getUser(message.getAuthor()).money;
-        System.out.println(money);
 
         if (claim > time) {
             String claimtime = StringUtil.prettyPeriod((claim - time));
@@ -49,7 +54,7 @@ public class DailiesCommand extends Command {
         } else {
             money += amount;
             UserConfig uc = kyoko.getDatabaseManager().getUser(message.getAuthor());
-            uc.claim = time + 10000;
+            uc.claim = time + 86400000;
             uc.money = money;
             kyoko.getDatabaseManager().saveUser(message.getAuthor(), uc);
 

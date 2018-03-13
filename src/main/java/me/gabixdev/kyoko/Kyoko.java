@@ -23,6 +23,7 @@ import me.gabixdev.kyoko.command.moderation.PruneCommand;
 import me.gabixdev.kyoko.command.moderation.UnbanCommand;
 import me.gabixdev.kyoko.command.money.DailiesCommand;
 import me.gabixdev.kyoko.command.money.MoneyCommand;
+import me.gabixdev.kyoko.command.money.MoneyTopCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.database.DatabaseManager;
@@ -226,6 +227,7 @@ public class Kyoko {
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
             commandManager.registerCommand(new MoneyCommand(this));
+            commandManager.registerCommand(new MoneyTopCommand(this));
             commandManager.registerCommand(new DailiesCommand(this));
         }
     }
