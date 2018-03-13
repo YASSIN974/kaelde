@@ -9,7 +9,7 @@ import me.gabixdev.kyoko.music.SearchResult;
 import me.gabixdev.kyoko.music.YoutubeSearch;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import me.gabixdev.kyoko.util.exception.APIException;
 import me.gabixdev.kyoko.util.exception.NotFoundException;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -42,8 +42,8 @@ public class PlayYoutubeCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.MUSIC;
+    public CommandCategory getCategory() {
+        return CommandCategory.MUSIC;
     }
 
     @Override

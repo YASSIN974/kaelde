@@ -3,7 +3,7 @@ package me.gabixdev.kyoko.command.util;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -32,8 +32,8 @@ public class PingCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.UTILITY;
+    public CommandCategory getCategory() {
+        return CommandCategory.UTILITY;
     }
 
     @Override

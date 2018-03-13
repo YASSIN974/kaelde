@@ -4,7 +4,7 @@ import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.music.MusicManager;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -26,8 +26,8 @@ public class ShuffleCommand extends Command
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.MUSIC;
+    public CommandCategory getCategory() {
+        return CommandCategory.MUSIC;
     }
 
     @Override

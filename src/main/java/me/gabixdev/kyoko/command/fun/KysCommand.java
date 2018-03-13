@@ -5,7 +5,7 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.UserUtil;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -40,8 +40,8 @@ public class KysCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.FUN;
+    public CommandCategory getCategory() {
+        return CommandCategory.FUN;
     }
 
     @Override

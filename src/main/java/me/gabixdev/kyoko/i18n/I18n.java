@@ -36,11 +36,9 @@ public class I18n {
     }
 
     public String get(Language l, String key) {
-        if (langs.containsKey(l)) {
-            return langs.get(l).getProperty(key, key);
-        } else {
-            return key;
-        }
+        if (langs.containsKey(l))
+            return langs.get(l).getProperty(key, langs.get(Language.ENGLISH).getProperty(key, key));
+        return langs.get(Language.ENGLISH).getProperty(key, key);
     }
 
     public Language getLanguage(Guild guild) {
@@ -49,7 +47,7 @@ public class I18n {
 
     public Language getLanguage(Member member) {
         try {
-            return kyoko.getDatabaseManager().getUser(member.getUser()).getLanguage();
+            return kyoko.getDatabaseManager().getUser(member.getUser()).language;
         } catch (Exception e) {
             e.printStackTrace();
             return Language.ENGLISH;

@@ -5,7 +5,7 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.UserUtil;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
@@ -40,8 +40,8 @@ public class BanCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.MODERATION;
+    public CommandCategory getCategory() {
+        return CommandCategory.MODERATION;
     }
 
     @Override

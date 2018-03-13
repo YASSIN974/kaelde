@@ -39,7 +39,7 @@ public class MoneyCommand extends Command {
         EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
         if (args.length == 1) {
-            int money = kyoko.getDatabaseManager().getUser(message.getMember().getUser()).getMoney();
+            int money = kyoko.getDatabaseManager().getUser(message.getMember().getUser()).money;
             eb.addField(kyoko.getI18n().get(l, "money.title"), String.format(kyoko.getI18n().get(l, "money.your"), money), false);
             message.getTextChannel().sendMessage(eb.build()).queue();
         } else {
@@ -48,7 +48,7 @@ public class MoneyCommand extends Command {
             if (member == null) {
                 CommonErrorUtil.noUserFound(kyoko, l, message.getTextChannel(), name);
             } else {
-                int money = kyoko.getDatabaseManager().getUser(member.getUser()).getMoney();
+                int money = kyoko.getDatabaseManager().getUser(member.getUser()).money;
                 eb.addField(kyoko.getI18n().get(l, "money.title"), String.format(kyoko.getI18n().get(l, "money.other"), member.getEffectiveName(), money), false);
                 message.getTextChannel().sendMessage(eb.build()).queue();
             }

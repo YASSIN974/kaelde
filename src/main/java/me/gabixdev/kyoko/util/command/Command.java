@@ -23,8 +23,8 @@ public abstract class Command {
         return "";
     }
 
-    public CommandType getType() {
-        return CommandType.BASIC;
+    public CommandCategory getCategory() {
+        return CommandCategory.BASIC;
     }
 
     public void printUsage(Kyoko kyoko, Language lang, TextChannel c) {

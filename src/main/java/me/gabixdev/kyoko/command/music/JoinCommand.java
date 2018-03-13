@@ -5,7 +5,7 @@ import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.music.MusicUtil;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -36,8 +36,8 @@ public class JoinCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.MUSIC;
+    public CommandCategory getCategory() {
+        return CommandCategory.MUSIC;
     }
 
     @Override

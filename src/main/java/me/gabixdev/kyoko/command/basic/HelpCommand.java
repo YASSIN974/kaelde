@@ -4,7 +4,7 @@ import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
@@ -14,12 +14,12 @@ import java.util.*;
 public class HelpCommand extends Command {
     private final Kyoko kyoko;
     private final String[] aliases = new String[] {"help"};
-    private HashMap<CommandType, HashSet<Command>> categories;
-    private TreeMap<String, String> cached;
+    private HashMap<CommandCategory, HashSet<Command>> categories;
+    private HashMap<String, Integer> cachedCounts;
+    private TreeMap<String, String> cachedLists;
 
     public HelpCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
-        categories = null;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class HelpCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.BASIC;
+    public CommandCategory getCategory() {
+        return CommandCategory.BASIC;
     }
 
     @Override
@@ -48,33 +48,67 @@ public class HelpCommand extends Command {
             initCategories();
         }
 
-        EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+        EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         Language l = kyoko.getI18n().getLanguage(message.getMember());
-        normal.addField(String.format(kyoko.getI18n().get(l, "help.header.title"), kyoko.getJda().getSelfUser().getName()), String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.WIKI_URL, Constants.DISCORD_URL), false);
-
-        for (String s : cached.keySet()) {
-            normal.addField(kyoko.getI18n().get(l, s), cached.get(s), false);
+        if (categories == null) {
+            initCategories();
         }
 
-        message.getChannel().sendMessage(normal.build()).queue();
+        if (args.length == 1) {
+            eb.addField(
+                    String.format(kyoko.getI18n().get(l, "help.header.title"), kyoko.getJda().getSelfUser().getName()),
+                    String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.WIKI_URL, kyoko.getSettings().getPrefix(), Constants.DISCORD_URL),
+                    false);
+
+            for (String s : cachedLists.keySet()) {
+                eb.addField(kyoko.getI18n().get(l, s) + " (" + cachedCounts.get(s) + ")", cachedLists.get(s), false);
+            }
+        } else {
+            String clabel = String.join(" ", args).substring(args[0].length() + 1);
+            Command c = kyoko.getCommandManager().getCommands().stream().filter(command -> command.getLabel().equalsIgnoreCase(clabel)).findFirst().orElse(null);
+            if (c != null) {
+                StringBuilder dsc = new StringBuilder();
+
+                dsc.append(kyoko.getI18n().get(l, c.getDescription())).append("\n\n");
+                if (c.getAliases().length != 0) {
+                    dsc.append(kyoko.getI18n().get(l, "help.aliases"))
+                            .append(": `")
+                            .append(String.join(", ", c.getAliases()))
+                            .append("`\n\n");
+                }
+                dsc.append(kyoko.getI18n().get(l, "generic.usage"))
+                        .append(": `")
+                        .append(kyoko.getSettings().getPrefix())
+                        .append(c.getLabel());
+                if (c.getUsage() != null) dsc.append(" ").append(kyoko.getI18n().get(l, c.getUsage()));
+                dsc.append("`");
+
+                eb.addField(kyoko.getI18n().get(l, "help.header.titlealt") + kyoko.getSettings().getPrefix() + c.getLabel(),
+                        dsc.toString(),
+                        false);
+            } else {
+                eb = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+                eb.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "help.notfound"), false);
+            }
+        }
+        message.getTextChannel().sendMessage(eb.build()).queue();
     }
 
     private void initCategories() {
         categories = new HashMap<>();
 
-        for (CommandType t : CommandType.values()) {
+        for (CommandCategory t : CommandCategory.values()) {
             HashSet<Command> cmds = new HashSet<>();
-            for (Command c : kyoko.getCommandManager().getCommands()) {
-                if (c.getType() == t) {
-                    cmds.add(c);
-                }
-            }
+            kyoko.getCommandManager().getCommands().stream()
+                    .filter(command -> (command.getCategory() == t))
+                    .forEach(cmds::add);
             categories.put(t, cmds);
         }
 
-        cached = new TreeMap<>();
+        cachedLists = new TreeMap<>();
+        cachedCounts = new HashMap<>();
 
-        for (CommandType t : categories.keySet()) {
+        for (CommandCategory t : categories.keySet()) {
             HashSet<Command> set = categories.get(t);
             if (set.size() == 0) continue;
 
@@ -84,7 +118,8 @@ public class HelpCommand extends Command {
                     s.add("`" + c.getLabel() + "`");
             }
             String listed = String.join(", ", s);
-            cached.put("help.category." + t.name().toLowerCase(), listed);
+            cachedLists.put("help.category." + t.name().toLowerCase(), listed);
+            cachedCounts.put("help.category." + t.name().toLowerCase(), set.size());
         }
     }
 }

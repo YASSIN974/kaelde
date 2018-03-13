@@ -1,6 +1,7 @@
 package me.gabixdev.kyoko.command.basic;
 
 import me.gabixdev.kyoko.Kyoko;
+import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -48,8 +49,9 @@ public class LangCommand extends Command {
                 if (l.getShortName().equalsIgnoreCase(args[1])
                         || l.getEmoji().equalsIgnoreCase(args[1])
                         || l.getLocalized().equalsIgnoreCase(args[1])) {
-                    kyoko.getDatabaseManager().getUser(message.getMember().getUser()).setLanguage(l);
-                    kyoko.getDatabaseManager().saveUser(message.getMember().getUser());
+                    UserConfig uc = kyoko.getDatabaseManager().getUser(message.getAuthor());
+                    uc.language = l;
+                    kyoko.getDatabaseManager().saveUser(message.getAuthor(), uc);
                     message.getChannel().sendMessage(String.format(kyoko.getI18n().get(l, "language.set"), l.getLocalized())).queue();
                     return;
                 }

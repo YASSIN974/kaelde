@@ -6,7 +6,7 @@ import me.gabixdev.kyoko.util.GsonUtil;
 import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
-import me.gabixdev.kyoko.util.command.CommandType;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
@@ -39,8 +39,8 @@ public class HugCommand extends Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.IMAGES;
+    public CommandCategory getCategory() {
+        return CommandCategory.IMAGES;
     }
 
     @Override
