@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.command.util;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
+import me.gabixdev.kyoko.util.UserUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -11,7 +12,9 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserInfoCommand extends Command {
     private final String[] aliases = new String[]{"userinfo"};
@@ -56,14 +59,9 @@ public class UserInfoCommand extends Command {
             return;
         }
 
-        Optional<Member> member = message.getGuild().getMembers().stream().parallel().filter(
-                mem -> mem.getAsMention().equals(args[1])
-                        || mem.getUser().getName().equalsIgnoreCase(args[1])
-                        || mem.getEffectiveName().equalsIgnoreCase(args[1])
-                        || mem.getUser().getIdLong() == Long.parseLong(args[1])).findFirst();
-
-        if (member.isPresent()) {
-            Member mem = member.get();
+        String username = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
+        Member mem = UserUtil.getMember(message.getGuild(), username);
+        if (mem != null) {
             EmbedBuilder normal = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             if (mem.getUser().getAvatarUrl() != null) normal.setThumbnail(mem.getUser().getAvatarUrl());
             StringBuilder desc = new StringBuilder();
