@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
-public class MoneyCommand extends Command {
+public class  MoneyCommand extends Command {
     private Kyoko kyoko;
     private final String[] aliases = new String[]{"money", "balance", "bal"};
 

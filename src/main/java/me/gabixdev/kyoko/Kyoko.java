@@ -2,6 +2,7 @@ package me.gabixdev.kyoko;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.HashBiMap;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -24,6 +25,7 @@ import me.gabixdev.kyoko.command.moderation.UnbanCommand;
 import me.gabixdev.kyoko.command.money.DailiesCommand;
 import me.gabixdev.kyoko.command.money.MoneyCommand;
 import me.gabixdev.kyoko.command.money.MoneyTopCommand;
+import me.gabixdev.kyoko.command.money.SendMoneyCommand;
 import me.gabixdev.kyoko.command.music.*;
 import me.gabixdev.kyoko.command.util.*;
 import me.gabixdev.kyoko.database.DatabaseManager;
@@ -40,7 +42,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.utils.tuple.MutableTriple;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.script.ScriptEngine;
@@ -48,6 +55,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.ConsoleHandler;
@@ -73,6 +81,7 @@ public class Kyoko {
     private final Map<Long, MusicManager> musicManagers;
     public String supportedSources;
     private Thread blinkThread;
+    public final HashBiMap<User, MutableTriple<User, Long, Integer>> confirmMembers = HashBiMap.create();
 
     private JDA jda;
     private Logger log;
@@ -206,6 +215,7 @@ public class Kyoko {
         commandManager.registerCommand(new MoneyCommand(this));
         commandManager.registerCommand(new MoneyTopCommand(this));
         commandManager.registerCommand(new DailiesCommand(this));
+        commandManager.registerCommand(new SendMoneyCommand(this));
 
         commandManager.registerCommand(new PruneCommand(this));
         commandManager.registerCommand(new KickCommand(this));

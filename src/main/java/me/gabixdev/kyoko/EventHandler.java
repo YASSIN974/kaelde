@@ -1,5 +1,6 @@
 package me.gabixdev.kyoko;
 
+import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.util.command.DebugCommands;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -9,6 +10,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
 
@@ -29,12 +31,21 @@ public class EventHandler implements EventListener {
             if (event instanceof MessageReceivedEvent) {
                 MessageReceivedEvent e = (MessageReceivedEvent) event;
                 if (e.getAuthor().isBot()) return;
-
                 if (e.getChannelType() == ChannelType.PRIVATE) {
                     if (e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
                         DebugCommands.handle(kyoko, e);
                     }
                 } else {
+                    if(e.getMessage().getIdLong() % 20 == 0) {
+                        try {
+                            UserConfig config = kyoko.getDatabaseManager().getUser(e.getAuthor());
+                            int money = config.money + RandomUtils.nextInt(1, 5);
+                            config.money=+money;
+                            kyoko.getDatabaseManager().saveUser(e.getAuthor(), config);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    }
                     kyoko.getExecutor().submit(() -> {
                         kyoko.getCommandManager().parseAndExecute(e);
                     });

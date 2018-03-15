@@ -61,4 +61,10 @@ public class CommonErrorUtil {
         err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.guildowner"), false);
         chan.sendMessage(err.build()).queue();
     }
+
+    public static void isBot(Kyoko kyoko, Language l, TextChannel channel, String arg) {
+        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
+        err.addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.isbot"), arg), false);
+        channel.sendMessage(err.build()).queue();
+    }
 }
