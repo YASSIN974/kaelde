@@ -39,8 +39,7 @@ public class EventHandler implements EventListener {
                     if(e.getMessage().getIdLong() % 20 == 0) {
                         try {
                             UserConfig config = kyoko.getDatabaseManager().getUser(e.getAuthor());
-                            int money = config.money + RandomUtils.nextInt(1, 5);
-                            config.money=+money;
+                            config.money += RandomUtils.nextInt(1, 5);
                             kyoko.getDatabaseManager().saveUser(e.getAuthor(), config);
                         } catch (Exception e1) {
                             e1.printStackTrace();
