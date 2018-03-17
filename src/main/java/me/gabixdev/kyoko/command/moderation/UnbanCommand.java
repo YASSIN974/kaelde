@@ -13,6 +13,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class UnbanCommand extends Command {
     private Kyoko kyoko;
     private final String[] aliases = new String[]{"unban"};
@@ -54,13 +57,15 @@ public class UnbanCommand extends Command {
         } else {
             if (message.getMember().hasPermission(Permission.BAN_MEMBERS)) {
                 try {
-                    User banned = UserUtil.getBannedUser(message.getGuild(), args[1]);
+                    String username = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
+                    User banned = UserUtil.getBannedUser(message.getGuild(), username);
                     if (banned == null) {
+                        CommonErrorUtil.noBanFound(kyoko, l, message.getTextChannel(), args[1]);
                         return;
                     }
+                    message.getGuild().getController().unban(banned).queue();
                     Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.unban.unbanned"), message.getMember().getAsMention(), banned.getAsMention())).build();
                     message.getTextChannel().sendMessage(msg).queue();
-                    message.getGuild().getController().unban(banned).queue();
 
                 } catch (PermissionException e) {
                     CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());

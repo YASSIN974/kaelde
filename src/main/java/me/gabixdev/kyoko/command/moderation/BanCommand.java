@@ -61,15 +61,18 @@ public class BanCommand extends Command {
                     String reason = kyoko.getI18n().get(l, "generic.unknown");
                     if (args.length > 2) reason = Arrays.stream(args).skip(2).collect(Collectors.joining(" "));
                     Member member = UserUtil.getMember(message.getGuild(), args[1]);
-                    if (member == null) return;
+                    if (member == null) {
+                        CommonErrorUtil.noUserFound(kyoko, l, message.getTextChannel(), args[1]);
+                        return;
+                    }
 
                     if (member.isOwner()) {
                         CommonErrorUtil.owner(kyoko, l, message.getTextChannel());
                     } else {
+                        message.getGuild().getController().ban(member, 0, reason).queue();
                         Message msg = new MessageBuilder().append(String.format(kyoko.getI18n().get(l, "mod.ban.banned"), message.getMember().getAsMention(), member.getAsMention()))
                                 .append("\n").append(String.format(kyoko.getI18n().get(l, "mod.ban.reason"), reason)).build();
                         message.getTextChannel().sendMessage(msg).queue();
-                        message.getGuild().getController().ban(member, 0, reason).queue();
                     }
                 } catch (PermissionException e) {
                     CommonErrorUtil.noPermissionBot(kyoko, l, message.getTextChannel());
