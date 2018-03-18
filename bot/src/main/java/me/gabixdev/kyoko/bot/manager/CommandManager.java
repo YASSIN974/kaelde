@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.bot.manager;
 import me.gabixdev.kyoko.bot.Kyoko;
 import me.gabixdev.kyoko.bot.command.Command;
 import me.gabixdev.kyoko.bot.command.CommandContext;
+import me.gabixdev.kyoko.bot.command.CommandType;
 import me.gabixdev.kyoko.bot.util.CommonErrors;
 import me.gabixdev.kyoko.bot.util.StringUtil;
 import me.gabixdev.kyoko.shared.Settings;
@@ -58,6 +59,11 @@ public class CommandManager {
         if (content.startsWith(s.normalPrefix)) {
             content = content.trim().substring(s.normalPrefix.length()).trim();
             handleNormal(event, s.normalPrefix, content);
+        } else if (content.startsWith(s.debugPrefix)) {
+            if (s.owner.equals(event.getAuthor().getId())) {
+                content = content.trim().substring(s.debugPrefix.length()).trim();
+                handleDebug(event, s.debugPrefix, content);
+            }
         }
     }
 
@@ -65,7 +71,7 @@ public class CommandManager {
         String[] parts = content.split(" ");
         if (parts.length != 0) {
             Command c = commands.get(parts[0].toLowerCase());
-            if (c != null) {
+            if (c != null && c.getType() == CommandType.NORMAL) {
                 String[] args = new String[parts.length - 1];
                 System.arraycopy(parts, 1, args, 0, args.length);
 
@@ -74,6 +80,30 @@ public class CommandManager {
 
                 kyoko.getExecutor().submit(() -> {
                     kyoko.getLogger().info("User " + StringUtil.formatDiscrim(event.getAuthor()) + "(" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
+                    try {
+                        c.execute(context);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        CommonErrors.exception(context);
+                    }
+                });
+            }
+        }
+    }
+
+    private void handleDebug(MessageReceivedEvent event, String prefix, String content) {
+        String[] parts = content.split(" ");
+        if (parts.length != 0) {
+            Command c = commands.get(parts[0].toLowerCase());
+            if (c != null && c.getType() == CommandType.DEBUG) {
+                String[] args = new String[parts.length - 1];
+                System.arraycopy(parts, 1, args, 0, args.length);
+
+                String concatArgs = String.join(" ", args);
+                CommandContext context = new CommandContext(kyoko, c, event, prefix, parts[0], concatArgs, args);
+
+                kyoko.getExecutor().submit(() -> {
+                    kyoko.getLogger().info("User " + StringUtil.formatDiscrim(event.getAuthor()) + "(" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed debug command " + content);
                     try {
                         c.execute(context);
                     } catch (Exception e) {

@@ -1,14 +1,17 @@
 package me.gabixdev.kyoko.bot;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import me.gabixdev.kyoko.bot.command.basic.HelpCommand;
 import me.gabixdev.kyoko.bot.command.basic.InviteCommand;
+import me.gabixdev.kyoko.bot.command.debug.CleanCommand;
+import me.gabixdev.kyoko.bot.command.debug.EvalCommand;
+import me.gabixdev.kyoko.bot.command.debug.ShellCommand;
 import me.gabixdev.kyoko.bot.command.fun.BananaCommand;
 import me.gabixdev.kyoko.bot.command.util.*;
 import me.gabixdev.kyoko.bot.event.KyokoEventHandler;
 import me.gabixdev.kyoko.bot.i18n.I18n;
 import me.gabixdev.kyoko.bot.manager.CommandManager;
 import me.gabixdev.kyoko.bot.util.CLICommands;
+import me.gabixdev.kyoko.bot.util.EventWaiter;
 import me.gabixdev.kyoko.shared.KyokoLogger;
 import me.gabixdev.kyoko.shared.Settings;
 import net.dv8tion.jda.core.JDA;
@@ -51,7 +54,6 @@ public class Kyoko {
         running = true;
 
         logger.info("Kyoko v" + Constants.VERSION + " is starting...");
-
         i18n.init();
 
         registerCommands();
@@ -86,9 +88,14 @@ public class Kyoko {
 
         commandManager.registerCommand(new AvatarCommand(this));
         commandManager.registerCommand(new Base64Command(this));
+        commandManager.registerCommand(new EmoteCommand(this));
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new Unbase64Command(this));
+
+        commandManager.registerCommand(new ShellCommand(this));
+        commandManager.registerCommand(new EvalCommand(this));
+        commandManager.registerCommand(new CleanCommand(this));
     }
 
     public JDA getJda() {

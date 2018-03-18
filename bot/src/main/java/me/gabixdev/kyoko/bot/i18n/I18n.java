@@ -37,9 +37,10 @@ public class I18n {
     }
 
     public String get(Language l, String key) {
-        if (langs.containsKey(l))
-            return langs.get(l).getProperty(key, key);
+        if (key == null) return "";
 
+        if (langs.containsKey(l))
+            return langs.get(l).getProperty(key, langs.get(Language.ENGLISH).getProperty(key, key));
         return langs.get(Language.ENGLISH).getProperty(key, key);
     }
 
