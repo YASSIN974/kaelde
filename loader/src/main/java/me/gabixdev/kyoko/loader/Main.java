@@ -55,8 +55,8 @@ public class Main {
 
         JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT);
 
-        if (settings.shardMode.equalsIgnoreCase("main") || settings.shardMode.equalsIgnoreCase("slave"))
-            jdaBuilder.useSharding(settings.shardId, settings.shardCount);
+        if (settings.shard.shardMode.equalsIgnoreCase("main") || settings.shard.shardMode.equalsIgnoreCase("slave"))
+            jdaBuilder.useSharding(settings.shard.shardId, settings.shard.shardCount);
 
         jdaBuilder.setAutoReconnect(true);
         jdaBuilder.setBulkDeleteSplittingEnabled(false);

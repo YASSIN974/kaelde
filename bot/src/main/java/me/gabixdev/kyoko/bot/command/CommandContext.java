@@ -99,12 +99,12 @@ public class CommandContext {
     public EmbedBuilder getNormalEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(getNormalColor());
-        eb.setFooter(kyoko.getSettings().botBrand + " v" + Constants.VERSION + " | created by gabixdev, Oksi & contributors", null);
+        eb.setFooter(kyoko.getSettings().brand.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 
     public Color getNormalColor() {
-        Color c = kyoko.getSettings().normalColor;
+        Color c = kyoko.getSettings().brand.normalColor;
 
         if (event.getMember() != null) {
             if (event.getMember().getColor() != null) {
@@ -117,8 +117,8 @@ public class CommandContext {
 
     public EmbedBuilder getErrorEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(kyoko.getSettings().errorColor);
-        eb.setFooter(kyoko.getSettings().botBrand + " v" + Constants.VERSION + " | created by gabixdev, Oksi & contributors", null);
+        eb.setColor(kyoko.getSettings().brand.errorColor);
+        eb.setFooter(kyoko.getSettings().brand.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 }

@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.bot.command.fun;
+package me.gabixdev.kyoko.bot.command.normal.fun;
 
 import me.gabixdev.kyoko.bot.Kyoko;
 import me.gabixdev.kyoko.bot.command.Command;

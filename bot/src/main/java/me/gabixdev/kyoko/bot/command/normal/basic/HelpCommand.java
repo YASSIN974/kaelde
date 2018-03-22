@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.bot.command.basic;
+package me.gabixdev.kyoko.bot.command.normal.basic;
 
 import me.gabixdev.kyoko.bot.Constants;
 import me.gabixdev.kyoko.bot.Kyoko;
@@ -34,7 +34,7 @@ public class HelpCommand extends Command {
         EmbedBuilder eb = context.getNormalEmbed();
         if (context.getArgs().length == 0) {
             eb.addField(
-                    String.format(context.getTranslated("help.header.title"), kyoko.getSettings().botBrand),
+                    String.format(context.getTranslated("help.header.title"), kyoko.getSettings().brand.botName),
                     String.format(context.getTranslated("help.header.desc"), Constants.WIKI_URL, kyoko.getSettings().normalPrefix, kyoko.getSettings().moderationPrefix, kyoko.getSettings().moderationPrefix, Constants.DISCORD_URL),
                     false);
 

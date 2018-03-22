@@ -1,12 +1,13 @@
 package me.gabixdev.kyoko.bot;
 
-import me.gabixdev.kyoko.bot.command.basic.HelpCommand;
-import me.gabixdev.kyoko.bot.command.basic.InviteCommand;
 import me.gabixdev.kyoko.bot.command.debug.CleanCommand;
 import me.gabixdev.kyoko.bot.command.debug.EvalCommand;
 import me.gabixdev.kyoko.bot.command.debug.ShellCommand;
-import me.gabixdev.kyoko.bot.command.fun.BananaCommand;
-import me.gabixdev.kyoko.bot.command.util.*;
+import me.gabixdev.kyoko.bot.command.normal.basic.HelpCommand;
+import me.gabixdev.kyoko.bot.command.normal.basic.InviteCommand;
+import me.gabixdev.kyoko.bot.command.normal.basic.StatsCommand;
+import me.gabixdev.kyoko.bot.command.normal.fun.BananaCommand;
+import me.gabixdev.kyoko.bot.command.normal.util.*;
 import me.gabixdev.kyoko.bot.event.KyokoEventHandler;
 import me.gabixdev.kyoko.bot.i18n.I18n;
 import me.gabixdev.kyoko.bot.manager.CommandManager;
@@ -83,6 +84,7 @@ public class Kyoko {
     private void registerCommands() {
         commandManager.registerCommand(new HelpCommand(this));
         commandManager.registerCommand(new InviteCommand(this));
+        commandManager.registerCommand(new StatsCommand(this));
 
         commandManager.registerCommand(new BananaCommand(this));
 
@@ -96,6 +98,10 @@ public class Kyoko {
         commandManager.registerCommand(new ShellCommand(this));
         commandManager.registerCommand(new EvalCommand(this));
         commandManager.registerCommand(new CleanCommand(this));
+    }
+
+    public String getShardInfo() {
+        return (jda.getShardInfo() == null) ? "n/a" : jda.getShardInfo().getShardString();
     }
 
     public JDA getJda() {
