@@ -49,7 +49,7 @@ public class CatCommand extends Command {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         try {
-            String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("http://aws.random.cat/meow")).getAsJsonObject().get("file").getAsString();
+            String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("http://random.cat/meow")).getAsJsonObject().get("file").getAsString();
             EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             builder.addField(kyoko.getI18n().get(l, "cat.title"), kyoko.getI18n().get(l, "cat.subtitle"), true);
             builder.setImage(url);
