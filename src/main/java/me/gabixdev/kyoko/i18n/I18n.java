@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
@@ -27,7 +28,7 @@ public class I18n {
                 continue;
             }
             try {
-                p.load(getClass().getResourceAsStream("/messages_" + l.getShortName() + ".properties"));
+                p.load(new InputStreamReader(getClass().getResourceAsStream("/messages_" + l.getShortName() + ".properties"), "UTF-8"));
                 langs.put(l, p);
             } catch (IOException e) {
                 e.printStackTrace();
