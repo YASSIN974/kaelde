@@ -42,12 +42,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.tuple.MutableTriple;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.script.ScriptEngine;
@@ -55,7 +52,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.ConsoleHandler;
@@ -101,6 +97,7 @@ public class Kyoko {
         musicManagers = new HashMap<>();
 
         playerManager = new DefaultAudioPlayerManager();
+        playerManager.setFrameBufferDuration(2000);
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
         playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -231,6 +228,7 @@ public class Kyoko {
         commandManager.registerCommand(new PauseCommand(this));
         commandManager.registerCommand(new VolumeCommand(this));
         commandManager.registerCommand(new ShuffleCommand(this));
+        commandManager.registerCommand(new NightcoreCommand(this));
 
         if (settings.isYoutubeSearchEnabled()) {
             new YoutubeSearch(this);
@@ -239,6 +237,7 @@ public class Kyoko {
 
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new CatCommand(this));
+            commandManager.registerCommand(new SpeedCommand(this));
             commandManager.registerCommand(new DecancerCommand(this));
         }
     }

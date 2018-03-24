@@ -54,13 +54,6 @@ public class VolumeCommand extends Command {
         MusicManager musicManager = kyoko.getMusicManager(message.getGuild());
         musicManager.outChannel = message.getTextChannel();
 
-        if (musicManager.scheduler.getQueue().isEmpty() && musicManager.player.getPlayingTrack() == null) {
-            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
-            message.getChannel().sendMessage(err.build()).queue();
-            return;
-        }
-
         if (args.length == 1) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.volume"), musicManager.player.getVolume()), false);
@@ -77,6 +70,8 @@ public class VolumeCommand extends Command {
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }
+        if (vol == 99) vol = 100; // volume 99 is reserved for nightcore mode
+
         if (vol < 0 || vol > 150) {
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.outofrange"), false);

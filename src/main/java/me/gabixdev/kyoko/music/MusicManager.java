@@ -11,6 +11,7 @@ public class MusicManager {
     public final TrackScheduler scheduler;
     public TextChannel outChannel;
     public final Guild guild;
+    public AudioPlayerSendHandler sendHandler;
 
     public MusicManager(AudioPlayerManager manager, Guild guild, Kyoko kyoko) {
         player = manager.createPlayer();
@@ -20,6 +21,8 @@ public class MusicManager {
     }
 
     public AudioPlayerSendHandler getSendHandler() {
-        return new AudioPlayerSendHandler(player);
+        if (sendHandler == null) sendHandler = new AudioPlayerSendHandler(player);
+
+        return sendHandler;
     }
 }

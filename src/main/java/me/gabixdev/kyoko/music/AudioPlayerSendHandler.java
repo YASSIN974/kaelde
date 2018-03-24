@@ -7,7 +7,13 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 public class AudioPlayerSendHandler implements AudioSendHandler {
     private final AudioPlayer audioPlayer;
     private AudioFrame lastFrame;
-    private boolean stop;
+
+    private final int normalSpeed = 10;
+    private final int maxSpeed = 10 * normalSpeed;
+    private final int minSpeed = 1;
+    private int speed = 10;
+
+    private int count;
 
     public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
@@ -15,8 +21,17 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 
     @Override
     public boolean canProvide() {
+        count += speed;
+
         if (lastFrame == null) {
-            lastFrame = audioPlayer.provide();
+            if (speed != 10) {
+                while (count >= normalSpeed) {
+                    lastFrame = audioPlayer.provide();
+                    count -= normalSpeed;
+                }
+            } else {
+                lastFrame = audioPlayer.provide();
+            }
         }
 
         return lastFrame != null;
@@ -37,5 +52,9 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     @Override
     public boolean isOpus() {
         return true;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 }
