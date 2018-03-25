@@ -48,30 +48,36 @@ public class CommandManager {
     }
 
     public void handlePrivate(MessageReceivedEvent event) {
-
+        handlePrefix(event, true);
     }
 
     public void handleGuild(MessageReceivedEvent event) {
+        handlePrefix(event, false);
+    }
+
+    private void handlePrefix(MessageReceivedEvent event, boolean direct) {
         String content = event.getMessage().getContentRaw();
 
         Settings s = kyoko.getSettings();
 
         if (content.startsWith(s.normalPrefix)) {
             content = content.trim().substring(s.normalPrefix.length()).trim();
-            handleNormal(event, s.normalPrefix, content);
+            handleNormal(event, s.normalPrefix, content, direct);
         } else if (content.startsWith(s.debugPrefix)) {
             if (s.owner.equals(event.getAuthor().getId())) {
                 content = content.trim().substring(s.debugPrefix.length()).trim();
-                handleDebug(event, s.debugPrefix, content);
+                handleDebug(event, s.debugPrefix, content, direct);
             }
         }
     }
 
-    private void handleNormal(MessageReceivedEvent event, String prefix, String content) {
+    private void handleNormal(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         String[] parts = content.split(" ");
         if (parts.length != 0) {
             Command c = commands.get(parts[0].toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
+                if (!c.isAllowInDMs() && direct) return;
+
                 String[] args = new String[parts.length - 1];
                 System.arraycopy(parts, 1, args, 0, args.length);
 
@@ -91,11 +97,13 @@ public class CommandManager {
         }
     }
 
-    private void handleDebug(MessageReceivedEvent event, String prefix, String content) {
+    private void handleDebug(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         String[] parts = content.split(" ");
         if (parts.length != 0) {
             Command c = commands.get(parts[0].toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
+                if (!c.isAllowInDMs() && direct) return;
+
                 String[] args = new String[parts.length - 1];
                 System.arraycopy(parts, 1, args, 0, args.length);
 

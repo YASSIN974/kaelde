@@ -7,6 +7,7 @@ public abstract class Command {
     protected String description;
     protected CommandCategory category = CommandCategory.BASIC;
     protected CommandType type = CommandType.NORMAL;
+    protected boolean allowInDMs = false;
 
     public String getName() {
         return name;
@@ -30,6 +31,10 @@ public abstract class Command {
 
     public CommandType getType() {
         return type;
+    }
+
+    public boolean isAllowInDMs() {
+        return allowInDMs;
     }
 
     public void execute(CommandContext context) {

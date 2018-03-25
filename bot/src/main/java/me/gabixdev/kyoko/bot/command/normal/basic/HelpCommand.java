@@ -23,6 +23,7 @@ public class HelpCommand extends Command {
         this.description = "help.description";
         this.usage = "help.usage";
         this.category = CommandCategory.BASIC;
+        this.allowInDMs = true;
     }
 
     @Override
