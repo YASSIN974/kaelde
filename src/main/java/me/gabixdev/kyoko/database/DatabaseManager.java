@@ -2,7 +2,7 @@ package me.gabixdev.kyoko.database;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import me.gabixdev.kyoko.Kyoko;
@@ -27,7 +27,7 @@ public class DatabaseManager {
 
         String databaseURL = "jdbc:mysql://" + settings.getMysqlHost() + ":" + settings.getMysqlPort() + "/" + settings.getMysqlDatabase() + "?useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" + "&user=" + settings.getMysqlUser() + "&password=" + settings.getMysqlPassword();
         try {
-            connectionSource = new JdbcConnectionSource(databaseURL);
+            connectionSource = new JdbcPooledConnectionSource(databaseURL);
             userDao = DaoManager.createDao(connectionSource, UserConfig.class);
         } catch (SQLException e) {
             kyoko.getLog().info("Error connecting to MySQL!");
