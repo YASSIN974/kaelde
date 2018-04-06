@@ -30,6 +30,11 @@ public class NightcoreCommand extends Command {
     }
 
     @Override
+    public String getUsage() {
+        return "music.nightcore.usage";
+    }
+
+    @Override
     public String getDescription() {
         return "music.nightcore.description";
     }
@@ -56,13 +61,45 @@ public class NightcoreCommand extends Command {
 
         EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-        if (musicManager.player.getVolume() == 99) {
-            eb.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.nightcore.disabled"), false);
-            musicManager.player.setVolume(100);
+        int mode = musicManager.sendHandler.getNightcore();
+        if (args.length == 1) {
+            if (mode == 4)
+                mode = 0;
+            else mode++;
         } else {
-            eb.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.nightcore.enabled"), false);
-            musicManager.player.setVolume(99);
+            switch (args[1]) {
+                case "off":
+                case "none":
+                    mode = 0;
+                    break;
+                case "nightcore":
+                case "1.5":
+                case "1.5x":
+                    mode = 1;
+                    break;
+                case "nightcore2":
+                case "1.25":
+                case "1.25x":
+                    mode = 2;
+                    break;
+                case "daycore":
+                case "0.66":
+                case "0.66x":
+                    mode = 3;
+                    break;
+                case "daycore2":
+                case "0.9":
+                case "0.9x":
+                    mode = 4;
+                    break;
+                default:
+                    kyoko.getCommandManager().getCommand("help").handle(message, event, new String[] {"help", "nightcore"});
+                    return;
+            }
         }
+        eb.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.nightcore.mode." + mode), false);
+        musicManager.sendHandler.setNightcore(mode);
+        musicManager.sendHandler.updateFilters();
         message.getTextChannel().sendMessage(eb.build()).queue();
     }
 }

@@ -86,6 +86,12 @@ public class Settings {
     @SerializedName("saucenao-apikey")
     private String saucenaoApiKey = "Put your api key here";
 
+    @SerializedName("weebsh-apikey")
+    private String weebshApiKey = "ask wolke";
+
+    @SerializedName("dbl-apikey")
+    private String dblApiKey = "DiscordBotList API key";
+
     @SerializedName("min-remove")
     private int minRemove = 2;
 
@@ -189,6 +195,14 @@ public class Settings {
 
     public String getSaucenaoApiKey() {
         return saucenaoApiKey;
+    }
+
+    public String getWeebshApiKey() {
+        return weebshApiKey;
+    }
+
+    public String getDblApiKey() {
+        return dblApiKey;
     }
 
     public int getMinRemove() {

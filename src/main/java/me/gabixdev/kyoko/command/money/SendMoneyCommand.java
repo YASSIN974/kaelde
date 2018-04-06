@@ -1,5 +1,6 @@
 package me.gabixdev.kyoko.command.money;
 
+import com.google.common.collect.HashBiMap;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.i18n.Language;
@@ -17,8 +18,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class SendMoneyCommand extends Command {
+    private final Kyoko kyoko;
+    private final HashBiMap<User, MutableTriple<User, Long, Integer>> confirmMembers = HashBiMap.create();
 
-    private Kyoko kyoko;
     private final String[] aliases = new String[] {"sendmoney", "send"};
     public SendMoneyCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
@@ -55,7 +57,7 @@ public class SendMoneyCommand extends Command {
             return;
         }
         if(args[1].equalsIgnoreCase("confirm")) {
-            MutableTriple<User, Long, Integer> triple = kyoko.confirmMembers.get(message.getAuthor());
+            MutableTriple<User, Long, Integer> triple = confirmMembers.get(message.getAuthor());
             if(triple != null) {
                 if(triple.getMiddle() < System.currentTimeMillis()) {
                     EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
@@ -79,7 +81,7 @@ public class SendMoneyCommand extends Command {
                             String.format(kyoko.getI18n().get(l, "money.sent"), triple.getRight(), triple.getLeft().getAsMention(), senderConfig.money, triple.getLeft().getAsMention(), mentionedConfig.money),
                             false);
                     message.getTextChannel().sendMessage(builder.build()).queue();
-                    kyoko.confirmMembers.remove(message.getAuthor());
+                    confirmMembers.remove(message.getAuthor());
                 }
             }
         } else {
@@ -112,7 +114,7 @@ public class SendMoneyCommand extends Command {
             }
             EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             builder.addField(kyoko.getI18n().get(l, "money.title"), String.format(kyoko.getI18n().get(l, "money.confirm"), mentioned.getAsMention(), kyoko.getSettings().getPrefix() + args[0] + " confirm"), false);
-            kyoko.confirmMembers.put(message.getAuthor(), MutableTriple.of(mentioned.getUser(), System.currentTimeMillis() + 60000, amount));
+            confirmMembers.put(message.getAuthor(), MutableTriple.of(mentioned.getUser(), System.currentTimeMillis() + 60000, amount));
             message.getTextChannel().sendMessage(builder.build()).queue();
 
         }

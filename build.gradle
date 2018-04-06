@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'me.gabixdev'
+version = '1.8.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+    maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:3.6.0_354'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.google.guava:guava:21.0'
+    compile 'org.apache.httpcomponents:httpclient:4.5.3'
+    compile 'org.fusesource.jansi:jansi:1.16'
+    compile 'org.slf4j:slf4j-jdk14:1.7.25'
+    compile 'com.github.lalyos:jfiglet:0.0.8'
+    compile 'com.atilika.kuromoji:kuromoji-core:0.9.0'
+    compile 'com.atilika.kuromoji:kuromoji-naist-jdic:0.9.0'
+    compile 'com.sedmelluq:lavaplayer:1.2.59'
+    compile 'com.j256.ormlite:ormlite-jdbc:5.1'
+    compile 'mysql:mysql-connector-java:8.0.9-rc'
+    compile 'org.apache.commons:commons-lang3:3.7'
+    compile 'org.jsoup:jsoup:1.11.2'
+    compile 'com.sedmelluq:jda-nas:1.0.5'
+    compile 'com.github.natanbc:weeb4j:3.1'
+    compile 'com.github.DiscordBotList:DBL-Java-Wrapper:4b27930'
+}
+
+task fatJar(type: Jar, overwrite: true) {
+    baseName = "Kyoko"
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    manifest {
+        attributes 'Implementation-Title': 'Kyoko', 'Implementation-Version': version
+        attributes 'Main-Class': 'me.gabixdev.kyoko.Kyoko'
+    }
+    version = null
+}

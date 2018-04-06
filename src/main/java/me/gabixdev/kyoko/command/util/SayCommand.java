@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.command.util;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandCategory;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
@@ -43,6 +44,11 @@ public class SayCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         String msg = message.getContentRaw();
         String mention = kyoko.getJda().getSelfUser().getAsMention();
+
+        //if (!message.getMember().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+            msg = msg.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere");
+        //}
+
         if (msg.startsWith(mention)) {
             msg = msg.substring(mention.length()).trim().substring(args[0].length());
         } else {

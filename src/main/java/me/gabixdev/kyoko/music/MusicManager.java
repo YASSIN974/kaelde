@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 public class MusicManager {
+    private final Kyoko kyoko;
     public final AudioPlayer player;
     public final TrackScheduler scheduler;
     public TextChannel outChannel;
@@ -14,14 +15,15 @@ public class MusicManager {
     public AudioPlayerSendHandler sendHandler;
 
     public MusicManager(AudioPlayerManager manager, Guild guild, Kyoko kyoko) {
+        this.kyoko = kyoko;
+        this.guild = guild;
         player = manager.createPlayer();
         scheduler = new TrackScheduler(player, kyoko, this);
         player.addListener(scheduler);
-        this.guild = guild;
     }
 
     public AudioPlayerSendHandler getSendHandler() {
-        if (sendHandler == null) sendHandler = new AudioPlayerSendHandler(player);
+        if (sendHandler == null) sendHandler = new AudioPlayerSendHandler(kyoko, player);
 
         return sendHandler;
     }

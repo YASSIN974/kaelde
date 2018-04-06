@@ -42,7 +42,7 @@ public class DatabaseManager {
 
         UserConfig uc = userDao.queryForFirst(statementBuilder.prepare());
         if (uc == null) {
-            kyoko.getLog().info("Creating new user configuration for " + user.getName() + " (" + user.getId() + ")");
+            //kyoko.getLog().info("Creating new user configuration for " + user.getName() + " (" + user.getId() + ")");
             uc = new UserConfig(user.getIdLong(), Language.ENGLISH, 0, 0, 0, 0L);
             userDao.create(uc);
         }
@@ -52,7 +52,7 @@ public class DatabaseManager {
     public void saveUser(User u, UserConfig uc) {
         try {
             userDao.createOrUpdate(uc);
-            kyoko.getLog().info("User saved: " + u.getName() + " (" + u.getId() + ")");
+            //kyoko.getLog().info("User saved: " + u.getName() + " (" + u.getId() + ")");
         } catch (Exception e) {
             kyoko.getLog().severe("Error saving user " + u.getName() + " (" + u.getId() + ")!");
             e.printStackTrace();

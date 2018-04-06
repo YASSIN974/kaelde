@@ -3,9 +3,11 @@ package me.gabixdev.kyoko.util.command;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,11 +21,13 @@ public class CommandManager {
     private HashSet<Command> commands;
     private HashMap<String, Command> handlers;
     private HashMap<Command, String> disabled;
+    private HashMap<Guild, ArrayList<String>> prefixes;
 
     public CommandManager(Kyoko kyoko) {
         this.kyoko = kyoko;
         this.commands = new HashSet<>();
         this.handlers = new HashMap<>();
+        this.prefixes = new HashMap<>();
         this.runs = 0;
     }
 
@@ -39,6 +43,10 @@ public class CommandManager {
         });
         commands.add(c);
         Arrays.stream(c.getAliases()).filter(alias -> alias != null && !alias.isEmpty()).forEach(alias -> handlers.put(alias.toLowerCase(), c));
+    }
+
+    public Command getCommand(String label) {
+        return handlers.get(label);
     }
 
     public void parseAndExecute(MessageReceivedEvent event) {

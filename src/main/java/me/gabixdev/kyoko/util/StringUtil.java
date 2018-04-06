@@ -1,6 +1,7 @@
 package me.gabixdev.kyoko.util;
 
 import me.gabixdev.kyoko.Kyoko;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -178,5 +179,9 @@ public class StringUtil {
         } else {
             return msg.substring(kyoko.getSettings().getPrefix().length() + label.length() + 1);
         }
+    }
+
+    public static String logUser(User author) {
+        return author.getName() + " (" + author.getId() + ")";
     }
 }

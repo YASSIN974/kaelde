@@ -1,5 +1,7 @@
 package me.gabixdev.kyoko;
 
+import com.github.natanbc.weeb4j.TokenType;
+import com.github.natanbc.weeb4j.Weeb4J;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.HashBiMap;
@@ -45,6 +47,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.tuple.MutableTriple;
+import org.discordbots.api.client.DiscordBotListAPI;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.script.ScriptEngine;
@@ -77,10 +80,11 @@ public class Kyoko {
     private final Map<Long, MusicManager> musicManagers;
     public String supportedSources;
     private Thread blinkThread;
-    public final HashBiMap<User, MutableTriple<User, Long, Integer>> confirmMembers = HashBiMap.create();
 
     private JDA jda;
     private Logger log;
+    private Weeb4J weeb4j;
+    private DiscordBotListAPI dblApi;
 
     private boolean running;
     private boolean initialized;
@@ -97,7 +101,8 @@ public class Kyoko {
         musicManagers = new HashMap<>();
 
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setFrameBufferDuration(2000);
+        playerManager.setFrameBufferDuration(1000);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
         playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -116,9 +121,17 @@ public class Kyoko {
             playerManager.registerSourceManager(new LocalAudioSourceManager());
             supportedSources += ", direct HTTP link, local filesystem";
         }
+
+        if (!settings.getWeebshApiKey().equals("ask wolke")) {
+            weeb4j = new Weeb4J.Builder().setToken(TokenType.WOLKE, settings.getWeebshApiKey()).build();
+        }
+
+        if (!settings.getDblApiKey().equals("DiscordBotList API key")) {
+             dblApi = new DiscordBotListAPI.Builder().token(settings.getDblApiKey()).build();
+        }
     }
 
-    public void start() throws LoginException, InterruptedException, RateLimitedException {
+    public void start() throws LoginException, InterruptedException {
         running = true;
 
         // init logger
@@ -162,6 +175,8 @@ public class Kyoko {
                 .setStatus(OnlineStatus.IDLE);
         jda = builder.buildBlocking();
 
+        if (dblApi != null) dblApi.setStats(jda.getSelfUser().getId(), jda.getGuilds().size());
+
         log.info("Invite link: " + "https://discordapp.com/oauth2/authorize?&client_id=" + jda.getSelfUser().getId() + "&scope=bot&permissions=" + Constants.PERMISSIONS);
 
         if (settings.getGame() != null && !settings.getGame().isEmpty()) {
@@ -193,6 +208,9 @@ public class Kyoko {
         commandManager.registerCommand(new SpinnerCommand(this));
         commandManager.registerCommand(new KysCommand(this));
         commandManager.registerCommand(new SaucenaoCommand(this));
+        if (weeb4j != null) {
+            commandManager.registerCommand(new TrapCommand(this));
+        }
 
         commandManager.registerCommand(new HugCommand(this));
         commandManager.registerCommand(new PatCommand(this));
@@ -354,5 +372,13 @@ public class Kyoko {
 
     public ThreadPoolExecutor getExecutor() {
         return executor;
+    }
+
+    public Weeb4J getWeeb4j() {
+        return weeb4j;
+    }
+
+    public DiscordBotListAPI getDblApi() {
+        return dblApi;
     }
 }

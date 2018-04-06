@@ -41,6 +41,7 @@ public class TrackScheduler extends AudioEventAdapter {
             m.outChannel.sendMessage(err.build()).queue();
         }
         player.startTrack(track, false);
+        m.sendHandler.updateFilters();
     }
 
     public LinkedList<AudioTrack> getQueue() {
