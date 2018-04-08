@@ -265,6 +265,7 @@ public class Kyoko {
         commandManager.registerCommand(new KickCommand(this));
         commandManager.registerCommand(new BanCommand(this));
         commandManager.registerCommand(new UnbanCommand(this));
+        commandManager.registerCommand(new PrefixCommand(this));
 
         // music
         commandManager.registerCommand(new JoinCommand(this));
@@ -286,7 +287,6 @@ public class Kyoko {
 
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
-            commandManager.registerCommand(new PrefixCommand(this));
         }
     }
 
