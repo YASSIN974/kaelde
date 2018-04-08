@@ -63,8 +63,8 @@ public class WeebshCommand extends Command {
 
             EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-            Image image = kyoko.getWeeb4j().getRandomImage(getTitle(l, args[1]), HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
-            eb.addField(args[1].toLowerCase(), Constants.POWERED_BY_WEEB, false);
+            Image image = kyoko.getWeeb4j().getRandomImage(args[1].toLowerCase(), HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
+            eb.addField(getTitle(l, args[1].toLowerCase()), Constants.POWERED_BY_WEEB, false);
             eb.setImage(image.getUrl());
             message.getTextChannel().sendMessage(eb.build()).queue();
         }

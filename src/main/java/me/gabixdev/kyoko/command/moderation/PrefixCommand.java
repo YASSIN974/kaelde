@@ -108,7 +108,7 @@ public class PrefixCommand extends Command {
 
                     LinkedList<String> prefixes2 = new LinkedList<String>(kyoko.getCommandManager().getPrefixes(message.getGuild()));
 
-                    if (num < 1 || num > (prefixes2.size() + 1)) {
+                    if (num < 1 || num > (prefixes2.size())) {
                         eb = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
                         eb.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "prefixes.outrange"), false);
                         message.getTextChannel().sendMessage(eb.build()).queue();
