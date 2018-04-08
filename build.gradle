@@ -44,7 +44,7 @@ task fatJar(type: Jar, overwrite: true) {
     with jar
     manifest {
         attributes 'Implementation-Title': 'Kyoko', 'Implementation-Version': version
-        attributes 'Main-Class': 'me.gabixdev.kyoko.Kyoko'
+        attributes 'Main-Class': 'me.gabixdev.kyoko.Main'
     }
     version = null
 }
