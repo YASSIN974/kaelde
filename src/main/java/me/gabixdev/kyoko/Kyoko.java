@@ -223,6 +223,7 @@ public class Kyoko {
             commandManager.registerCommand(new SlapCommand(this));
             commandManager.registerCommand(new LickCommand(this));
             commandManager.registerCommand(new WeebshCommand(this));
+            commandManager.registerCommand(new ShipCommand(this));
 
             commandManager.registerCommand(new AliasCommand(this, "waaa", "weebsh.description.waaa", null, CommandCategory.IMAGES, new String[] {"weebsh", "cry"}));
             commandManager.registerCommand(new AliasCommand(this, "discordmeme", "weebsh.description.discordmeme", null, CommandCategory.IMAGES, new String[] {"weebsh", "discord_memes"}));
@@ -233,6 +234,8 @@ public class Kyoko {
             commandManager.registerCommand(new AliasCommand(this, "kemonomimi", "weebsh.description.kemonomimi", null, CommandCategory.IMAGES, new String[] {"weebsh", "kemonomimi"}));
             commandManager.registerCommand(new AliasCommand(this, "triggered", "weebsh.description.triggered", null, CommandCategory.IMAGES, new String[] {"weebsh", "triggered"}));
             commandManager.registerCommand(new AliasCommand(this, "poi", "weebsh.description.poi", null, CommandCategory.IMAGES, new String[] {"weebsh", "poi"}));
+            commandManager.registerCommand(new AliasCommand(this, "neko", "weebsh.description.neko", null, CommandCategory.IMAGES, new String[] {"weebsh", "neko"}));
+            commandManager.registerCommand(new AliasCommand(this, "megumin", "weebsh.description.megumin", null, CommandCategory.IMAGES, new String[] {"weebsh", "megumin"}));
         }
 
         commandManager.registerCommand(new DogCommand(this));

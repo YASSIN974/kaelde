@@ -17,15 +17,18 @@ import net.dv8tion.jda.core.events.Event;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class WeebshCommand extends Command {
     private final Kyoko kyoko;
-    private static final String[] types;
+    private static final List<String> types;
+    private static final List<String> titleTypes;
     private static final String cachedTypes;
     private HashMap<Guild, Long> cooldowns;
 
     static {
-        types = new String[] {"awoo","bang","blush","clagwimoth","cry","cuddle","dance","hug","insult","jojo","kiss","lewd","lick","megumin","neko","nom","owo","pat","poke","pout","rem","shrug","slap","sleepy","smile","teehee","smug","stare","thumbsup","triggered","wag","waifu_insult","wasted","sumfuk","dab","tickle","highfive","banghead","bite","discord_memes","nani","initial_d","delet_this","poi","thinking","greet","punch","handholding","kemonomimi","trap","deredere","animal_cat","animal_dog"};
+        types = Arrays.asList("awoo","bang","blush","clagwimoth","cry","cuddle","dance","hug","insult","jojo","kiss","lewd","lick","megumin","neko","nom","owo","pat","poke","pout","rem","shrug","slap","sleepy","smile","teehee","smug","stare","thumbsup","triggered","wag","waifu_insult","wasted","sumfuk","dab","tickle","highfive","banghead","bite","discord_memes","nani","initial_d","delet_this","poi","thinking","greet","punch","handholding","kemonomimi","trap","deredere","animal_cat","animal_dog");
+        titleTypes = Arrays.asList("waaa", "discordmeme", "dance", "insult", "initiald", "trap", "kemonomimi", "triggered", "poi", "neko", "megumin");
         cachedTypes = "`" + String.join("`, `", types) + "`";
     }
 
@@ -43,7 +46,7 @@ public class WeebshCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
-        if (args.length == 1 || (args.length > 1 && !Arrays.asList(types).contains(args[1].toLowerCase()))) {
+        if (args.length == 1 || (args.length > 1 && types.contains(args[1].toLowerCase()))) {
             printHelp(message.getTextChannel(), l);
         } else {
             if (cooldowns.containsKey(message.getGuild())) {
@@ -60,7 +63,7 @@ public class WeebshCommand extends Command {
 
             EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-            Image image = kyoko.getWeeb4j().getRandomImage(args[1].toLowerCase(), HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
+            Image image = kyoko.getWeeb4j().getRandomImage(getTitle(l, args[1]), HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
             eb.addField(args[1].toLowerCase(), Constants.POWERED_BY_WEEB, false);
             eb.setImage(image.getUrl());
             message.getTextChannel().sendMessage(eb.build()).queue();
@@ -73,5 +76,12 @@ public class WeebshCommand extends Command {
         sb.append(kyoko.getI18n().get(l, "weebsh.types")).append("\n").append(cachedTypes);
         eb.addField(kyoko.getI18n().get(l, "weebsh.title"), sb.toString(), false);
         chan.sendMessage(eb.build()).queue();
+    }
+
+    private String getTitle(Language l, String type) {
+        if (titleTypes.contains(type.toLowerCase())) {
+            return kyoko.getI18n().get(l, "weebsh.description." + type);
+        }
+        return type;
     }
 }
