@@ -72,7 +72,7 @@ public class ShipCommand extends Command {
                 MessageBuilder mb = new MessageBuilder();
                 mb.append("**").append(m1.getEffectiveName()).append(" x ").append(m2.getEffectiveName()).append("**\n");
                 int love = (m1.getUser().getId() + m2.getUser().getId()).hashCode() % 100;
-                mb.append("love meter: ").append(love).append("%");
+                mb.append("love meter: ").append(Math.abs(love)).append("%");
 
                 message.getTextChannel().sendFile(image, "ship.png", mb.build()).queue();
             }

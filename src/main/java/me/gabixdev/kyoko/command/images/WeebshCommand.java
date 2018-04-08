@@ -46,7 +46,7 @@ public class WeebshCommand extends Command {
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
-        if (args.length == 1 || (args.length > 1 && types.contains(args[1].toLowerCase()))) {
+        if (args.length == 1 || (args.length > 1 && !types.contains(args[1].toLowerCase()))) {
             printHelp(message.getTextChannel(), l);
         } else {
             if (cooldowns.containsKey(message.getGuild())) {
@@ -80,7 +80,7 @@ public class WeebshCommand extends Command {
 
     private String getTitle(Language l, String type) {
         if (titleTypes.contains(type.toLowerCase())) {
-            return kyoko.getI18n().get(l, "weebsh.description." + type);
+            return kyoko.getI18n().get(l, "weebsh.description." + type.replace("_", ""));
         }
         return type;
     }
