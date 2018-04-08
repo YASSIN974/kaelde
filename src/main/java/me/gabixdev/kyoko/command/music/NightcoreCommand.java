@@ -63,43 +63,60 @@ public class NightcoreCommand extends Command {
 
         int mode = musicManager.sendHandler.getNightcore();
         if (args.length == 1) {
-            if (mode == 4)
+            if (mode == 6)
                 mode = 0;
             else mode++;
         } else {
-            switch (args[1]) {
-                case "off":
-                case "none":
-                    mode = 0;
-                    break;
-                case "nightcore":
-                case "1.5":
-                case "1.5x":
-                    mode = 1;
-                    break;
-                case "nightcore2":
-                case "1.25":
-                case "1.25x":
-                    mode = 2;
-                    break;
-                case "daycore":
-                case "0.66":
-                case "0.66x":
-                    mode = 3;
-                    break;
-                case "daycore2":
-                case "0.9":
-                case "0.9x":
-                    mode = 4;
-                    break;
-                default:
-                    kyoko.getCommandManager().getCommand("help").handle(message, event, new String[] {"help", "nightcore"});
-                    return;
+            mode = modeFromString(args[1]);
+            if (mode == -1) {
+                kyoko.getCommandManager().getCommand("help").handle(message, event, new String[] {"help", "nightcore"});
+                return;
             }
         }
         eb.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.nightcore.mode." + mode), false);
         musicManager.sendHandler.setNightcore(mode);
         musicManager.sendHandler.updateFilters();
         message.getTextChannel().sendMessage(eb.build()).queue();
+    }
+
+    private int modeFromString(String in) {
+        switch (in) {
+            case "off":
+            case "none":
+            case "0":
+                return 0;
+            case "nightcore":
+            case "1.5":
+            case "1.5x":
+            case "1":
+                return 1;
+            case "nightcore2":
+            case "1.33":
+            case "1.33x":
+            case "2":
+                return 2;
+            case "nightcore3":
+            case "1.25":
+            case "1.25x":
+            case "3":
+                return 3;
+            case "daycore":
+            case "0.66":
+            case "0.66x":
+            case "4":
+                return 4;
+            case "daycore2":
+            case "0.75":
+            case "0.75x":
+            case "5":
+                return 5;
+            case "daycore3":
+            case "0.9":
+            case "0.9x":
+            case "6":
+                return 6;
+            default:
+                return -1;
+        }
     }
 }

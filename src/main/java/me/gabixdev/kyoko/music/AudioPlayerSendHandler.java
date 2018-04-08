@@ -110,7 +110,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 0.8f)
+                                (int) (audioDataFormat.sampleRate * 0.75f)
                         )));
                         return;
                     case 3:
@@ -120,7 +120,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 1.33f)
+                                (int) (audioDataFormat.sampleRate * 0.8f)
                         )));
                         return;
                     case 4:
@@ -130,7 +130,27 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 1.11f)
+                                (int) (audioDataFormat.sampleRate * 1.33f)
+                        )));
+                        return;
+                    case 5:
+                        audioPlayer.setFilterFactory(null);
+                        audioPlayer.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(new ResamplingPcmAudioFilter(
+                                kyoko.getPlayerManager().getConfiguration(),
+                                audioDataFormat.channelCount,
+                                audioFilter,
+                                audioDataFormat.sampleRate,
+                                (int) (audioDataFormat.sampleRate * 1.5f)
+                        )));
+                        return;
+                    case 6:
+                        audioPlayer.setFilterFactory(null);
+                        audioPlayer.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(new ResamplingPcmAudioFilter(
+                                kyoko.getPlayerManager().getConfiguration(),
+                                audioDataFormat.channelCount,
+                                audioFilter,
+                                audioDataFormat.sampleRate,
+                                (int) (audioDataFormat.sampleRate * 1.33f)
                         )));
                         return;
                     default:

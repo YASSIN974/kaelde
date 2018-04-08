@@ -7,24 +7,30 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
 public abstract class Command {
+    protected String label;
+    protected String[] aliases;
+    protected String description;
+    protected String usage;
+    protected CommandCategory category;
+
     public String getLabel() {
-        return "";
+        return label;
     }
 
     public String[] getAliases() {
-        return new String[] {};
+        return aliases;
     }
 
     public String getDescription() {
-        return "";
+        return description;
     }
 
     public String getUsage() {
-        return "";
+        return usage;
     }
 
     public CommandCategory getCategory() {
-        return CommandCategory.BASIC;
+        return category;
     }
 
     public void printUsage(Kyoko kyoko, Language lang, TextChannel c) {

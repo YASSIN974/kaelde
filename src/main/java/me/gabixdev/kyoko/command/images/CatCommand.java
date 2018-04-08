@@ -1,5 +1,9 @@
 package me.gabixdev.kyoko.command.images;
 
+import com.github.natanbc.weeb4j.image.HiddenMode;
+import com.github.natanbc.weeb4j.image.Image;
+import com.github.natanbc.weeb4j.image.NsfwFilter;
+import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.GsonUtil;
@@ -49,10 +53,11 @@ public class CatCommand extends Command {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         try {
-            String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("http://random.cat/meow")).getAsJsonObject().get("file").getAsString();
+            Image image = kyoko.getWeeb4j().getRandomImage("animal_cat", HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
+            //String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl("http://random.cat/meow")).getAsJsonObject().get("file").getAsString();
             EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            builder.addField(kyoko.getI18n().get(l, "cat.title"), kyoko.getI18n().get(l, "cat.subtitle"), true);
-            builder.setImage(url);
+            builder.addField(kyoko.getI18n().get(l, "cat.title"), Constants.POWERED_BY_WEEB, true);
+            builder.setImage(image.getUrl());
             message.getChannel().sendMessage(builder.build()).queue();
         } catch (Exception ex) {
             EmbedBuilder builder = kyoko.getAbstractEmbedBuilder().getErrorBuilder();

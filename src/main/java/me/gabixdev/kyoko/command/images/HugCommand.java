@@ -1,5 +1,9 @@
 package me.gabixdev.kyoko.command.images;
 
+import com.github.natanbc.weeb4j.image.HiddenMode;
+import com.github.natanbc.weeb4j.image.Image;
+import com.github.natanbc.weeb4j.image.NsfwFilter;
+import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.GsonUtil;
@@ -60,7 +64,7 @@ public class HugCommand extends Command {
 
             if (message.getMentionedUsers().isEmpty()) {
                 //normal.setTitle(kyoko.getI18n().get(l, "hug.description"));
-                normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), StringUtil.stripPrefix(kyoko, args[0], message.getContentRaw())));
+                normal.addField(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), StringUtil.stripPrefix(kyoko, args[0], message.getContentRaw())), Constants.POWERED_BY_WEEB, false);
             } else {
                 List<String> userlist = new ArrayList<>();
                 for (User u : message.getMentionedUsers()) {
@@ -69,13 +73,14 @@ public class HugCommand extends Command {
                             continue;
                     userlist.add(u.getName());
                 }
-                normal.setTitle(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), String.join(", ", userlist)));
+                normal.addField(String.format(kyoko.getI18n().get(l, "hug.someone"), message.getAuthor().getName(), String.join(", ", userlist)), Constants.POWERED_BY_WEEB, false);
             }
         }
 
-        String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(NekosCommand.NEKOS_URL + "hug")).getAsJsonObject().get("url").getAsString();
+        //String url = GsonUtil.fromStringToJsonElement(URLUtil.readUrl(NekosCommand.NEKOS_URL + "hug")).getAsJsonObject().get("url").getAsString();
+        Image image = kyoko.getWeeb4j().getRandomImage("hug", HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
 
-        normal.setImage(url);
+        normal.setImage(image.getUrl());
 
         message.getTextChannel().sendMessage(normal.build()).queue();
     }

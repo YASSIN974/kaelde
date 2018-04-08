@@ -6,6 +6,8 @@ import me.gabixdev.kyoko.i18n.Language;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.util.concurrent.TimeUnit;
+
 public class CommonErrorUtil {
     public static void noPermissionUser(Kyoko kyoko, Language l, TextChannel chan) {
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
@@ -31,7 +33,7 @@ public class CommonErrorUtil {
 
     public static void exception(Kyoko kyoko, Language l, TextChannel chan) {
         chan.sendMessage(kyoko.getAbstractEmbedBuilder().getErrorBuilder().addField(kyoko.getI18n().get(l, "generic.error"), String.format(kyoko.getI18n().get(l, "generic.error.message"), Constants.DISCORD_URL), false).build()).queue();
-        chan.sendMessage(Constants.DISCORD_URL).queue();
+        //chan.sendMessage(Constants.DISCORD_URL).queue();
     }
 
     public static void commandDisabled(Kyoko kyoko, Language l, TextChannel chan, String reason) {
@@ -53,7 +55,9 @@ public class CommonErrorUtil {
     public static void cooldown(Kyoko kyoko, Language l, TextChannel chan) {
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
         err.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "generic.cooldown"), false);
-        chan.sendMessage(err.build()).queue();
+        chan.sendMessage(err.build()).queue(completeMsg -> {
+            completeMsg.delete().queueAfter(3, TimeUnit.SECONDS);
+        });
     }
 
     public static void owner(Kyoko kyoko, Language l, TextChannel chan) {

@@ -3,6 +3,7 @@ package me.gabixdev.kyoko;
 import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.command.DebugCommands;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
@@ -33,16 +34,15 @@ public class EventHandler implements EventListener {
             if (event instanceof MessageReceivedEvent) {
                 MessageReceivedEvent e = (MessageReceivedEvent) event;
                 if (e.getAuthor().isBot() || e.getMessage().getContentRaw().trim().isEmpty()) return;
-
                 if (e.getChannelType() == ChannelType.PRIVATE) {
                     if (e.getAuthor().getId().equals(kyoko.getSettings().getOwner())) {
                         DebugCommands.handle(kyoko, e);
                     }
                 } else {
                     kyoko.getExecutor().submit(() -> {
-                        kyoko.getCommandManager().parseAndExecute(e);
+                        if (e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_WRITE)) kyoko.getCommandManager().parseAndExecute(e);
+                        handleMessageReward(e);
                     });
-                    handleMessageReward(e);
                 }
             } else if (event instanceof MessageDeleteEvent) {
             } else if (event instanceof GuildVoiceLeaveEvent) {

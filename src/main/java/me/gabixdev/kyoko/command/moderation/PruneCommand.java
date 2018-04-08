@@ -92,7 +92,7 @@ public class PruneCommand extends Command {
                     message.getTextChannel().getHistory().retrievePast(messageAmount).queue(list -> {
                         message.getTextChannel().deleteMessages(list).queue(success -> {
                             message.getTextChannel().sendMessage(String.format(kyoko.getI18n().get(l, "mod.prune.cleared"), list.size())).queue(completeMsg -> {
-                                completeMsg.delete().completeAfter(5, TimeUnit.SECONDS);
+                                completeMsg.delete().queueAfter(5, TimeUnit.SECONDS);
                             }, failure -> {
                                 failure.printStackTrace();
                                 CommonErrorUtil.exception(kyoko, l, message.getTextChannel());

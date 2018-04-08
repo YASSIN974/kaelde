@@ -4,7 +4,9 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import me.gabixdev.kyoko.util.ColorTypeAdapter;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.List;
 
 /*
  * @author ProgrammingWizzard
@@ -100,6 +102,9 @@ public class Settings {
 
     @SerializedName("execution-limit")
     private boolean limitExecution = false;
+
+    @SerializedName("whitelisted-domains")
+    private List<String> whitelistedDomains = Arrays.asList("cdn.discordapp.com", "discordapp.com", "listen.moe", "kyokobot.moe", "gabixdev.me", "kyoko.gabixdev.me");
 
     public String getOwner() {
         return owner;

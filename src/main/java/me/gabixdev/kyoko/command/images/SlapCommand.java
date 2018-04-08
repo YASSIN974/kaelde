@@ -6,9 +6,7 @@ import com.github.natanbc.weeb4j.image.NsfwFilter;
 import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
-import me.gabixdev.kyoko.util.GsonUtil;
 import me.gabixdev.kyoko.util.StringUtil;
-import me.gabixdev.kyoko.util.URLUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -19,11 +17,11 @@ import net.dv8tion.jda.core.events.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatCommand extends Command {
-    private static final String[] aliases = new String[]{"pat"};
+public class SlapCommand extends Command {
+    private static final String[] aliases = new String[]{"slap"};
     private Kyoko kyoko;
 
-    public PatCommand(Kyoko kyoko) {
+    public SlapCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
     }
 
@@ -39,7 +37,7 @@ public class PatCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "pat.description";
+        return "slap.description";
     }
 
     @Override
@@ -53,7 +51,7 @@ public class PatCommand extends Command {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 
         if (args.length == 1) {
-            normal.addField(kyoko.getI18n().get(l, "pat.description"), Constants.POWERED_BY_WEEB, false);
+            normal.addField(kyoko.getI18n().get(l, "slap.description"), Constants.POWERED_BY_WEEB, false);
         } else {
             boolean skipme = false;
 
@@ -63,7 +61,7 @@ public class PatCommand extends Command {
             }
 
             if (message.getMentionedUsers().isEmpty()) {
-                normal.addField(String.format(kyoko.getI18n().get(l, "pat.someone"), message.getAuthor().getName(), StringUtil.stripPrefix(kyoko, args[0], message.getContentRaw())), Constants.POWERED_BY_WEEB, false);
+                normal.addField(String.format(kyoko.getI18n().get(l, "slap.someone"), message.getAuthor().getName(), StringUtil.stripPrefix(kyoko, args[0], message.getContentRaw())), Constants.POWERED_BY_WEEB, false);
             } else {
                 List<String> userlist = new ArrayList<>();
                 for (User u : message.getMentionedUsers()) {
@@ -72,11 +70,11 @@ public class PatCommand extends Command {
                             continue;
                     userlist.add(u.getName());
                 }
-                normal.addField(String.format(kyoko.getI18n().get(l, "pat.someone"), message.getAuthor().getName(), String.join(", ", userlist)), Constants.POWERED_BY_WEEB, false);
+                normal.addField(String.format(kyoko.getI18n().get(l, "slap.someone"), message.getAuthor().getName(), String.join(", ", userlist)), Constants.POWERED_BY_WEEB, false);
             }
         }
 
-        Image image = kyoko.getWeeb4j().getRandomImage("pat", HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
+        Image image = kyoko.getWeeb4j().getRandomImage("slap", HiddenMode.DEFAULT, message.getTextChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
 
         normal.setImage(image.getUrl());
 

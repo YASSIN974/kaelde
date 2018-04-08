@@ -57,7 +57,7 @@ public class HelpCommand extends Command {
         if (args.length == 1) {
             eb.addField(
                     String.format(kyoko.getI18n().get(l, "help.header.title"), kyoko.getJda().getSelfUser().getName()),
-                    String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.WIKI_URL, kyoko.getSettings().getPrefix(), Constants.DISCORD_URL),
+                    String.format(kyoko.getI18n().get(l, "help.header.desc"), Constants.COMMANDS_URL, kyoko.getSettings().getPrefix(), Constants.DISCORD_URL),
                     false);
 
             for (String s : cachedLists.keySet()) {

@@ -1,19 +1,23 @@
 package me.gabixdev.kyoko.util.command;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import me.gabixdev.kyoko.Kyoko;
+import me.gabixdev.kyoko.database.GuildConfig;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.CommonErrorUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.ObjectOutputStream;
+import java.util.*;
 
 public class CommandManager {
-    private Kyoko kyoko;
+    private final Kyoko kyoko;
+
+    private final Gson gson = new GsonBuilder().create();
 
     private String mention;
     private long runs;
@@ -21,7 +25,7 @@ public class CommandManager {
     private HashSet<Command> commands;
     private HashMap<String, Command> handlers;
     private HashMap<Command, String> disabled;
-    private HashMap<Guild, ArrayList<String>> prefixes;
+    private HashMap<Guild, List<String>> prefixes;
 
     public CommandManager(Kyoko kyoko) {
         this.kyoko = kyoko;
@@ -66,9 +70,21 @@ public class CommandManager {
                     System.arraycopy(bits, 1, args, 0, args.length);
                     bits = args;
                 }
-            } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) { // check for prefix
-                bits[0] = bits[0].substring(kyoko.getSettings().getPrefix().length()).trim(); // remove prefix from command label
-            } else return;
+            } else if (content.toLowerCase().startsWith(kyoko.getSettings().getPrefix())) {
+                bits = content.substring(kyoko.getSettings().getPrefix().length()).trim().split(" ");
+            } else {
+                List<String> table = getPrefixes(event.getGuild());
+                exit:
+                if (table.size() != 0) {
+                    for (String prefix : table) {
+                        if (content.toLowerCase().startsWith(prefix)) {
+                            bits = content.substring(prefix.length()).trim().split(" ");
+                            break exit;
+                        }
+                    }
+                    return;
+                } else return;
+            }
 
             Command c = getHandler(bits[0]);
             if (c != null) {
@@ -100,5 +116,36 @@ public class CommandManager {
 
     public HashSet<Command> getCommands() {
         return commands;
+    }
+
+    public List<String> getPrefixes(Guild g) {
+        if (!prefixes.containsKey(g)) {
+            List<String> pfxs = Collections.emptyList();
+            try {
+                GuildConfig gc = kyoko.getDatabaseManager().getGuild(g);
+                List<String> list = (ArrayList<String>) gson.fromJson(gc.prefixes, new TypeToken<ArrayList<String>>() {}.getType());
+                pfxs = list;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            prefixes.put(g, pfxs);
+        }
+
+        return prefixes.get(g);
+    }
+
+    public void setPrefixes(Guild g, List<String> prefixlist) {
+        if (prefixes.containsKey(g)) {
+            prefixes.replace(g, prefixlist);
+        } else prefixes.put(g, prefixlist);
+
+        try {
+            GuildConfig gc = kyoko.getDatabaseManager().getGuild(g);
+            gc.prefixes = gson.toJson(prefixlist);
+            kyoko.getDatabaseManager().saveGuild(g, gc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

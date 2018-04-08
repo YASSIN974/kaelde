@@ -7,6 +7,9 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class SayCommand extends Command {
     private final String[] aliases = new String[]{"say", "print"};
     private Kyoko kyoko;
@@ -42,17 +45,10 @@ public class SayCommand extends Command {
 
     @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
-        String msg = message.getContentRaw();
-        String mention = kyoko.getJda().getSelfUser().getAsMention();
+        String msg = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
-        //if (!message.getMember().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
+        if (!message.getMember().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {
             msg = msg.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere");
-        //}
-
-        if (msg.startsWith(mention)) {
-            msg = msg.substring(mention.length()).trim().substring(args[0].length());
-        } else {
-            msg = msg.substring(kyoko.getSettings().getPrefix().length() + args[0].length());
         }
 
         if (msg.trim().isEmpty()) {

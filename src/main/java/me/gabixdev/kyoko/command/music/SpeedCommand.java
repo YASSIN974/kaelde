@@ -59,7 +59,7 @@ public class SpeedCommand extends Command {
 
             double speedd = Double.parseDouble(args[1]);
             int speed = 10;
-            if (speedd < 0.5 || speedd > 2.0) {
+            if (speedd < 1.0 || speedd > 2.0) {
                 eb = kyoko.getAbstractEmbedBuilder().getErrorBuilder();
                 eb.addField(kyoko.getI18n().get(l, "generic.error"), kyoko.getI18n().get(l, "music.msg.speedoutofrange"), false);
             } else {

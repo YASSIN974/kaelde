@@ -15,15 +15,13 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import me.gabixdev.kyoko.command.AliasCommand;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.basic.LangCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.images.*;
-import me.gabixdev.kyoko.command.moderation.BanCommand;
-import me.gabixdev.kyoko.command.moderation.KickCommand;
-import me.gabixdev.kyoko.command.moderation.PruneCommand;
-import me.gabixdev.kyoko.command.moderation.UnbanCommand;
+import me.gabixdev.kyoko.command.moderation.*;
 import me.gabixdev.kyoko.command.money.DailiesCommand;
 import me.gabixdev.kyoko.command.money.MoneyCommand;
 import me.gabixdev.kyoko.command.money.MoneyTopCommand;
@@ -37,7 +35,9 @@ import me.gabixdev.kyoko.music.NicoAudioSourceManager;
 import me.gabixdev.kyoko.music.YoutubeSearch;
 import me.gabixdev.kyoko.util.APICommands;
 import me.gabixdev.kyoko.util.ColoredFormatter;
+import me.gabixdev.kyoko.util.KyokoJDABuilder;
 import me.gabixdev.kyoko.util.command.AbstractEmbedBuilder;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import me.gabixdev.kyoko.util.command.CommandManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -101,7 +101,7 @@ public class Kyoko {
         musicManagers = new HashMap<>();
 
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setFrameBufferDuration(1000);
+        playerManager.setFrameBufferDuration(3000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
         playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
@@ -118,8 +118,8 @@ public class Kyoko {
 
         if (settings.isAllowUnsafeSources()) {
             playerManager.registerSourceManager(new HttpAudioSourceManager());
-            playerManager.registerSourceManager(new LocalAudioSourceManager());
-            supportedSources += ", direct HTTP link, local filesystem";
+            //playerManager.registerSourceManager(new LocalAudioSourceManager());
+            //supportedSources += ", direct HTTP link, local filesystem";
         }
 
         if (!settings.getWeebshApiKey().equals("ask wolke")) {
@@ -157,7 +157,7 @@ public class Kyoko {
         i18n.loadMessages();
         databaseManager.load(settings);
 
-        JDABuilder builder = new JDABuilder(AccountType.BOT);
+        KyokoJDABuilder builder = new KyokoJDABuilder(AccountType.BOT);
         if (settings.getToken() != null) {
             if (settings.getToken().equalsIgnoreCase("Change me")) {
                 log.severe("No token specified, please set it in config.json");
@@ -166,6 +166,8 @@ public class Kyoko {
             }
             builder.setToken(settings.getToken());
         }
+
+        //builder.setGateway("wss://localhost:8000");
 
         builder.setAutoReconnect(true)
                 .setBulkDeleteSplittingEnabled(false)
@@ -198,25 +200,47 @@ public class Kyoko {
     }
 
     private void registerCommands() {
+        // basic
         commandManager.registerCommand(new HelpCommand(this));
         commandManager.registerCommand(new InviteCommand(this));
         commandManager.registerCommand(new LangCommand(this));
 
+        // fun
         commandManager.registerCommand(new BannerCommand(this));
         commandManager.registerCommand(new BananaCommand(this));
         commandManager.registerCommand(new FigletCommand(this));
         commandManager.registerCommand(new SpinnerCommand(this));
         commandManager.registerCommand(new KysCommand(this));
         commandManager.registerCommand(new SaucenaoCommand(this));
+
+        // images
         if (weeb4j != null) {
-            commandManager.registerCommand(new TrapCommand(this));
+            //commandManager.registerCommand(new TrapCommand(this));
+            commandManager.registerCommand(new CatCommand(this));
+            commandManager.registerCommand(new HugCommand(this));
+            commandManager.registerCommand(new PatCommand(this));
+            commandManager.registerCommand(new PunchCommand(this));
+            commandManager.registerCommand(new SlapCommand(this));
+            commandManager.registerCommand(new LickCommand(this));
+            commandManager.registerCommand(new WeebshCommand(this));
+
+            commandManager.registerCommand(new AliasCommand(this, "waaa", "weebsh.description.waaa", null, CommandCategory.IMAGES, new String[] {"weebsh", "cry"}));
+            commandManager.registerCommand(new AliasCommand(this, "discordmeme", "weebsh.description.discordmeme", null, CommandCategory.IMAGES, new String[] {"weebsh", "discord_memes"}));
+            commandManager.registerCommand(new AliasCommand(this, "dance", "weebsh.description.dance", null, CommandCategory.IMAGES, new String[] {"weebsh", "dance"}));
+            commandManager.registerCommand(new AliasCommand(this, "insult", "weebsh.description.insult", null, CommandCategory.IMAGES, new String[] {"weebsh", "insult"}));
+            commandManager.registerCommand(new AliasCommand(this, "initiald", "weebsh.description.initiald", null, CommandCategory.IMAGES, new String[] {"weebsh", "initial_d"}));
+            commandManager.registerCommand(new AliasCommand(this, "trap", "weebsh.description.trap", null, CommandCategory.IMAGES, new String[] {"weebsh", "trap"}));
+            commandManager.registerCommand(new AliasCommand(this, "kemonomimi", "weebsh.description.kemonomimi", null, CommandCategory.IMAGES, new String[] {"weebsh", "kemonomimi"}));
+            commandManager.registerCommand(new AliasCommand(this, "triggered", "weebsh.description.triggered", null, CommandCategory.IMAGES, new String[] {"weebsh", "triggered"}));
+            commandManager.registerCommand(new AliasCommand(this, "poi", "weebsh.description.poi", null, CommandCategory.IMAGES, new String[] {"weebsh", "poi"}));
         }
 
-        commandManager.registerCommand(new HugCommand(this));
-        commandManager.registerCommand(new PatCommand(this));
-        commandManager.registerCommand(new NekosCommand(this));
         commandManager.registerCommand(new DogCommand(this));
+        commandManager.registerCommand(new NekosCommand(this));
+        commandManager.registerCommand(new AliasCommand(this, "lizard", "nekos.description.lizard", null, CommandCategory.IMAGES, new String[] {"nekos", "lizard"}));
+        commandManager.registerCommand(new AliasCommand(this, "lewdneko", "nekos.description.lewdneko", null, CommandCategory.IMAGES, new String[] {"nekos", "lewd"}));
 
+        // utils
         commandManager.registerCommand(new PingCommand(this));
         commandManager.registerCommand(new SayCommand(this));
         commandManager.registerCommand(new StatsCommand(this));
@@ -227,16 +251,19 @@ public class Kyoko {
         commandManager.registerCommand(new UserInfoCommand(this));
         commandManager.registerCommand(new VoteCommand(this));
 
+        // money
         commandManager.registerCommand(new MoneyCommand(this));
         commandManager.registerCommand(new MoneyTopCommand(this));
         commandManager.registerCommand(new DailiesCommand(this));
         commandManager.registerCommand(new SendMoneyCommand(this));
 
+        // moderation
         commandManager.registerCommand(new PruneCommand(this));
         commandManager.registerCommand(new KickCommand(this));
         commandManager.registerCommand(new BanCommand(this));
         commandManager.registerCommand(new UnbanCommand(this));
 
+        // music
         commandManager.registerCommand(new JoinCommand(this));
         commandManager.registerCommand(new PlayCommand(this));
         commandManager.registerCommand(new SkipCommand(this));
@@ -247,6 +274,7 @@ public class Kyoko {
         commandManager.registerCommand(new VolumeCommand(this));
         commandManager.registerCommand(new ShuffleCommand(this));
         commandManager.registerCommand(new NightcoreCommand(this));
+        commandManager.registerCommand(new SpeedCommand(this));
 
         if (settings.isYoutubeSearchEnabled()) {
             new YoutubeSearch(this);
@@ -254,9 +282,8 @@ public class Kyoko {
         }
 
         if (settings.isWipFeaturesEnabled()) {
-            commandManager.registerCommand(new CatCommand(this));
-            commandManager.registerCommand(new SpeedCommand(this));
             commandManager.registerCommand(new DecancerCommand(this));
+            commandManager.registerCommand(new PrefixCommand(this));
         }
     }
 
@@ -286,10 +313,6 @@ public class Kyoko {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
-    }
-
-    public EventHandler getEventHandler() {
-        return eventHandler;
     }
 
     public Thread getBlinkThread() {
@@ -334,7 +357,7 @@ public class Kyoko {
 
     public String getShardInfo() {
         if (jda.getShardInfo() == null) {
-            return "n/a";
+            return "[0/1]";
         } else {
             return jda.getShardInfo().getShardString();
         }

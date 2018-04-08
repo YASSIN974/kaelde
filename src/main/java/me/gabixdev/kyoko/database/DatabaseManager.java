@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.Settings;
 import me.gabixdev.kyoko.i18n.Language;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ public class DatabaseManager {
     private Settings settings;
     private ConnectionSource connectionSource;
     private Dao<UserConfig, Integer> userDao;
+    private Dao<GuildConfig, Integer> guildDao;
 
     public DatabaseManager(Kyoko kyoko) {
         this.kyoko = kyoko;
@@ -29,6 +31,7 @@ public class DatabaseManager {
         try {
             connectionSource = new JdbcPooledConnectionSource(databaseURL);
             userDao = DaoManager.createDao(connectionSource, UserConfig.class);
+            guildDao = DaoManager.createDao(connectionSource, GuildConfig.class);
         } catch (SQLException e) {
             kyoko.getLog().info("Error connecting to MySQL!");
             kyoko.setRunning(false);
@@ -42,8 +45,7 @@ public class DatabaseManager {
 
         UserConfig uc = userDao.queryForFirst(statementBuilder.prepare());
         if (uc == null) {
-            //kyoko.getLog().info("Creating new user configuration for " + user.getName() + " (" + user.getId() + ")");
-            uc = new UserConfig(user.getIdLong(), Language.ENGLISH, 0, 0, 0, 0L);
+            uc = new UserConfig(user.getIdLong(), null, 0, 0, 0, 0L);
             userDao.create(uc);
         }
         return uc;
@@ -52,9 +54,29 @@ public class DatabaseManager {
     public void saveUser(User u, UserConfig uc) {
         try {
             userDao.createOrUpdate(uc);
-            //kyoko.getLog().info("User saved: " + u.getName() + " (" + u.getId() + ")");
         } catch (Exception e) {
             kyoko.getLog().severe("Error saving user " + u.getName() + " (" + u.getId() + ")!");
+            e.printStackTrace();
+        }
+    }
+
+    public GuildConfig getGuild(Guild guild) throws Exception {
+        QueryBuilder<GuildConfig, Integer> statementBuilder = guildDao.queryBuilder();
+        statementBuilder.where().like("guildid", guild.getIdLong());
+
+        GuildConfig gc = guildDao.queryForFirst(statementBuilder.prepare());
+        if (gc == null) {
+            gc = new GuildConfig(guild.getIdLong(), null, "[]");
+            guildDao.create(gc);
+        }
+        return gc;
+    }
+
+    public void saveGuild(Guild g, GuildConfig gc) {
+        try {
+            guildDao.createOrUpdate(gc);
+        } catch (Exception e) {
+            kyoko.getLog().severe("Error saving guild " + g.getName() + " (" + g.getId() + ")!");
             e.printStackTrace();
         }
     }
