@@ -10,14 +10,13 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FigletCommand extends Command {
     private List<String> fontList;
     private String cachedList;
-    private final String mention;
-    private final String name;
-
     private final String[] aliases = new String[]{"figlet"};
     private Kyoko kyoko;
 
@@ -45,9 +44,6 @@ public class FigletCommand extends Command {
         fontList.add("term");
 
         cachedList = "`" + String.join("`, `", fontList) + "`";
-
-        mention = kyoko.getJda().getSelfUser().getAsMention();
-        name = kyoko.getJda().getSelfUser().getName();
     }
 
     @Override
@@ -101,12 +97,7 @@ public class FigletCommand extends Command {
                 return;
             }
 
-            String msg = message.getContentDisplay();
-            if (message.getContentRaw().startsWith(mention)) {
-                msg = msg.substring(name.length()).trim().substring(args[0].length()).trim().substring(args[1].length());
-            } else {
-                msg = msg.substring(kyoko.getSettings().getPrefix().length() + args[0].length()).trim().substring(args[1].length());
-            }
+            String msg = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
             if (msg.trim().isEmpty()) {
                 printUsage(kyoko, kyoko.getI18n().getLanguage(message.getMember()), message.getTextChannel());

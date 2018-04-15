@@ -59,8 +59,8 @@ public class ListCommand extends Command {
             if(currTrack != null)
             {
                 String icon = "";
-                if (musicManager.sendHandler.getNightcore() != 0 && musicManager.sendHandler.getNightcore() <= 2) icon = " <:nightcore:431892415876562944>";
-                else if (musicManager.sendHandler.getNightcore() != 0 && musicManager.sendHandler.getNightcore() <= 4) icon = " <:halftime:431892863656394753>";
+                if (musicManager.sendHandler.getNightcore() != 0 && musicManager.sendHandler.getNightcore() <= 3) icon = " <:nightcore:431892415876562944>";
+                else if (musicManager.sendHandler.getNightcore() != 0 && musicManager.sendHandler.getNightcore() <= 6) icon = " <:halftime:431892863656394753>";
 
                 String builder = "**" + kyoko.getI18n().get(l, "music.msg.currplaying") + "** " + currTrack.getInfo().title + "\t`[" + StringUtil.prettyPeriod(currTrack.getPosition()) + "/" + StringUtil.prettyPeriod(currTrack.getDuration()) + "]`" + icon + "\n\n" +
                         String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix());

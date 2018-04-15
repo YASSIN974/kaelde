@@ -5,6 +5,7 @@ import me.gabixdev.kyoko.util.StringUtil;
 import me.gabixdev.kyoko.util.command.DebugCommands;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -55,10 +56,19 @@ public class EventHandler implements EventListener {
                 }
             } else if (event instanceof GuildJoinEvent) {
                 kyoko.getLog().info("Joined guild " + ((GuildJoinEvent) event).getGuild());
+
                 if (kyoko.getDblApi() != null) kyoko.getDblApi().setStats(kyoko.getJda().getSelfUser().getId(), kyoko.getJda().getGuilds().size());
+
+                if (kyoko.getSettings().isGateway()) {
+                    kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + kyoko.getJda().getGuilds().size()));
+                }
             } else if (event instanceof GuildLeaveEvent) {
                 kyoko.getLog().info("Left guild " + ((GuildLeaveEvent) event).getGuild());
                 if (kyoko.getDblApi() != null) kyoko.getDblApi().setStats(kyoko.getJda().getSelfUser().getId(), kyoko.getJda().getGuilds().size());
+
+                if (kyoko.getSettings().isGateway()) {
+                    kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + kyoko.getJda().getGuilds().size()));
+                }
             }
     }
 

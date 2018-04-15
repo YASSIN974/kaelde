@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'me.gabixdev'
-version = '1.8.0'
+version = '1.8.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,7 +24,6 @@ dependencies {
     compile 'com.google.guava:guava:21.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
     compile 'org.fusesource.jansi:jansi:1.16'
-    compile 'org.slf4j:slf4j-jdk14:1.7.25'
     compile 'com.github.lalyos:jfiglet:0.0.8'
     compile 'com.atilika.kuromoji:kuromoji-core:0.9.0'
     compile 'com.atilika.kuromoji:kuromoji-naist-jdic:0.9.0'
@@ -36,6 +35,8 @@ dependencies {
     compile 'com.sedmelluq:jda-nas:1.0.5'
     compile 'com.github.natanbc:weeb4j:3.1'
     compile 'com.github.DiscordBotList:DBL-Java-Wrapper:4b27930'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.tuxdude.logback.extensions:logback-colorizer:1.0.1'
 }
 
 task fatJar(type: Jar, overwrite: true) {

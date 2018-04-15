@@ -4,31 +4,20 @@ import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.i18n.Language;
 import me.gabixdev.kyoko.util.command.Command;
+import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
 public class InviteCommand extends Command {
     private Kyoko kyoko;
-    private final String[] aliases = new String[] {"invite"};
 
     public InviteCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
-    }
-
-    @Override
-    public String getLabel() {
-        return aliases[0];
-    }
-
-    @Override
-    public String[] getAliases() {
-        return aliases;
-    }
-
-    @Override
-    public String getDescription() {
-        return "invite.description";
+        this.aliases = new String[] {"invite"};
+        this.label = aliases[0];
+        this.category = CommandCategory.BASIC;
+        this.description = "invite.description";
     }
 
     @Override

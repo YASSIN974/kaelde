@@ -10,19 +10,17 @@ import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.Event;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DecancerCommand extends Command {
-    private final String mention;
-    private final String name;
     private final String[] aliases = new String[]{"decancer", "romaji"};
     private Tokenizer tokenizer;
     private Kyoko kyoko;
 
     public DecancerCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
-        mention = kyoko.getJda().getSelfUser().getAsMention();
-        name = kyoko.getJda().getSelfUser().getName();
 
         tokenizer = new Tokenizer.Builder().build();
     }
@@ -59,12 +57,7 @@ public class DecancerCommand extends Command {
         if (args.length == 1) {
             printUsage(kyoko, l, message.getTextChannel());
         } else {
-            String msg = message.getContentDisplay();
-            if (message.getContentRaw().startsWith(mention)) {
-                msg = msg.substring(name.length()).trim().substring(args[0].length()).trim().substring(args[1].length());
-            } else {
-                msg = msg.substring(kyoko.getSettings().getPrefix().length() + args[0].length()).trim().substring(args[1].length());
-            }
+            String msg = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
 
             // https://github.com/nicolas-raoul/jakaroma
 

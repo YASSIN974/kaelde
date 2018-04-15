@@ -55,14 +55,14 @@ public class ClearCommand extends Command {
         musicManager.outChannel = message.getTextChannel();
 
         if (musicManager.scheduler.getQueue().isEmpty()) {
-            musicManager.player.stopTrack();
+            //musicManager.player.stopTrack();
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.empty"), kyoko.getSettings().getPrefix(), kyoko.supportedSources, kyoko.getSettings().getPrefix(), kyoko.getSettings().getPrefix()), false);
             message.getChannel().sendMessage(err.build()).queue();
             return;
         }
 
-        musicManager.player.stopTrack();
+        //musicManager.player.stopTrack();
         musicManager.scheduler.getQueue().clear();
         EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
         err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.cleared"), false);

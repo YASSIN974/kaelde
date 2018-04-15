@@ -172,6 +172,7 @@ public class StringUtil {
         return t.toString();
     }
 
+    @Deprecated
     public static String stripPrefix(Kyoko kyoko, String label, String msg) {
         String mention = kyoko.getJda().getSelfUser().getAsMention();
         if (msg.startsWith(mention)) {

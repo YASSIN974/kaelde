@@ -1,4 +1,4 @@
-package me.gabixdev.kyoko.command.util;
+package me.gabixdev.kyoko.command.basic;
 
 import me.gabixdev.kyoko.Constants;
 import me.gabixdev.kyoko.Kyoko;
@@ -17,32 +17,15 @@ import java.lang.management.RuntimeMXBean;
 public class StatsCommand extends Command {
     private final RuntimeMXBean rb;
 
-    private final String[] aliases = new String[]{"stats", "statistics"};
     private Kyoko kyoko;
 
     public StatsCommand(Kyoko kyoko) {
         this.kyoko = kyoko;
+        this.aliases = new String[]{"stats", "statistics"};
+        this.label = aliases[0];
+        this.description = "stats.description";
+        this.category = CommandCategory.BASIC;
         this.rb = ManagementFactory.getRuntimeMXBean();
-    }
-
-    @Override
-    public String getLabel() {
-        return aliases[0];
-    }
-
-    @Override
-    public String[] getAliases() {
-        return aliases;
-    }
-
-    @Override
-    public String getDescription() {
-        return "stats.description";
-    }
-
-    @Override
-    public CommandCategory getCategory() {
-        return CommandCategory.UTILITY;
     }
 
     @Override

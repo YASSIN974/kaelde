@@ -130,7 +130,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 1.33f)
+                                (int) (audioDataFormat.sampleRate * 1.5f)
                         )));
                         return;
                     case 5:
@@ -140,7 +140,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 1.5f)
+                                (int) (audioDataFormat.sampleRate * 1.33f)
                         )));
                         return;
                     case 6:
@@ -150,7 +150,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
                                 audioDataFormat.channelCount,
                                 audioFilter,
                                 audioDataFormat.sampleRate,
-                                (int) (audioDataFormat.sampleRate * 1.33f)
+                                (int) (audioDataFormat.sampleRate * 1.11f)
                         )));
                         return;
                     default:

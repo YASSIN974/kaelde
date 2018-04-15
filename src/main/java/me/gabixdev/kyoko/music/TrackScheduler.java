@@ -36,6 +36,10 @@ public class TrackScheduler extends AudioEventAdapter {
 
         if (m.outChannel != null && track != null) {
             Language l = kyoko.getI18n().getLanguage(m.guild);
+            String icon = "";
+            if (m.sendHandler.getNightcore() != 0 && m.sendHandler.getNightcore() <= 3) icon = " <:nightcore:431892415876562944>";
+            else if (m.sendHandler.getNightcore() != 0 && m.sendHandler.getNightcore() <= 6) icon = " <:halftime:431892863656394753>";
+
             EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
             err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.playing"), track.getInfo().title, StringUtil.prettyPeriod(track.getDuration())), false);
             m.outChannel.sendMessage(err.build()).queue();

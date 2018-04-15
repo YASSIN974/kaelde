@@ -83,7 +83,7 @@ public class Settings {
     private String nicoPassword = "password";
 
     @SerializedName("youtube-apikey")
-    private String youtubeApiKey = "nico@example.com";
+    private String youtubeApiKey = "Put your api key here";
 
     @SerializedName("saucenao-apikey")
     private String saucenaoApiKey = "Put your api key here";
@@ -105,6 +105,9 @@ public class Settings {
 
     @SerializedName("whitelisted-domains")
     private List<String> whitelistedDomains = Arrays.asList("cdn.discordapp.com", "discordapp.com", "listen.moe", "kyokobot.moe", "gabixdev.me", "kyoko.gabixdev.me");
+
+    @SerializedName("use-gateway")
+    private boolean gateway = false;
 
     public String getOwner() {
         return owner;
@@ -220,5 +223,9 @@ public class Settings {
 
     public boolean isLimitExecution() {
         return limitExecution;
+    }
+
+    public boolean isGateway() {
+        return gateway;
     }
 }

@@ -61,27 +61,33 @@ public class VolumeCommand extends Command {
             return;
         }
 
-        int vol;
-        try {
-            vol = Integer.parseUnsignedInt(args[1]);
-        } catch (NumberFormatException ex) {
-            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "generic.nan"), false);
-            message.getChannel().sendMessage(err.build()).queue();
-            return;
-        }
-        if (vol == 99) vol = 100; // volume 99 is reserved for nightcore mode
+        EmbedBuilder eb = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
 
-        if (vol < 0 || vol > 150) {
-            EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-            err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.outofrange"), false);
-            message.getChannel().sendMessage(err.build()).queue();
-            return;
+        int vol;
+        if (args[1].equalsIgnoreCase("earrape")) {
+            vol = 185;
+            eb.addField(kyoko.getI18n().get(l, "music.title"), "EARRAPE MODE", false);
+        } else {
+            try {
+                vol = Integer.parseUnsignedInt(args[1]);
+            } catch (NumberFormatException ex) {
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "generic.nan"), false);
+                message.getChannel().sendMessage(err.build()).queue();
+                return;
+            }
+
+            if (vol < 0 || vol > 150) {
+                EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
+                err.addField(kyoko.getI18n().get(l, "music.title"), kyoko.getI18n().get(l, "music.msg.outofrange"), false);
+                message.getChannel().sendMessage(err.build()).queue();
+                return;
+            }
+            eb.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.volumeset"), vol), false);
         }
 
         musicManager.player.setVolume(vol);
-        EmbedBuilder err = kyoko.getAbstractEmbedBuilder().getNormalBuilder();
-        err.addField(kyoko.getI18n().get(l, "music.title"), String.format(kyoko.getI18n().get(l, "music.msg.volumeset"), vol), false);
-        message.getChannel().sendMessage(err.build()).queue();
+
+        message.getChannel().sendMessage(eb.build()).queue();
     }
 }

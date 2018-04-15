@@ -44,11 +44,6 @@ public class CatCommand extends Command {
     }
 
     @Override
-    public String getUsage() {
-        return "cat.usage";
-    }
-
-    @Override
     public void handle(Message message, Event event, String[] args) throws Throwable {
         Language l = kyoko.getI18n().getLanguage(message.getMember());
 

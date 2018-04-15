@@ -2,15 +2,11 @@ package me.gabixdev.kyoko;
 
 import com.github.natanbc.weeb4j.TokenType;
 import com.github.natanbc.weeb4j.Weeb4J;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.HashBiMap;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
@@ -19,6 +15,7 @@ import me.gabixdev.kyoko.command.AliasCommand;
 import me.gabixdev.kyoko.command.basic.HelpCommand;
 import me.gabixdev.kyoko.command.basic.InviteCommand;
 import me.gabixdev.kyoko.command.basic.LangCommand;
+import me.gabixdev.kyoko.command.basic.StatsCommand;
 import me.gabixdev.kyoko.command.fun.*;
 import me.gabixdev.kyoko.command.images.*;
 import me.gabixdev.kyoko.command.moderation.*;
@@ -41,12 +38,10 @@ import me.gabixdev.kyoko.util.command.CommandCategory;
 import me.gabixdev.kyoko.util.command.CommandManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.tuple.MutableTriple;
+import net.dv8tion.jda.core.requests.Requester;
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -56,14 +51,11 @@ import javax.script.ScriptException;
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
-/*
- * @author ProgrammingWizzard
- * @date 27.02.2017
- */
 public class Kyoko {
     private Settings settings;
     private final EventHandler eventHandler;
@@ -74,7 +66,6 @@ public class Kyoko {
     private final AbstractEmbedBuilder abstractEmbedBuilder;
     private ScriptEngine scriptEngine;
 
-    private final Cache<String, ExecutorService> poolCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private ThreadPoolExecutor executor;
     private final AudioPlayerManager playerManager;
     private final Map<Long, MusicManager> musicManagers;
@@ -91,6 +82,8 @@ public class Kyoko {
 
     public Kyoko(Settings settings) {
         this.settings = settings;
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+
         eventHandler = new EventHandler(this);
         abstractEmbedBuilder = new AbstractEmbedBuilder(this);
         commandManager = new CommandManager(this);
@@ -167,7 +160,11 @@ public class Kyoko {
             builder.setToken(settings.getToken());
         }
 
-        //builder.setGateway("wss://localhost:8000");
+        if (settings.isGateway()) {
+            // TODO url in settings
+            builder.setGateway("ws://localhost:8000");
+            Requester.DISCORD_API_PREFIX = "http://localhost:9000/api/";
+        }
 
         builder.setAutoReconnect(true)
                 .setBulkDeleteSplittingEnabled(false)
@@ -181,9 +178,13 @@ public class Kyoko {
 
         log.info("Invite link: " + "https://discordapp.com/oauth2/authorize?&client_id=" + jda.getSelfUser().getId() + "&scope=bot&permissions=" + Constants.PERMISSIONS);
 
-        if (settings.getGame() != null && !settings.getGame().isEmpty()) {
-            blinkThread = new Thread(new BlinkThread(this));
-            blinkThread.start();
+        if (!settings.isGateway()) {
+            if (settings.getGame() != null && !settings.getGame().isEmpty()) {
+                blinkThread = new Thread(new BlinkThread(this));
+                blinkThread.start();
+            }
+        } else {
+            jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + jda.getGuilds().size()));
         }
 
         registerCommands();
@@ -199,7 +200,7 @@ public class Kyoko {
         initialized = true;
     }
 
-    private void registerCommands() {
+    protected void registerCommands() {
         // basic
         commandManager.registerCommand(new HelpCommand(this));
         commandManager.registerCommand(new InviteCommand(this));
@@ -288,18 +289,6 @@ public class Kyoko {
         if (settings.isWipFeaturesEnabled()) {
             commandManager.registerCommand(new DecancerCommand(this));
         }
-    }
-
-    public void run(Guild guild, Runnable runnable) {
-        if (guild == null || runnable == null) {
-            return;
-        }
-        ExecutorService service = poolCache.getIfPresent(guild.getId());
-        if (service == null) {
-            service = new ThreadPoolExecutor(2, 16, 60, TimeUnit.SECONDS, new SynchronousQueue<>());
-            poolCache.put(guild.getId(), service);
-        }
-        service.execute(runnable);
     }
 
     public void initJS() {

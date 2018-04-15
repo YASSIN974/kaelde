@@ -4,6 +4,7 @@ import me.gabixdev.kyoko.BlinkThread;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.Settings;
 import me.gabixdev.kyoko.util.GsonUtil;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -15,12 +16,20 @@ public class DebugCommands {
             e.getChannel().sendMessage("```markdown\n" +
                     "# Kyoko debug console\n\n" +
                     "help - display help\n" +
+                    "gwtest - set gateway guild count to random\n" +
                     "reload - reload config\n" +
                     "setname - set bot name\n" +
                     "eval - eval js code\n" +
                     "prune - emergency server cleanup" +
                     "```"
             ).queue();
+        } else if (e.getMessage().getContentRaw().startsWith("gwtest")) {
+            if (kyoko.getSettings().isGateway()) {
+                int gc = (int) Math.floor(Math.random() * 1000);
+                kyoko.getJda().getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + gc));
+            } else {
+                e.getChannel().sendMessage("gateway is not enabled!").queue();
+            }
         } else if (e.getMessage().getContentRaw().startsWith("reload")) {
             try {
                 Settings settings = GsonUtil.readConfiguration(Settings.class, new File("config.json"));
@@ -28,11 +37,18 @@ public class DebugCommands {
                 kyoko.initJS();
                 kyoko.getBlinkThread().interrupt();
 
-                if (settings.getGame() != null && !settings.getGame().isEmpty()) {
-                    kyoko.setBlinkThread(new Thread(new BlinkThread(kyoko)));
-                    kyoko.getBlinkThread().start();
+                if (!settings.isGateway()) {
+                    if (settings.getGame() != null && !settings.getGame().isEmpty()) {
+                        kyoko.setBlinkThread(new Thread(new BlinkThread(kyoko)));
+                        kyoko.getBlinkThread().start();
+                    } else {
+                        kyoko.getJda().getPresence().setGame(null);
+                    }
                 } else {
-                    kyoko.getJda().getPresence().setGame(null);
+                    if (kyoko.getBlinkThread() != null) {
+                        kyoko.getBlinkThread().interrupt();
+                        kyoko.setBlinkThread(null);
+                    }
                 }
 
                 e.getChannel().sendMessage("configuration reloaded!").queue();
