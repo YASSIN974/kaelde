@@ -3,6 +3,7 @@ package me.gabixdev.kyoko.command.basic;
 import me.gabixdev.kyoko.Kyoko;
 import me.gabixdev.kyoko.database.UserConfig;
 import me.gabixdev.kyoko.i18n.Language;
+import me.gabixdev.kyoko.util.TranslationUtil;
 import me.gabixdev.kyoko.util.command.Command;
 import me.gabixdev.kyoko.util.command.CommandCategory;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -22,7 +23,7 @@ public class LangCommand extends Command {
 
         StringBuilder langs = new StringBuilder();
         for (Language l : Language.values()) {
-            langs.append("`").append(kyoko.getSettings().getPrefix()).append("lang ").append(l.getShortName()).append("` - ").append(l.getEmoji()).append(" ").append(l.getLocalized()).append("\n");
+            langs.append("`").append(kyoko.getSettings().getPrefix()).append("lang ").append(l.getShortName()).append("` - ").append(l.getEmoji()).append(" ").append(l.getLocalized()).append(" translated in ").append(TranslationUtil.getTranslationCompleteness(l)).append("%\n");
         }
         langs.append("\nCan't find your language? [Teach Kyoko it by clicking here ;3](https://poeditor.com/join/project/SUP7N8fDk0)");
         langoptions = langs.toString();
