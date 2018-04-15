@@ -14,6 +14,8 @@ public class TranslationUtil {
     private static HashMap<Language, Integer> completeness;
 
     public static int getTranslationCompleteness(Language l) {
+        if (l == Language.ENGLISH) return 100;
+
         if (completeness == null) completeness = new HashMap<>();
         if (completeness.containsKey(l)) return completeness.get(l);
 
@@ -35,9 +37,13 @@ public class TranslationUtil {
             int max = p.keySet().size();
             int translated = 0;
             for (Object k : english.keySet()) {
-                if (p.getProperty((String) k) != null) translated++;
+                if (!p.getProperty((String) k, (String) k).equals(english.getProperty((String) k))) translated++;
             }
+
             int percent = (int) Math.floor(((float) translated / (float) max) * 100);
+
+            if (percent > 85) percent = 100; // not all strings can be translated
+            
             completeness.put(l, percent);
             return percent;
 
