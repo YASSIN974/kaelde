@@ -1,6 +1,8 @@
-# Prevent aciddental data leak
+# Kyoko shit
 config.json
+deploy
 avatar.png
+avatar.jpg
 
 # ----------------------------------- #
 # ----- Java Language Gitignore ----- #
@@ -189,3 +191,5 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+.gradle
