@@ -1,7 +1,10 @@
-package me.gabixdev.kyoko;
+package moe.kyokobot.bot;
 
+import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import moe.kyokobot.bot.services.KyokoService;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,7 +24,7 @@ public class Main {
                 if (cfg.createNewFile()) {
                     settings = new Settings();
 
-                    Files.write(cfg.toPath(), gson.toJson(settings).getBytes("UTF-8"));
+                    Files.write(cfg.toPath(), gson.toJson(settings).getBytes(Charsets.UTF_8));
                     System.out.println("Configuration created, please setup the bot :)");
                     System.exit(1);
                 }
@@ -41,8 +44,13 @@ public class Main {
         }
         System.out.println("KyokoBot is loading...");
 
+        if (settings.connection.token.isEmpty()) {
+            System.out.println("No token specified!");
+            return;
+        }
+
         try {
-            new KyokoService(settings).startUp();
+            Service kyoko = new KyokoService(settings).startAsync();
         } catch (Exception e) {
             e.printStackTrace();
         }

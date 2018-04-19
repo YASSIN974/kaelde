@@ -1,3 +1,4 @@
 rootProject.name = 'kyoko'
 
-include 'core'
+include ':core'
+include ':misccommands'

@@ -9,8 +9,8 @@ buildscript {
     }
 }
 
-group 'me.gabixdev'
-version rootProject.ext.version
+group 'moe.kyokobot'
+version "2.0.0-SNAPSHOT"
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -20,19 +20,26 @@ sourceCompatibility = 1.8
 repositories {
     jcenter()
     maven { url "https://jitpack.io" }
+    maven { url "https://jcenter.bintray.com" }
     maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
     maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'net.dv8tion', name: 'JDA', version: rootProject.ext.jdaVersion
+    compile group: 'net.dv8tion', name: 'JDA', version: "3.6.0_354"
     compile 'com.j256.ormlite:ormlite-jdbc:5.1'
     compile 'com.intellij:annotations:+@jar'
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.tuxdude.logback.extensions:logback-colorizer:1.0.1'
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.google.guava:guava:21.0'
+    compile 'com.google.inject:guice:4.2.0'
+    compile 'org.xeustechnologies:jcl-core:2.8'
+    compile 'mysql:mysql-connector-java:8.0.11'
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
+
 }
 
 build.dependsOn shadowJar
@@ -46,6 +53,6 @@ shadowJar {
     destinationDir project.file('../deploy')
     manifest {
         attributes 'Implementation-Title': 'Kyoko', 'Implementation-Version': version
-        attributes 'Main-Class': 'me.gabixdev.kyoko.Main'
+        attributes 'Main-Class': 'moe.kyokobot.bot.Main'
     }
 }

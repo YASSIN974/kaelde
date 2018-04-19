@@ -1,8 +1,8 @@
-package me.gabixdev.kyoko;
+package moe.kyokobot.bot;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import me.gabixdev.kyoko.util.ColorTypeAdapter;
+import moe.kyokobot.bot.util.ColorTypeAdapter;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -28,10 +28,10 @@ public class Settings {
         public String gatewayServer = "ws://localhost:8000";
 
         @SerializedName("rest-server")
-        public String restServer = "http://localhost:9000/";
+        public String restServer = "http://localhost:9000/api/";
 
         @SerializedName("mode")
-        public String shardMode = "single"; // single, gateway
+        public String mode = "single"; // single, gateway
 
         @SerializedName("shard-id")
         public int shardId = 0;
