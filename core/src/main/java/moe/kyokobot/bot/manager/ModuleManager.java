@@ -1,6 +1,5 @@
 package moe.kyokobot.bot.manager;
 
-import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
@@ -13,8 +12,6 @@ import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.KyokoModuleDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xeustechnologies.jcl.JarClassLoader;
-import org.xeustechnologies.jcl.exception.ResourceNotFoundException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +20,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
@@ -49,6 +49,12 @@ public class ModuleManager {
     }
 
     public void loadModules() {
+        try {
+            new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
+        } catch (Exception e) { // should not happen
+            e.printStackTrace();
+        }
+
         if (classLoaders.size() != 0) {
             commandManager.unregisterAll();
             Iterator<Map.Entry<String, URLClassLoader>> in = classLoaders.entrySet().iterator();
@@ -146,8 +152,6 @@ public class ModuleManager {
     }
 
     public void load(String path) throws Exception {
-        new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
-
         File jar = new File(path);
         URL jarUrl = jar.toURI().toURL();
         URL[] classPath = new URL[]{jarUrl};
@@ -156,7 +160,7 @@ public class ModuleManager {
         URL config = cl.getResource("plugin.json");
         if (config == null) config = cl.getResource("/plugin.json");
 
-        if (config == null) throw new ResourceNotFoundException("Cannot find plugin.json");
+        if (config == null) throw new FileNotFoundException("Cannot find plugin.json");
         KyokoModuleDescription description = gson.fromJson(new InputStreamReader(config.openStream()), KyokoModuleDescription.class);
 
         if (description.moduleName == null) throw new IllegalArgumentException("No module name specified!");
