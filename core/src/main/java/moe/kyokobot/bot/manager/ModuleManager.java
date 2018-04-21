@@ -7,6 +7,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
+import moe.kyokobot.bot.Settings;
+import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.KyokoModuleDescription;
 import org.slf4j.Logger;
@@ -15,9 +17,11 @@ import org.xeustechnologies.jcl.JarClassLoader;
 import org.xeustechnologies.jcl.exception.ResourceNotFoundException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -25,16 +29,18 @@ public class ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
     private Logger logger;
+    private Settings settings;
     private CommandManager commandManager;
 
     private HashMap<String, KyokoModule> modules;
-    private HashMap<String, JarClassLoader> classLoaders;
+    private HashMap<String, URLClassLoader> classLoaders;
     private ArrayList<String> started;
     private Injector injector;
     private Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
-    public ModuleManager(CommandManager commandManager) {
+    public ModuleManager(Settings settings, CommandManager commandManager) {
         logger = LoggerFactory.getLogger(getClass());
+        this.settings = settings;
         this.commandManager = commandManager;
 
         modules = new HashMap<>();
@@ -44,17 +50,22 @@ public class ModuleManager {
 
     public void loadModules() {
         if (classLoaders.size() != 0) {
-            Iterator<String> in = classLoaders.keySet().iterator();
+            commandManager.unregisterAll();
+            Iterator<Map.Entry<String, URLClassLoader>> in = classLoaders.entrySet().iterator();
             while (in.hasNext()) {
-                String name = in.next();
+                String name = in.next().getKey();
                 stopModule(name);
-                unload(name);
+                unload(name, false);
+                modules.remove(name);
+                in.remove();
             }
         }
         System.gc();
 
         if (MODULES_DIR.exists()) {
             try {
+                modules.put("core", new CoreModule());
+                classLoaders.put("core", null);
                 Files.list(MODULES_DIR.toPath()).filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {
                     try {
                         load(path.toAbsolutePath().toString());
@@ -71,7 +82,9 @@ public class ModuleManager {
                         for(KyokoModule mod : modules.values()) {
                             multibinder.addBinding().to(mod.getClass());
                         }
+                        bind(Settings.class).toInstance(settings);
                         bind(CommandManager.class).toInstance(commandManager);
+                        bind(ModuleManager.class).toInstance(ModuleManager.this);
                     }
                 });
 
@@ -110,37 +123,52 @@ public class ModuleManager {
                 logger.error("Error stopping module: " + name);
                 e.printStackTrace();
             }
-            started.remove(name);
+
+            Iterator<String> i = started.iterator();
+            while (i.hasNext())
+                if (i.next().equalsIgnoreCase(name)) i.remove();
         }
     }
 
-    public void unload(String name) {
-        modules.entrySet().removeIf(e -> e.getKey().equals(name));
-        Set<String> classes = new HashSet<String>(classLoaders.get(name).getLoadedClasses().keySet());
-        classes.forEach(clazz -> classLoaders.get(name).unloadClass(clazz));
-        classLoaders.get(name).close();
-        classLoaders.entrySet().removeIf(e -> e.getKey().equals(name));
+    public void unload(String name, boolean remove) {
+        if (classLoaders.get(name) == null) return;
+
+        try {
+            classLoaders.get(name).close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (remove) {
+            modules.entrySet().removeIf(e -> e.getKey().equals(name));
+            classLoaders.entrySet().removeIf(e -> e.getKey().equals(name));
+        }
         System.gc();
     }
 
     public void load(String path) throws Exception {
-        JarClassLoader jcl = new JarClassLoader();
-        jcl.add(path);
+        new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
 
-        URL config = jcl.getResource("plugin.json");
-        if (config == null) throw new ResourceNotFoundException("Cannot find /plugin.json");
+        File jar = new File(path);
+        URL jarUrl = jar.toURI().toURL();
+        URL[] classPath = new URL[]{jarUrl};
+        URLClassLoader cl = new URLClassLoader(classPath, getClass().getClassLoader());
+
+        URL config = cl.getResource("plugin.json");
+        if (config == null) config = cl.getResource("/plugin.json");
+
+        if (config == null) throw new ResourceNotFoundException("Cannot find plugin.json");
         KyokoModuleDescription description = gson.fromJson(new InputStreamReader(config.openStream()), KyokoModuleDescription.class);
 
         if (description.moduleName == null) throw new IllegalArgumentException("No module name specified!");
         if (description.mainClass == null) throw new IllegalArgumentException("No main class specified!");
 
-        Class jarClass = jcl.loadClass(description.mainClass);
+        Class jarClass = cl.loadClass(description.mainClass);
 
         if (!KyokoModule.class.isAssignableFrom(jarClass)) throw new IllegalArgumentException("Module main class does not implement KyokoModule!");
 
         KyokoModule mod = (KyokoModule) jarClass.newInstance();
         modules.put(description.moduleName, mod);
-        classLoaders.put(description.moduleName, jcl);
+        classLoaders.put(description.moduleName, cl);
     }
 
     public boolean isLoaded(String name) {

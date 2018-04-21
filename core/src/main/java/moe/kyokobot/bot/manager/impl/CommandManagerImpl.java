@@ -48,9 +48,11 @@ public class CommandManagerImpl implements CommandManager {
 
         List<String> aliases = Arrays.asList(command.getAliases());
 
-        if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases)))
+        if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases))) {
+        /*    Command c = commands.get(command.getName());
+            commands.values().removeIf(cmd -> cmd == c);*/
             throw new IllegalArgumentException("Alias or label is already registered!");
-
+        }
         registered.add(command);
         commands.put(command.getName().toLowerCase(), command);
 
@@ -64,6 +66,11 @@ public class CommandManagerImpl implements CommandManager {
 
         registered.remove(command);
         commands.values().remove(command);
+    }
+
+    public void unregisterAll() {
+        registered = new HashSet<>();
+        commands = new HashMap<>();
     }
 
     public void handlePrivate(MessageReceivedEvent event) {

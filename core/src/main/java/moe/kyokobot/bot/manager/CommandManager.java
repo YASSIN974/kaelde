@@ -11,6 +11,7 @@ public interface CommandManager {
     Map<String, Command> getCommands();
     void registerCommand(Command command);
     void unregisterCommand(Command command);
+    void unregisterAll();
     void handlePrivate(MessageReceivedEvent event);
     void handleGuild(MessageReceivedEvent event);
 }
