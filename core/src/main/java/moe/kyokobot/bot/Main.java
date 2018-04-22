@@ -2,16 +2,35 @@ package moe.kyokobot.bot;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.Service;
+import com.google.common.util.concurrent.ServiceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import moe.kyokobot.bot.services.GuildCountService;
 import moe.kyokobot.bot.services.KyokoService;
+import moe.kyokobot.bot.util.KyokoJDABuilder;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.requests.Requester;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
+import java.util.Arrays;
+
+import static java.util.Arrays.asList;
 
 public class Main {
     public static void main(String... args) {
+        Logger logger = LoggerFactory.getLogger(Main.class);
+        logger.info(" __                 __           __           __                           ");
+        logger.info("|  |--.--.--.-----.|  |--.-----.|  |--.-----.|  |_   .--------.-----.-----.");
+        logger.info("|    <|  |  |  _  ||    <|  _  ||  _  |  _  ||   _|__|        |  _  |  -__|");
+        logger.info("|__|__|___  |_____||__|__|_____||_____|_____||____|__|__|__|__|_____|_____|");
+        logger.info("      |_____|                                                              ");
+        logger.info("KyokoBot is loading...");
+
         String cfgname = System.getenv("KYOKO_CONFIG");
         if (cfgname == null) cfgname = System.getProperty("kyoko.config");
 
@@ -25,11 +44,11 @@ public class Main {
                     settings = new Settings();
 
                     Files.write(cfg.toPath(), gson.toJson(settings).getBytes(Charsets.UTF_8));
-                    System.out.println("Configuration created, please setup the bot :)");
+                    logger.info("Configuration created, please setup the bot :)");
                     System.exit(1);
                 }
             } catch (Exception e) {
-                System.out.println("Error creating default configuration!");
+                logger.error("Error creating default configuration!");
                 e.printStackTrace();
                 System.exit(1);
             }
@@ -38,19 +57,35 @@ public class Main {
         try {
             settings = gson.fromJson(new FileReader(cfg), Settings.class);
         } catch (Exception e) {
-            System.out.println("Cannot read configuration file!");
+            logger.error("Cannot read configuration file!");
             e.printStackTrace();
             System.exit(1);
         }
-        System.out.println("KyokoBot is loading...");
 
         if (settings.connection.token.isEmpty()) {
-            System.out.println("No token specified!");
+            logger.error("No token specified!");
             return;
         }
 
+        KyokoJDABuilder jdaBuilder = new KyokoJDABuilder(AccountType.BOT);
+
+        if (settings.connection.mode.equalsIgnoreCase("gateway")) {
+            jdaBuilder.setGateway(settings.connection.gatewayServer);
+            Requester.DISCORD_API_PREFIX = settings.connection.restServer;
+        }
+
+        jdaBuilder.setAutoReconnect(true);
+        jdaBuilder.setToken(settings.connection.token);
+
         try {
-            Service kyoko = new KyokoService(settings).startAsync();
+            JDA jda = jdaBuilder.buildBlocking();
+
+            Service kyoko = new KyokoService(settings, jda);
+            Service guildCount = new GuildCountService(settings, jda);
+
+            ServiceManager serviceManager = new ServiceManager(asList(kyoko, guildCount));
+            serviceManager.startAsync();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

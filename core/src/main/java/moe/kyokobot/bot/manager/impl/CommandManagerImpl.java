@@ -15,18 +15,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class CommandManagerImpl implements CommandManager {
     private Settings settings;
     private Logger logger;
     private I18n i18n;
-    private ThreadPoolExecutor executor;
+    private ScheduledExecutorService executor;
 
     private Set<Command> registered;
     private Map<String, Command> commands;
 
-    public CommandManagerImpl(Settings settings, I18n i18n, ThreadPoolExecutor executor) {
+    public CommandManagerImpl(Settings settings, I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();

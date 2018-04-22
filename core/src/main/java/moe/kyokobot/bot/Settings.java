@@ -3,6 +3,8 @@ package moe.kyokobot.bot;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import moe.kyokobot.bot.util.ColorTypeAdapter;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Game;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -55,6 +57,12 @@ public class Settings {
 
         @SerializedName("debug-prefix")
         public String debugPrefix = "kd!";
+
+        @SerializedName("game")
+        public String game = "{prefix}help | {guilds} guilds";
+
+        @SerializedName("gametype")
+        public Game.GameType gameType = Game.GameType.DEFAULT;
 
         @SerializedName("normal-color")
         @JsonAdapter(ColorTypeAdapter.class)
