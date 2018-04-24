@@ -1,7 +1,7 @@
 package me.gabixdev.kyoko;
 
 public class Constants {
-    public static final String VERSION = "1.8.1";
+    public static final String VERSION = "1.8.2";
     public static final String SITE_URL = "https://kyokobot.moe";
     public static final String SITE_URL_MD = "[kyokobot.moe](https://kyokobot.moe)";
     public static final String GITHUB_URL = "https://github.com/KyokoBot/";
