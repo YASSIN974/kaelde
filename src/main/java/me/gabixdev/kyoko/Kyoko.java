@@ -211,7 +211,6 @@ public class Kyoko {
         commandManager.registerCommand(new BananaCommand(this));
         commandManager.registerCommand(new FigletCommand(this));
         commandManager.registerCommand(new SpinnerCommand(this));
-        commandManager.registerCommand(new KysCommand(this));
         commandManager.registerCommand(new SaucenaoCommand(this));
 
         // images
