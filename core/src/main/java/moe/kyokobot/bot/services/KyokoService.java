@@ -2,28 +2,24 @@ package moe.kyokobot.bot.services;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
-import moe.kyokobot.bot.JDAEventHandler;
+import moe.kyokobot.bot.discordapi.impl.JDAEventHandler;
 import moe.kyokobot.bot.Settings;
-import moe.kyokobot.bot.command.debug.ModulesCommand;
+import moe.kyokobot.bot.discordapi.DiscordAPI;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.impl.CommandManagerImpl;
-import moe.kyokobot.bot.util.KyokoJDABuilder;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.ModuleManager;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class KyokoService extends AbstractIdleService {
     private final Logger logger;
-    private JDA jda;
+
+    private DiscordAPI discordAPI;
 
     private ScheduledExecutorService executor;
     private ModuleManager moduleManager;
@@ -34,25 +30,24 @@ public class KyokoService extends AbstractIdleService {
     private I18n i18n;
     private Settings settings;
 
-    public KyokoService(Settings settings, JDA jda) {
+    public KyokoService(Settings settings, DiscordAPI discordAPI, EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         executor = (ScheduledExecutorService) Executors.newScheduledThreadPool(4);
-        eventBus = new EventBus();
 
         this.settings = settings;
-        this.jda = jda;
+        this.discordAPI = discordAPI;
+        this.eventBus = eventBus;
 
         databaseManager = new DatabaseManager();
         i18n = new I18n(databaseManager);
         commandManager = new CommandManagerImpl(settings, i18n, executor);
-        eventHandler = new JDAEventHandler(commandManager);
+        eventHandler = new JDAEventHandler(eventBus);
         moduleManager = new ModuleManager(settings, commandManager);
     }
 
     @Override
     public void startUp() throws Exception {
         try {
-            jda.addEventListener(eventHandler);
             databaseManager.load(settings);
             i18n.loadMessages();
             moduleManager.loadModules();
@@ -64,6 +59,6 @@ public class KyokoService extends AbstractIdleService {
 
     @Override
     public void shutDown() throws Exception {
-        if (jda != null) jda.shutdown();
+        if (discordAPI != null) discordAPI.shutdown();
     }
 }

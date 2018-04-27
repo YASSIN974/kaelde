@@ -2,11 +2,14 @@ package moe.kyokobot.bot.command;
 
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Settings;
+import moe.kyokobot.bot.discordapi.entity.Guild;
+import moe.kyokobot.bot.discordapi.entity.Member;
+import moe.kyokobot.bot.discordapi.entity.TextChannel;
+import moe.kyokobot.bot.discordapi.entity.User;
+import moe.kyokobot.bot.discordapi.event.MessageReceivedEvent;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.i18n.I18n;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -27,8 +30,9 @@ public class CommandContext {
         this.i18n = i18n;
         this.command = command;
         this.prefix = prefix;
-        if (event.getChannelType().isGuild()) this.language = i18n.getLanguage(event.getMember());
-        else this.language = i18n.getLanguage(event.getAuthor());
+        this.language = i18n.getLanguage(event.getSender());
+        // if (event.getChannelType().isGuild()) this.language = i18n.getLanguage(event.getSender());
+        // else this.language = i18n.getLanguage(event.getAuthor());
         this.event = event;
         this.label = label;
         this.concatArgs = concatArgs.trim();
@@ -40,15 +44,15 @@ public class CommandContext {
     }
 
     public User getSender() {
-        return event.getAuthor();
+        return event.getUser();
     }
 
     public Member getMember() {
-        return event.getMember();
+        return event.getSender();
     }
 
     public TextChannel getChannel() {
-        return event.getTextChannel();
+        return event.getChannel();
     }
 
     public Guild getGuild() {

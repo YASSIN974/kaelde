@@ -3,20 +3,21 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.eventbus.Subscribe;
 import moe.kyokobot.bot.Settings;
+import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.i18n.I18n;
-import moe.kyokobot.bot.util.CommonErrors;
-import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.util.CommonErrors;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class CommandManagerImpl implements CommandManager {
     private Settings settings;
@@ -74,12 +75,15 @@ public class CommandManagerImpl implements CommandManager {
         commands = new HashMap<>();
     }
 
-    public void handlePrivate(MessageReceivedEvent event) {
-        handlePrefix(event, true);
-    }
+    @Subscribe
+    private void onMessage(MessageReceivedEvent event) {
+        if (event.getAuthor().isBot()) return;
 
-    public void handleGuild(MessageReceivedEvent event) {
-        handlePrefix(event, false);
+        if (event.getChannelType() == ChannelType.TEXT) {
+            handlePrefix(event, false);
+        } else if (event.getChannelType() == ChannelType.PRIVATE) {
+            handlePrefix(event, true);
+        }
     }
 
     private void handlePrefix(MessageReceivedEvent event, boolean direct) {

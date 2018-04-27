@@ -1,4 +1,4 @@
-package moe.kyokobot.bot.entity;
+package moe.kyokobot.bot.discordapi.entity;
 
 
 import com.j256.ormlite.field.DatabaseField;

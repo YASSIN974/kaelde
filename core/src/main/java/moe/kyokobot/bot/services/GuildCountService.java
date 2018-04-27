@@ -3,7 +3,8 @@ package moe.kyokobot.bot.services;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import moe.kyokobot.bot.Settings;
-import moe.kyokobot.bot.event.GuildCountUpdateEvent;
+import moe.kyokobot.bot.discordapi.DiscordAPI;
+import moe.kyokobot.bot.discordapi.event.GuildCountUpdateEvent;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 
@@ -15,10 +16,8 @@ public class GuildCountService extends AbstractScheduledService {
 
     private int guilds = 0;
 
-    public GuildCountService(Settings settings, JDA jda) {
+    public GuildCountService(Settings settings, DiscordAPI api) {
         this.settings = settings;
-        this.jda = jda;
-
         guilds = jda.getGuilds().size();
     }
 
@@ -28,7 +27,7 @@ public class GuildCountService extends AbstractScheduledService {
             if (settings.connection.mode.equalsIgnoreCase("gateway")) {
                 jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + guilds));
             } else {
-                jda.getPresence().setGame(Game.of(settings.bot.gameType,
+                jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT,
                         settings.bot.game
                                 .replace("{prefix}", settings.bot.normalPrefix)
                                 .replace("{guilds}", String.valueOf(guilds))));
@@ -45,6 +44,7 @@ public class GuildCountService extends AbstractScheduledService {
 
     @Subscribe
     public void update(GuildCountUpdateEvent event) {
+        System.out.println("Guild count update!");
         if (event != null) {
             guilds = event.getGuildCount();
         }

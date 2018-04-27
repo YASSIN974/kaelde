@@ -12,6 +12,4 @@ public interface CommandManager {
     void registerCommand(Command command);
     void unregisterCommand(Command command);
     void unregisterAll();
-    void handlePrivate(MessageReceivedEvent event);
-    void handleGuild(MessageReceivedEvent event);
 }

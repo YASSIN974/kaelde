@@ -1,10 +1,13 @@
 package moe.kyokobot.bot;
 
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import moe.kyokobot.bot.discordapi.DiscordAPI;
+import moe.kyokobot.bot.discordapi.impl.JDADiscordAPI;
 import moe.kyokobot.bot.services.GuildCountService;
 import moe.kyokobot.bot.services.KyokoService;
 import moe.kyokobot.bot.util.KyokoJDABuilder;
@@ -67,21 +70,20 @@ public class Main {
             return;
         }
 
-        KyokoJDABuilder jdaBuilder = new KyokoJDABuilder(AccountType.BOT);
+        DiscordAPI api = null;
+        EventBus eventBus = new EventBus();
 
         if (settings.connection.mode.equalsIgnoreCase("gateway")) {
-            jdaBuilder.setGateway(settings.connection.gatewayServer);
-            Requester.DISCORD_API_PREFIX = settings.connection.restServer;
+
+        } else {
+            api = new JDADiscordAPI(settings.connection.token, eventBus);
         }
 
-        jdaBuilder.setAutoReconnect(true);
-        jdaBuilder.setToken(settings.connection.token);
-
         try {
-            JDA jda = jdaBuilder.buildBlocking();
+            api.initialize();
 
-            Service kyoko = new KyokoService(settings, jda);
-            Service guildCount = new GuildCountService(settings, jda);
+            Service kyoko = new KyokoService(settings, api, eventBus);
+            Service guildCount = new GuildCountService(settings, api);
 
             ServiceManager serviceManager = new ServiceManager(asList(kyoko, guildCount));
             serviceManager.startAsync();

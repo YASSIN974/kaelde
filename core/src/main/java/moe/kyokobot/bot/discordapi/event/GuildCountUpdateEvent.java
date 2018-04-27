@@ -1,4 +1,4 @@
-package moe.kyokobot.bot.event;
+package moe.kyokobot.bot.discordapi.event;
 
 public class GuildCountUpdateEvent {
     private final int guildCount;
