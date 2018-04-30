@@ -4,25 +4,24 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import moe.kyokobot.bot.Settings;
+import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.i18n.I18n;
-import moe.kyokobot.bot.util.CommonErrors;
-import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.util.CommonErrors;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class CommandManagerImpl implements CommandManager {
-    private Settings settings;
-    private Logger logger;
-    private I18n i18n;
-    private ScheduledExecutorService executor;
+    private final Settings settings;
+    private final Logger logger;
+    private final I18n i18n;
+    private final ScheduledExecutorService executor;
 
     private Set<Command> registered;
     private Map<String, Command> commands;
@@ -115,7 +114,7 @@ public class CommandManagerImpl implements CommandManager {
                         c.execute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        CommonErrors.exception(context);
+                        CommonErrors.exception(context, e);
                     }
                 });
             }
@@ -141,7 +140,7 @@ public class CommandManagerImpl implements CommandManager {
                         c.execute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        CommonErrors.exception(context);
+                        CommonErrors.exception(context, e);
                     }
                 });
             }

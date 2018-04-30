@@ -10,6 +10,9 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class Settings {
+    @SerializedName("debug")
+    public boolean debug = false;
+
     @SerializedName("bot")
     public BotSettings bot = new BotSettings();
 
@@ -18,6 +21,9 @@ public class Settings {
 
     @SerializedName("apikeys")
     public HashMap<String, String> apiKeys = new HashMap<>();
+
+    @SerializedName("apiurls")
+    public HashMap<String, String> apiUrls = new HashMap<>();
 
     public class ConnectionSettings {
         @SerializedName("token")

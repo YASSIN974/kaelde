@@ -47,9 +47,10 @@ public class ModulesCommand extends Command {
                     }
                     break;
                 case "reload":
-                    context.send(context.info() + "Reloading all modules...", msg -> {
+                    context.send(context.working() + "Reloading all modules...", msg -> {
                         try {
                             moduleManager.loadModules();
+                            msg.editMessage(context.success() + "Modules reloaded!").queue();
                         } catch (Exception e) {
                             msg.editMessage(context.error() + "Error reloading modules: " + e.getMessage()).queue();
                             e.printStackTrace();

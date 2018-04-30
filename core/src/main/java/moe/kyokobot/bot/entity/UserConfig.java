@@ -35,6 +35,10 @@ public class UserConfig {
     public Integer xp;
     @DatabaseField
     public Long claim;
+    @DatabaseField
+    public Integer reputation = 0;
+    @DatabaseField
+    public String image = "default";
 
     public String toString() {
         return id + " " + userId + " " + language + " " + level + " " + money + " " + xp + " " + claim;

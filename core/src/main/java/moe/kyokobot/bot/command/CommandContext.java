@@ -110,7 +110,7 @@ public class CommandContext {
     public EmbedBuilder getNormalEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(getNormalColor());
-        eb.setFooter(settings.bot.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
+        //eb.setFooter(  "kyokobot v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 
@@ -134,6 +134,10 @@ public class CommandContext {
     }
 
     // TODO get from config
+    public String working() {
+        return "<a:working:440090198500573184>  |  ";
+    }
+
     public String success() {
         return "<:Success:435574370107129867>  |  ";
     }

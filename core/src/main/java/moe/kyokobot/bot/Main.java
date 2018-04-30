@@ -62,6 +62,8 @@ public class Main {
             System.exit(1);
         }
 
+        Constants.DEBUG = settings.debug;
+
         if (settings.connection.token.isEmpty()) {
             logger.error("No token specified!");
             return;

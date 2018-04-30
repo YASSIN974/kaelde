@@ -3,6 +3,8 @@ package moe.kyokobot.bot.util;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandContext;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Message;
 
 public class CommonErrors {
     public static void noPermissionUser(CommandContext context) {
@@ -29,11 +31,19 @@ public class CommonErrors {
         context.send(err.build());
     }
 
-    public static void exception(CommandContext context) {
+    public static void editException(CommandContext context, Throwable e, Message message) {
         EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL), false);
+        MessageBuilder mb = new MessageBuilder();
+        mb.append(" ");
+        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""), false);
+        mb.setEmbed(err.build());
+        message.editMessage(mb.build()).queue();
+    }
+
+    public static void exception(CommandContext context, Throwable e) {
+        EmbedBuilder err = context.getErrorEmbed();
+        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""), false);
         context.send(err.build());
-        context.send(Constants.DISCORD_URL);
     }
 
     public static void notANumber(CommandContext context, String arg) {

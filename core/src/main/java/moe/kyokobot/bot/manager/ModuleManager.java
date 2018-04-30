@@ -1,5 +1,6 @@
 package moe.kyokobot.bot.manager;
 
+import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
@@ -7,12 +8,14 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
 import moe.kyokobot.bot.Settings;
+import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.KyokoModuleDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,19 +31,25 @@ import java.util.Map;
 public class ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
-    private Logger logger;
-    private Settings settings;
-    private CommandManager commandManager;
+    private final Settings settings;
+    private final DatabaseManager databaseManager;
+    private final I18n i18n;
+    private final CommandManager commandManager;
+
+    private final Logger logger;
 
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
     private ArrayList<String> started;
     private Injector injector;
     private Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+    private EventBus moduleEventBus;
 
-    public ModuleManager(Settings settings, CommandManager commandManager) {
+    public ModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager) {
         logger = LoggerFactory.getLogger(getClass());
         this.settings = settings;
+        this.databaseManager = databaseManager;
+        this.i18n = i18n;
         this.commandManager = commandManager;
 
         modules = new HashMap<>();
@@ -49,6 +58,9 @@ public class ModuleManager {
     }
 
     public void loadModules() {
+        i18n.loadMessages();
+
+        moduleEventBus = new EventBus();
         try {
             new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
@@ -89,8 +101,10 @@ public class ModuleManager {
                             multibinder.addBinding().to(mod.getClass());
                         }
                         bind(Settings.class).toInstance(settings);
+                        bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ModuleManager.this);
+                        bind(EventBus.class).toInstance(moduleEventBus);
                     }
                 });
 

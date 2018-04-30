@@ -46,7 +46,7 @@ public class KyokoService extends AbstractIdleService {
         i18n = new I18n(databaseManager);
         commandManager = new CommandManagerImpl(settings, i18n, executor);
         eventHandler = new JDAEventHandler(commandManager);
-        moduleManager = new ModuleManager(settings, commandManager);
+        moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager);
     }
 
     @Override
@@ -54,7 +54,6 @@ public class KyokoService extends AbstractIdleService {
         try {
             jda.addEventListener(eventHandler);
             databaseManager.load(settings);
-            i18n.loadMessages();
             moduleManager.loadModules();
         } catch (Exception e) {
             e.printStackTrace();

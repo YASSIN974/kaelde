@@ -1,15 +1,16 @@
 package moe.kyokobot.misccommands.commands;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
+import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {
     private CommandManager commandManager;
@@ -26,15 +27,10 @@ public class HelpCommand extends Command {
     public void execute(CommandContext context) {
         if (context.getConcatArgs().isEmpty()) {
             EmbedBuilder eb = context.getNormalEmbed();
-            eb.setAuthor(context.getTranslated("help.header.title"), null, context.getEvent().getJDA().getSelfUser().getAvatarUrl());
-            HashMap<CommandCategory, List<String>> categories = new HashMap<>();
-            for (CommandCategory c : CommandCategory.values()) categories.put(c, new ArrayList<>());
+            eb.addField(Constants.KYOKO_ICON + " " + String.format(context.getTranslated("help.header.title"), Constants.COMMANDS_URL), context.getTranslated("help.header.subtitle"), false);
 
-            commandManager.getRegistered().forEach(command -> {
-                if (command.getCategory() != null) {
-                    categories.get(command.getCategory()).add(command.getName());
-                }
-            });
+            TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
+            commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
             categories.forEach((category, commands) -> {
                 if (commands.size() != 0)
