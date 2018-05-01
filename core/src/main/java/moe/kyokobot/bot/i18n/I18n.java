@@ -63,7 +63,7 @@ public class I18n {
     }
 
     public Language getLanguage(Guild guild) {
-        // TODO
+        // TODO guild lang
         return Language.ENGLISH;
     }
 

@@ -1,7 +1,6 @@
 package moe.kyokobot.misccommands.commands;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
@@ -9,7 +8,10 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {

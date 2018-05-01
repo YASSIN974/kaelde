@@ -9,12 +9,15 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.CommonUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import static moe.kyokobot.weeb.WeebConstants.COMMAND_RATELIMIT;
 
 public class WeebCommand extends Command {
     private static final List<String> types;
@@ -45,17 +48,7 @@ public class WeebCommand extends Command {
         if (context.getConcatArgs().isEmpty() || !types.contains(context.getConcatArgs().toLowerCase())) {
             printHelp(context);
         } else {
-            if (cooldowns.containsKey(context.getGuild())) {
-                if (cooldowns.get(context.getGuild()) > System.currentTimeMillis()) {
-                    CommonErrors.cooldown(context);
-                    return;
-                } else {
-                    cooldowns.remove(context.getGuild());
-                    cooldowns.put(context.getGuild(), System.currentTimeMillis() + 2000);
-                }
-            } else {
-                cooldowns.put(context.getGuild(), System.currentTimeMillis() + 2000);
-            }
+            if (CommonUtil.checkCooldown(cooldowns, context, COMMAND_RATELIMIT)) return;
 
             EmbedBuilder eb = context.getNormalEmbed();
 

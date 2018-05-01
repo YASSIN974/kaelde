@@ -79,6 +79,10 @@ public class CommandContext {
         return concatArgs;
     }
 
+    public boolean hasArgs() {
+        return !concatArgs.isEmpty();
+    }
+
     public Settings getSettings() {
         return settings;
     }

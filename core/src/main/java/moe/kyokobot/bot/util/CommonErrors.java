@@ -6,6 +6,8 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
+import java.util.concurrent.TimeUnit;
+
 public class CommonErrors {
     public static void noPermissionUser(CommandContext context) {
         EmbedBuilder err = context.getErrorEmbed();
@@ -32,18 +34,11 @@ public class CommonErrors {
     }
 
     public static void editException(CommandContext context, Throwable e, Message message) {
-        EmbedBuilder err = context.getErrorEmbed();
-        MessageBuilder mb = new MessageBuilder();
-        mb.append(" ");
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""), false);
-        mb.setEmbed(err.build());
-        message.editMessage(mb.build()).queue();
+        message.editMessage(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).queue();
     }
 
     public static void exception(CommandContext context, Throwable e) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""), false);
-        context.send(err.build());
+        context.send(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
     }
 
     public static void notANumber(CommandContext context, String arg) {
@@ -61,7 +56,7 @@ public class CommonErrors {
     public static void cooldown(CommandContext context) {
         EmbedBuilder err = context.getErrorEmbed();
         err.addField(context.getTranslated("generic.error"), context.getTranslated("generic.cooldown"), false);
-        context.send(err.build());
+        context.send(err.build(), message -> message.delete().queueAfter(3, TimeUnit.SECONDS));
     }
 
     public static void owner(CommandContext context) {

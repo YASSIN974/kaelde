@@ -58,7 +58,16 @@ public class DatabaseManager {
 
     public void saveUser(User u, UserConfig uc) {
         try {
-            userDao.createOrUpdate(uc);
+            QueryBuilder<UserConfig, Integer> statementBuilder = userDao.queryBuilder();
+            statementBuilder.where().like("userid", u.getIdLong());
+
+            UserConfig uc2 = userDao.queryForFirst(statementBuilder.prepare());
+            if (uc2 == null) {
+                userDao.create(uc);
+            } else {
+                userDao.delete(uc2);
+                userDao.create(uc);
+            }
         } catch (Exception e) {
             logger.error("Error saving user " + u.getName() + " (" + u.getId() + ")!");
             e.printStackTrace();

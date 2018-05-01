@@ -84,7 +84,10 @@ public class CommandManagerImpl implements CommandManager {
     private void handlePrefix(MessageReceivedEvent event, boolean direct) {
         String content = event.getMessage().getContentRaw();
 
-        if (content.startsWith(settings.bot.normalPrefix)) {
+        if (content.startsWith(event.getJDA().getSelfUser().getAsMention())) {
+            content = content.trim().substring(event.getJDA().getSelfUser().getAsMention().length()).trim();
+            handleNormal(event, event.getJDA().getSelfUser().getAsMention(), content, direct);
+        } else if (content.startsWith(settings.bot.normalPrefix)) {
             content = content.trim().substring(settings.bot.normalPrefix.length()).trim();
             handleNormal(event, settings.bot.normalPrefix, content, direct);
         } else if (content.startsWith(settings.bot.debugPrefix)) {
