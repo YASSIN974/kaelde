@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Module implements KyokoModule {
     private Logger logger;
@@ -40,15 +41,15 @@ public class Module implements KyokoModule {
     public void startUp() {
         if (settings.apiKeys.containsKey("weebsh")) {
             weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
-
             commands.add(new WeebCommand(weeb4J));
             commands.add(new ActionCommand(weeb4J, cooldowns, "hug"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "pat"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "slap"));
+            commands.add(new ActionCommand(weeb4J, cooldowns, "kiss"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "lick"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "punch"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "tickle"));
-            commands.add(new AliasCommand(commandManager, "trap", new String[0], "trap.description", null, CommandCategory.IMAGES, "weeb", new String[]{"trap"}));
+            commands.addAll(createWeebCommandAliases(commandManager, "awoo", "blush", "clagwimoth", "cry", "dance", "jojo", "lewd", "megumin"));
         } else {
             logger.warn("No weebsh token set in config!");
         }
@@ -58,5 +59,13 @@ public class Module implements KyokoModule {
     @Override
     public void shutDown() {
         commands.forEach(commandManager::unregisterCommand);
+    }
+
+    public List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
+        List<Command> cmds = new ArrayList<>();
+        for (String name : commands) {
+            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{name}));
+        }
+        return cmds;
     }
 }

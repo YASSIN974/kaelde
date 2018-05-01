@@ -12,7 +12,6 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public class ActionCommand extends Command {
         this.cooldowns = cooldowns;
         this.name = name;
         category = CommandCategory.IMAGES;
-        description = "action." + name + ".description";
+        description = "weebsh.action." + name + ".description";
         usage = "generic.multipleusersusage";
     }
 
@@ -44,14 +43,14 @@ public class ActionCommand extends Command {
 
                 String rawMessage = context.getEvent().getMessage().getContentRaw();
                 String kyokoMention = context.getEvent().getJDA().getSelfUser().getAsMention();
-                EmbedBuilder eb = new EmbedBuilder();
+                EmbedBuilder eb = context.getNormalEmbed();
                 if (context.getEvent().getMessage().getMentionedUsers().stream().anyMatch(user -> user.getId().equals(context.getSender().getId()))) {
-                    eb.setTitle(context.getTranslated("action." + this.name + ".alone"));
+                    eb.setTitle(context.getTranslated("weebsh.action." + this.name + ".alone"));
                 } else {
                     String users = context.getEvent().getMessage().getMentionedUsers().stream()
                             .filter(user -> !((rawMessage.startsWith(kyokoMention) && (StringUtil.getOccurencies(rawMessage, kyokoMention) < 2) && (user.getIdLong() == context.getEvent().getJDA().getSelfUser().getIdLong()))))
                             .map(user -> context.getGuild().getMember(user).getEffectiveName()).collect(Collectors.joining(", ")).trim();
-                    eb.setTitle(String.format(context.getTranslated("action." + this.name + ".someone"), context.getMember().getEffectiveName(), users));
+                    eb.setTitle(String.format(context.getTranslated("weebsh.action." + this.name + ".someone"), context.getMember().getEffectiveName(), users));
                 }
 
                 eb.setImage(image.getUrl());
