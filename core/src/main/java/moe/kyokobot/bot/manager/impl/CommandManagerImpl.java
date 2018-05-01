@@ -3,6 +3,7 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
@@ -117,6 +118,7 @@ public class CommandManagerImpl implements CommandManager {
                         c.execute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }
                 });
@@ -143,6 +145,7 @@ public class CommandManagerImpl implements CommandManager {
                         c.execute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }
                 });

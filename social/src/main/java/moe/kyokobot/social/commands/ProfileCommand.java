@@ -1,5 +1,6 @@
 package moe.kyokobot.social.commands;
 
+import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
@@ -32,10 +33,12 @@ public class ProfileCommand extends Command {
                 byte[] image = imageRequester.getProfile(context.getSender());
                 context.getChannel().sendFile(image, "profile.webp").queue(success -> message.delete().queue(), error -> {
                     error.printStackTrace();
+                    Sentry.capture(error);
                     CommonErrors.editException(context, error, message);
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+                Sentry.capture(e);
                 CommonErrors.editException(context, e, message);
             }
         });

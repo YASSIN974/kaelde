@@ -49,7 +49,7 @@ public class Module implements KyokoModule {
             commands.add(new ActionCommand(weeb4J, cooldowns, "lick"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "punch"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "tickle"));
-            commands.addAll(createWeebCommandAliases(commandManager, "awoo", "blush", "clagwimoth", "cry", "dance", "jojo", "lewd", "megumin"));
+            commands.addAll(createWeebCommandAliases(commandManager, "awoo", "blush", "clagwimoth", "cry", "dance", "jojo", "lewd", "megumin", "kemonomimi", "cat", "discordmeme", "initiald"));
         } else {
             logger.warn("No weebsh token set in config!");
         }
@@ -64,7 +64,13 @@ public class Module implements KyokoModule {
     public List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
         List<Command> cmds = new ArrayList<>();
         for (String name : commands) {
-            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{name}));
+            String srcname = name;
+
+            if (name.equals("cat")) srcname = "animal_cat";
+            else if (name.equals("discordmeme")) srcname = "discord_meme";
+            else if (name.equals("initiald")) srcname = "initial_d";
+
+            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{srcname}));
         }
         return cmds;
     }

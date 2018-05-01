@@ -19,6 +19,7 @@ sourceCompatibility = 1.8
 
 repositories {
     jcenter()
+    mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://jcenter.bintray.com" }
     maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
@@ -39,7 +40,7 @@ dependencies {
     compile 'com.github.natanbc:reliqua:2.3.2'
     compile 'mysql:mysql-connector-java:8.0.11'
     compile 'org.xerial:sqlite-jdbc:3.7.2'
-
+    compile 'io.sentry:sentry:1.7.3'
 }
 
 build.dependsOn shadowJar

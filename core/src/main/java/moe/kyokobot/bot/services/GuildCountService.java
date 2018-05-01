@@ -2,6 +2,7 @@ package moe.kyokobot.bot.services;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractScheduledService;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.event.GuildCountUpdateEvent;
 import net.dv8tion.jda.core.JDA;
@@ -35,6 +36,7 @@ public class GuildCountService extends AbstractScheduledService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.capture(e);
         }
     }
 

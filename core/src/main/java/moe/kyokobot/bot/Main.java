@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.services.GuildCountService;
 import moe.kyokobot.bot.services.KyokoService;
 import moe.kyokobot.bot.util.KyokoJDABuilder;
@@ -67,6 +68,10 @@ public class Main {
         if (settings.connection.token.isEmpty()) {
             logger.error("No token specified!");
             return;
+        }
+
+        if (settings.apiKeys.containsKey("sentry-dsn")) {
+            Sentry.init(settings.apiKeys.get("sentry-dsn"));
         }
 
         KyokoJDABuilder jdaBuilder = new KyokoJDABuilder(AccountType.BOT);

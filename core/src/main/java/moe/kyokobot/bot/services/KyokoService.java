@@ -2,6 +2,7 @@ package moe.kyokobot.bot.services;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.JDAEventHandler;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.debug.ModulesCommand;
@@ -57,6 +58,7 @@ public class KyokoService extends AbstractIdleService {
             moduleManager.loadModules();
         } catch (Exception e) {
             e.printStackTrace();
+            Sentry.capture(e);
             this.stopAsync();
         }
     }

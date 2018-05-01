@@ -7,6 +7,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.module.CoreModule;
@@ -64,6 +65,7 @@ public class ModuleManager {
         try {
             new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
+            Sentry.capture(e);
             e.printStackTrace();
         }
 
@@ -89,6 +91,7 @@ public class ModuleManager {
                         load(path.toAbsolutePath().toString());
                     } catch (Exception e) {
                         logger.error("Error loading module \"" + path + "\"!");
+                        Sentry.capture(e);
                         e.printStackTrace();
                     }
                 });
@@ -113,6 +116,7 @@ public class ModuleManager {
                 }
             } catch (IOException e) {
                 logger.error("Error while (re)loading modules!");
+                Sentry.capture(e);
                 e.printStackTrace();
             }
         }
@@ -129,6 +133,7 @@ public class ModuleManager {
                 System.gc();
             } catch (Exception e) {
                 logger.error("Error starting module: " + name);
+                Sentry.capture(e);
                 e.printStackTrace();
             }
         }
@@ -141,6 +146,7 @@ public class ModuleManager {
                 modules.get(name).shutDown();
             } catch (Exception e) {
                 logger.error("Error stopping module: " + name);
+                Sentry.capture(e);
                 e.printStackTrace();
             }
 
@@ -156,6 +162,7 @@ public class ModuleManager {
         try {
             classLoaders.get(name).close();
         } catch (IOException e) {
+            Sentry.capture(e);
             e.printStackTrace();
         }
         if (remove) {

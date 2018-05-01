@@ -4,6 +4,7 @@ import com.github.natanbc.weeb4j.Weeb4J;
 import com.github.natanbc.weeb4j.image.HiddenMode;
 import com.github.natanbc.weeb4j.image.Image;
 import com.github.natanbc.weeb4j.image.NsfwFilter;
+import io.sentry.Sentry;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
@@ -58,6 +59,7 @@ public class ActionCommand extends Command {
                 context.send(eb.build());
             } catch (Exception e) {
                 e.printStackTrace();
+                Sentry.capture(e);
                 CommonErrors.exception(context, e);
             }
         } else {
