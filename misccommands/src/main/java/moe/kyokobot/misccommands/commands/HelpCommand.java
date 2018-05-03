@@ -29,7 +29,11 @@ public class HelpCommand extends Command {
     public void execute(CommandContext context) {
         if (context.getConcatArgs().isEmpty()) {
             EmbedBuilder eb = context.getNormalEmbed();
-            eb.addField(Constants.KYOKO_ICON + " " + String.format(context.getTranslated("help.header.title"), Constants.COMMANDS_URL), context.getTranslated("help.header.subtitle"), false);
+            eb.addField(context.getSettings().bot.botIcon + " " +
+                    (context.getSettings().bot.botName.equals("Kyoko")
+                            ? context.getTranslated("help.header.title")
+                            : String.format(context.getTranslated("help.header.title.cust"), context.getSettings().bot.botName)),
+                    String.format(context.getTranslated("help.header.subtitle"), Constants.COMMANDS_URL), false);
 
             TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
             commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));

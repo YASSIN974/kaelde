@@ -11,7 +11,6 @@ public class Constants {
     public static final String DISCORD_URL = "https://discord.gg/ZvDRQf7";
     public static final String DISCORDBOTS_URL = "https://discordbots.org/bot/375750637540868107";
     public static final int PERMISSIONS = 2117598326;
-    public static final String KYOKO_ICON = "<:kyoko:440219494267355146>";
 
     public static final String POWERED_BY_WEEB = "powered by weeb.sh";
     public static final String POWERED_BY_DOGCEO = "powered by dog.ceo";

@@ -49,6 +49,9 @@ public class Settings {
         @SerializedName("bot-name")
         public String botName = "Kyoko";
 
+        @SerializedName("bot-icon")
+        public String botIcon = "<:kyoko:440219494267355146>";
+
         @SerializedName("owner")
         public String owner = "219067402174988290";
 
