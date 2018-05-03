@@ -67,7 +67,7 @@ public class Module implements KyokoModule {
             String srcname = name;
 
             if (name.equals("cat")) srcname = "animal_cat";
-            else if (name.equals("discordmeme")) srcname = "discord_meme";
+            else if (name.equals("discordmeme")) srcname = "discord_memes";
             else if (name.equals("initiald")) srcname = "initial_d";
 
             cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{srcname}));
