@@ -9,7 +9,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CommandContext {
     private Settings settings;
@@ -81,6 +83,10 @@ public class CommandContext {
 
     public boolean hasArgs() {
         return !concatArgs.isEmpty();
+    }
+
+    public String skipConcatArgs(int n) {
+        return Arrays.stream(args).skip(n).collect(Collectors.joining(" "));
     }
 
     public Settings getSettings() {

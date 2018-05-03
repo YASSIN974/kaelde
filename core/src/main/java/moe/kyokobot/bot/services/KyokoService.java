@@ -9,6 +9,7 @@ import moe.kyokobot.bot.command.debug.ModulesCommand;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.impl.CommandManagerImpl;
+import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.KyokoJDABuilder;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.ModuleManager;
@@ -30,6 +31,7 @@ public class KyokoService extends AbstractIdleService {
     private ModuleManager moduleManager;
     private DatabaseManager databaseManager;
     private CommandManager commandManager;
+    private EventWaiter eventWaiter;
     private JDAEventHandler eventHandler;
     private EventBus eventBus;
     private I18n i18n;
@@ -39,6 +41,7 @@ public class KyokoService extends AbstractIdleService {
         logger = LoggerFactory.getLogger(getClass());
         executor = (ScheduledExecutorService) Executors.newScheduledThreadPool(4);
         eventBus = new EventBus();
+        eventWaiter = new EventWaiter();
 
         this.settings = settings;
         this.jda = jda;
@@ -47,13 +50,14 @@ public class KyokoService extends AbstractIdleService {
         i18n = new I18n(databaseManager);
         commandManager = new CommandManagerImpl(settings, i18n, executor);
         eventHandler = new JDAEventHandler(commandManager);
-        moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager);
+        moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
     }
 
     @Override
     public void startUp() throws Exception {
         try {
             jda.addEventListener(eventHandler);
+            jda.addEventListener(eventWaiter);
             databaseManager.load(settings);
             moduleManager.loadModules();
         } catch (Exception e) {

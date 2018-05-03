@@ -13,6 +13,7 @@ import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.KyokoModuleDescription;
+import moe.kyokobot.bot.util.EventWaiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class ModuleManager {
     private final DatabaseManager databaseManager;
     private final I18n i18n;
     private final CommandManager commandManager;
+    private final EventWaiter eventWaiter;
 
     private final Logger logger;
 
@@ -46,12 +48,13 @@ public class ModuleManager {
     private Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private EventBus moduleEventBus;
 
-    public ModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager) {
+    public ModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
         logger = LoggerFactory.getLogger(getClass());
         this.settings = settings;
         this.databaseManager = databaseManager;
         this.i18n = i18n;
         this.commandManager = commandManager;
+        this.eventWaiter = eventWaiter;
 
         modules = new HashMap<>();
         classLoaders = new HashMap<>();
@@ -103,11 +106,13 @@ public class ModuleManager {
                         for(KyokoModule mod : modules.values()) {
                             multibinder.addBinding().to(mod.getClass());
                         }
+
                         bind(Settings.class).toInstance(settings);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ModuleManager.this);
                         bind(EventBus.class).toInstance(moduleEventBus);
+                        bind(EventWaiter.class).toInstance(eventWaiter);
                     }
                 });
 

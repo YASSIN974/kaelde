@@ -6,8 +6,10 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.social.commands.ClaimCommand;
 import moe.kyokobot.social.commands.ProfileCommand;
+import moe.kyokobot.social.commands.SendMoneyCommand;
 import moe.kyokobot.social.requester.ImageRequester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +17,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 public class Module implements KyokoModule {
+    @Inject private CommandManager commandManager;
+    @Inject private Settings settings;
+    @Inject private DatabaseManager databaseManager;
+    @Inject private EventWaiter eventWaiter;
+
     private Logger logger;
-    private ImageRequester requester;
-    @Inject
-    private CommandManager commandManager;
-    @Inject
-    private Settings settings;
-    @Inject
-    private DatabaseManager databaseManager;
     private ArrayList<Command> commands;
+    private ImageRequester requester;
 
     public Module() {
         logger = LoggerFactory.getLogger(getClass());
@@ -35,6 +36,7 @@ public class Module implements KyokoModule {
         requester = new ImageRequester(settings, databaseManager);
         commands.add(new ProfileCommand(requester));
         commands.add(new ClaimCommand(databaseManager));
+        commands.add(new SendMoneyCommand(databaseManager, eventWaiter));
         commands.forEach(commandManager::registerCommand);
     }
 
