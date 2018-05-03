@@ -110,7 +110,11 @@ public class CommandContext {
     }
 
     public void send(CharSequence message, Consumer<Message> callback) {
-        event.getChannel().sendMessage(message).queue(callback);
+        if (checkSensitive(message.toString())) {
+            event.getChannel().sendMessage(error() + getTranslated("generic.sensitive")).queue(callback);
+        } else {
+            event.getChannel().sendMessage(message).queue(callback);
+        }
     }
 
     public void send(MessageEmbed message, Consumer<Message> callback) {
@@ -162,5 +166,10 @@ public class CommandContext {
 
     public String info() {
         return "<:Information:435576029680238593>  |  ";
+    }
+
+    private boolean checkSensitive(String input) {
+        if (input.contains(settings.connection.databaseUrl) || input.contains(settings.connection.token)) return true;
+        return settings.apiKeys.values().stream().anyMatch(input::contains);
     }
 }
