@@ -97,6 +97,10 @@ public class CommandContext {
         return i18n;
     }
 
+    public Message getMessage() {
+        return event.getMessage();
+    }
+
     public void send(CharSequence message) {
         send(message, null);
     }
