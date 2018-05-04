@@ -6,7 +6,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
 
 public class SayCommand extends Command {
-	private CommandManager commandManager;
+    private CommandManager commandManager;
 
     public SayCommand(CommandManager commandManager) {
         this.commandManager = commandManager;
@@ -18,9 +18,10 @@ public class SayCommand extends Command {
 
 
     @Override
+
     public void execute(CommandContext context) {
-        if (context.getConcatArgs().isEmpty()) {
-            context.send(context.error() + "You have not written anything!");
+        if (context.getArgs().length == 0) {
+            context.send(context.error() + "" + context.getTranslated("say.error"));
         } else {
             context.send(context.getConcatArgs());
         }
