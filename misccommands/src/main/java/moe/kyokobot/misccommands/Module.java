@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.misccommands.commands.HelpCommand;
 import moe.kyokobot.misccommands.commands.PingCommand;
+import moe.kyokobot.misccommands.commands.SayCommand;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.manager.CommandManager;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class Module implements KyokoModule {
         //logger.info("Hello from miscommands XD");
         commands.add(new HelpCommand(commandManager));
         commands.add(new PingCommand(commandManager));
+        commands.add(new SayCommand(commandManager));
 
         commands.forEach(commandManager::registerCommand);
     }
