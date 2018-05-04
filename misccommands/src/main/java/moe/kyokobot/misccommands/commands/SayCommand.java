@@ -20,10 +20,10 @@ public class SayCommand extends Command {
     @Override
 
     public void execute(CommandContext context) {
-        if (context.getArgs().length == 0) {
-            context.send(context.error() + "" + context.getTranslated("say.error"));
-        } else {
+        if (context.hasArgs()) {
             context.send(context.getConcatArgs());
+        } else {
+            context.send(context.error() + context.getTranslated("say.error"));
         }
     }
 }
