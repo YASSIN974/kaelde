@@ -45,7 +45,7 @@ public class UserInfoCommand extends Command {
         eb.setTitle(context.getTranslated("userinfo.user"));
         eb.addField(context.getTranslated("userinfo.tag"), member.getUser().getName() + "#" + member.getUser().getDiscriminator(), false);
         eb.addField(context.getTranslated("userinfo.id"), member.getUser().getId(), false);
-        eb.addField(context.getTranslated("userinfo.status"), member.getOnlineStatus().name(), false);
+        eb.addField(context.getTranslated("userinfo.status"), prettyStatus(context, member.getOnlineStatus()), false);
         eb.addField(context.getTranslated("userinfo.game"), member.getGame() == null ? context.getTranslated("generic.none") : gameToString(member.getGame()), false);
         eb.addField(context.getTranslated("userinfo.roles"), member.getRoles().size() == 0 ? context.getTranslated("generic.none") : "`" + member.getRoles().stream().map(Role::getName).collect(Collectors.joining("`, `")) + "`", false);
         context.send(eb.build());
