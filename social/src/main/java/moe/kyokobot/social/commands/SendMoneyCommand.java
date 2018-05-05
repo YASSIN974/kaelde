@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
@@ -33,18 +34,6 @@ public class SendMoneyCommand extends Command {
     public void execute(CommandContext context) {
         if (context.getArgs().length > 1) {
             sendMoney(context);
-        } else if (context.getArgs().length == 1) {
-            switch (context.getArgs()[0].toLowerCase()) {
-                case "confirm":
-                    confirm(context);
-                    break;
-                case "cancel":
-                    cancel(context);
-                    break;
-                default:
-                    CommonErrors.usage(context);
-                    break;
-            }
         } else CommonErrors.usage(context);
     }
 
@@ -77,7 +66,8 @@ public class SendMoneyCommand extends Command {
         }
     }
 
-    private void confirm(CommandContext context) {
+    @SubCommand()
+    public void confirm(CommandContext context) {
         if (requests.containsKey(context.getSender())) {
             SendMoneyRequest request = requests.remove(context.getSender());
             if (request.isExpiried()) {
@@ -106,7 +96,8 @@ public class SendMoneyCommand extends Command {
         }
     }
 
-    private void cancel(CommandContext context) {
+    @SubCommand()
+    public void cancel(CommandContext context) {
         if (requests.containsKey(context.getSender())) {
             requests.remove(context.getSender());
             context.send(context.info() + context.getTranslated("sendmoney.cancelled"));
