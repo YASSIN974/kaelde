@@ -52,9 +52,10 @@ public class CommandManagerImpl implements CommandManager {
         List<String> aliases = Arrays.asList(command.getAliases());
 
         if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases))) {
-        /*    Command c = commands.get(command.getName());
-            commands.values().removeIf(cmd -> cmd == c);*/
-            throw new IllegalArgumentException("Alias or label is already registered!");
+            logger.debug("Overriding command " + command.getName());
+            Command c = commands.get(command.getName());
+            commands.values().removeIf(cmd -> cmd == c);
+            //throw new IllegalArgumentException("Alias or label is already registered!");
         }
 
         for (Method method : command.getClass().getMethods()) {
@@ -85,9 +86,10 @@ public class CommandManagerImpl implements CommandManager {
 
     public void unregisterCommand(Command command) {
         if (command == null) return;
-
-        registered.remove(command);
-        commands.values().remove(command);
+        commands.values().removeIf(cmd -> command == cmd);
+        registered.removeIf(cmd -> command == cmd);
+        commands.values().removeIf(cmd -> cmd.getName().equals(command.getName()));
+        registered.removeIf(cmd -> cmd.getName().equals(command.getName()));
     }
 
     public void unregisterAll() {
