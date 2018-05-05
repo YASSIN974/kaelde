@@ -79,5 +79,6 @@ public class UserInfoCommand extends Command {
             }
         }
         s += status.name();
+        return s;
     }
 }
