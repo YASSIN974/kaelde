@@ -51,7 +51,10 @@ public abstract class Command {
     public void preExecute(CommandContext context) {
         if (context.hasArgs()) {
             String subcommand = context.getArgs()[0].toLowerCase();
-            if (subCommands.containsKey(subcommand)) {
+            if (subcommand.equalsIgnoreCase("-help") || subcommand.equalsIgnoreCase("--help")) {
+                CommonErrors.usage(context);
+                return;
+            } else if (subCommands.containsKey(subcommand)) {
                 Method m = subCommands.get(subcommand);
                 try {
                     m.invoke(this, context);
