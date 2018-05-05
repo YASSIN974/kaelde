@@ -28,7 +28,7 @@ public class Module implements KyokoModule {
         commands.add(new PingCommand(commandManager));
         commands.add(new SayCommand(commandManager));
         commands.add(new AvatarCommand(commandManager));
-        commands.add(new userinfoCommand(commandManager));
+        commands.add(new UserInfoCommand(commandManager));
 
         commands.forEach(commandManager::registerCommand);
     }
