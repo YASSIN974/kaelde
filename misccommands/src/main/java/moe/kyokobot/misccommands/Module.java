@@ -23,7 +23,6 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
-        //logger.info("Hello from miscommands XD");
         commands.add(new HelpCommand(commandManager));
         commands.add(new PingCommand(commandManager));
         commands.add(new SayCommand(commandManager));
