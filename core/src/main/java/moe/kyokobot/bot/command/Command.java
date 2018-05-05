@@ -13,7 +13,7 @@ public abstract class Command {
     protected String description;
     protected CommandCategory category = null;
     protected CommandType type = CommandType.NORMAL;
-    protected boolean allowInDMs = false;
+    protected boolean allowedInDMs = false;
     protected HashMap<String, Method> subCommands = new HashMap<>();
 
     public String getName() {
@@ -40,8 +40,8 @@ public abstract class Command {
         return type;
     }
 
-    public boolean isAllowInDMs() {
-        return allowInDMs;
+    public boolean isAllowedInDMs() {
+        return allowedInDMs;
     }
 
     public HashMap<String, Method> getSubCommands() {

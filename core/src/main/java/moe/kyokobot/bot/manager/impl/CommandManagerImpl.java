@@ -16,7 +16,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -127,7 +126,7 @@ public class CommandManagerImpl implements CommandManager {
         if (parts.size() != 0) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
-                if (!c.isAllowInDMs() && direct) return;
+                if (!c.isAllowedInDMs() && direct) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
@@ -154,7 +153,7 @@ public class CommandManagerImpl implements CommandManager {
         if (parts.size() != 0) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
-                if (!c.isAllowInDMs() && direct) return;
+                if (!c.isAllowedInDMs() && direct) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
