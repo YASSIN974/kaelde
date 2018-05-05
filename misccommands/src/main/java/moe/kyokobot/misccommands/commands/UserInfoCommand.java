@@ -53,7 +53,7 @@ public class UserInfoCommand extends Command {
 
     private String gameToString(Game game) {
         if (game.isRich()) {
-            return game.asRichPresence().toString();
+            return game.asRichPresence().getName() + "\n" + game.asRichPresence().getDetails();
         }
         return game.getName();
     }
