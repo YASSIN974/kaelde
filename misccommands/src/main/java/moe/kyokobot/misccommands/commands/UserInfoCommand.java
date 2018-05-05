@@ -27,7 +27,7 @@ public class UserInfoCommand extends Command {
         EmbedBuilder eb = context.getNormalEmbed();
         if (context.hasArgs()) {
             if (member != null) {
-                eb.setThumbnail(member.getUser().getAvatarUrl());
+                eb.setThumbnail(member.getUser().getEffectiveAvatarUrl());
                 eb.addField(context.getTranslated("userinfo.user") + member.getUser().getName() + "#" + member.getUser().getDiscriminator(), "", false);
                 eb.addField("ID: ", member.getUser().getId() + "", false);
                 eb.addField("Status:", member.getOnlineStatus() + "", false);
@@ -38,7 +38,13 @@ public class UserInfoCommand extends Command {
                 context.send(context.error() + context.getTranslated("userinfo.notfound"));
             }
         } else {
-            context.send(context.error() + context.getTranslated("userinfo.error"));
+            eb.setThumbnail(context.getSender().getEffectiveAvatarUrl());
+            eb.addField(context.getTranslated("userinfo.user") + context.getSender().getName() + "#" + context.getSender().getDiscriminator(), "", false);
+            eb.addField("ID: ", context.getSender().getId() + "", false);
+            eb.addField("Status:", context.getMember().getOnlineStatus() + "", false);
+            eb.addField(context.getTranslated("userinfo.game"), context.getMember().getGame() + "", false);
+            eb.addField(context.getTranslated("userinfo.roles"), context.getMember().getRoles() + "", false);
+            context.send(eb.build());
         }
     }
 }

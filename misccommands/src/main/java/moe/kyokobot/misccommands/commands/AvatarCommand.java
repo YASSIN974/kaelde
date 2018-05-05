@@ -36,7 +36,9 @@ public class AvatarCommand extends Command {
                 context.send(context.error() + "" + context.getTranslated("avatar.usernotfound"));
             }
         } else {
-            context.send(context.error() + context.getTranslated("avatar.error"));
+            eb.addField(context.getTranslated("avatar.user") + context.getSender().getName() + "#" + context.getSender().getDiscriminator(), "", false);
+            eb.setImage(context.getSender().getEffectiveAvatarUrl());
+            context.send(eb.build());
         }
     }
 }
