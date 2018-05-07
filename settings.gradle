@@ -2,5 +2,6 @@ rootProject.name = 'kyoko'
 
 include ':core'
 include ':misccommands'
-include ':weebsh'
+include ':nsfw'
 include ':social'
+include ':weebsh'
