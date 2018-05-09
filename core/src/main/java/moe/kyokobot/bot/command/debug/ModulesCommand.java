@@ -25,8 +25,8 @@ public class ModulesCommand extends Command {
         String modname = Joiner.on(" ").join(Arrays.stream(context.getArgs()).skip(1).toArray()).toLowerCase();
         if (modname.isEmpty()) printModules(context);
         else {
-            if (moduleManager.getModules().keySet().contains(modname)) {
-                if (moduleManager.getStarted().contains(modname)) {
+            if (moduleManager.isLoaded(modname)) {
+                if (moduleManager.isStarted(modname)) {
                     context.send(context.error() + "Module  `" + modname + "` is already started!");
                 } else {
                     moduleManager.startModule(modname);
@@ -45,8 +45,8 @@ public class ModulesCommand extends Command {
         else {
             if (modname.equalsIgnoreCase("core")) {
                 context.send(context.error() + "Cannot stop `core` module!");
-            } else if (moduleManager.getModules().keySet().contains(modname)) {
-                if (moduleManager.getStarted().contains(modname)) {
+            } else if (moduleManager.isLoaded(modname)) {
+                if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
                     context.send(context.success() + "Module `" + modname + "` stopped!");
                 } else {
