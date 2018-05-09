@@ -3,6 +3,8 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
@@ -12,6 +14,7 @@ import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.CommonErrors;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,11 +100,20 @@ public class CommandManagerImpl implements CommandManager {
         commands = new HashMap<>();
     }
 
-    public void handlePrivate(MessageReceivedEvent event) {
+    @Subscribe
+    public void handleMessageEvent(MessageReceivedEvent event) {
+        if (event.getChannelType() == ChannelType.TEXT) {
+            handleGuild(event);
+        } else if (event.getChannelType() == ChannelType.PRIVATE) {
+            handlePrivate(event);
+        }
+    }
+
+    private void handlePrivate(MessageReceivedEvent event) {
         handlePrefix(event, true);
     }
 
-    public void handleGuild(MessageReceivedEvent event) {
+    private void handleGuild(MessageReceivedEvent event) {
         handlePrefix(event, false);
     }
 

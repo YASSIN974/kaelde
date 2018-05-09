@@ -1,4 +1,7 @@
 allprojects {
+    ext {
+        jdaVersion = "3.6.0_362"
+    }
     repositories {
         jcenter()
         mavenCentral()

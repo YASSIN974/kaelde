@@ -30,7 +30,8 @@ public class Settings {
         public String token = "";
 
         @SerializedName("database-url")
-        public String databaseUrl = "jdbc:mysql://localhost:3306/<database>?user=<username>&password=<password>&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        //public String databaseUrl = "jdbc:mysql://localhost:3306/<database>?user=<username>&password=<password>&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoreconnect=true";
+        public String databaseUrl = "jdbc:sqlite:kyoko.db";
 
         @SerializedName("gateway-server")
         public String gatewayServer = "ws://localhost:8000";

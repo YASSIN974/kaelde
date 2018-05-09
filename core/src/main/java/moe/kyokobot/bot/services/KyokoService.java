@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,40 +27,40 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class KyokoService extends AbstractIdleService {
     private final Logger logger;
     private JDA jda;
-
-    private ScheduledExecutorService executor;
     private ModuleManager moduleManager;
     private DatabaseManager databaseManager;
     private CommandManager commandManager;
     private EventWaiter eventWaiter;
     private JDAEventHandler eventHandler;
-    private EventBus eventBus;
     private I18n i18n;
-    private Settings settings;
 
     public KyokoService(Settings settings, JDA jda) {
         logger = LoggerFactory.getLogger(getClass());
-        executor = (ScheduledExecutorService) Executors.newScheduledThreadPool(4);
-        eventBus = new EventBus();
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
+        EventBus eventBus = new EventBus();
         eventWaiter = new EventWaiter();
 
-        this.settings = settings;
         this.jda = jda;
 
-        databaseManager = new DatabaseManager();
+        databaseManager = new DatabaseManager(settings);
         i18n = new I18n(databaseManager);
         commandManager = new CommandManagerImpl(settings, i18n, executor);
-        eventHandler = new JDAEventHandler(commandManager);
+        eventHandler = new JDAEventHandler(eventBus);
         moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
+
+        eventBus.register(commandManager);
+        eventBus.register(databaseManager);
     }
 
     @Override
     public void startUp() throws Exception {
         try {
+            logger.debug("Starting Kyoko service...");
+            databaseManager.load();
+            moduleManager.loadModules();
+
             jda.addEventListener(eventHandler);
             jda.addEventListener(eventWaiter);
-            databaseManager.load(settings);
-            moduleManager.loadModules();
         } catch (Exception e) {
             e.printStackTrace();
             Sentry.capture(e);

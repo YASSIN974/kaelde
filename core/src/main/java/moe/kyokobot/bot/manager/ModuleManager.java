@@ -1,6 +1,7 @@
 package moe.kyokobot.bot.manager;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
@@ -38,9 +39,7 @@ public class ModuleManager {
     private final I18n i18n;
     private final CommandManager commandManager;
     private final EventWaiter eventWaiter;
-
     private final Logger logger;
-
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
     private ArrayList<String> started;
@@ -215,5 +214,11 @@ public class ModuleManager {
 
     public ArrayList<String> getStarted() {
         return started;
+    }
+
+    @Subscribe
+    public void onEvent(Object object) {
+        if (moduleEventBus != null)
+            moduleEventBus.post(object);
     }
 }
