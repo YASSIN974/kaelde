@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'me.gabixdev'
-version = '1.8.2'
+version = '1.8.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.6.0_354'
+    compile 'net.dv8tion:JDA:3.6.0_362'
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.google.guava:guava:21.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
@@ -27,7 +27,7 @@ dependencies {
     compile 'com.github.lalyos:jfiglet:0.0.8'
     compile 'com.atilika.kuromoji:kuromoji-core:0.9.0'
     compile 'com.atilika.kuromoji:kuromoji-naist-jdic:0.9.0'
-    compile 'com.sedmelluq:lavaplayer:1.2.59'
+    compile 'com.sedmelluq:lavaplayer:1.2.63'
     compile 'com.j256.ormlite:ormlite-jdbc:5.1'
     compile 'mysql:mysql-connector-java:8.0.9-rc'
     compile 'org.apache.commons:commons-lang3:3.7'
