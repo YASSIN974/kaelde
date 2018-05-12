@@ -54,9 +54,7 @@ public class CommonErrors {
     }
 
     public static void cooldown(CommandContext context) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), context.getTranslated("generic.cooldown"), false);
-        context.send(err.build(), message -> message.delete().queueAfter(3, TimeUnit.SECONDS));
+        context.send(context.error() + context.getTranslated("generic.cooldown"), message -> message.delete().queueAfter(2, TimeUnit.SECONDS));
     }
 
     public static void owner(CommandContext context) {
