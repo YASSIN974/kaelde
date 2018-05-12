@@ -63,7 +63,7 @@ public class ActionCommand extends Command {
                 CommonErrors.exception(context, e);
             }
         } else {
-            context.send(context.error() + context.getTranslated("action.needtomention"));
+            context.send(context.error() + context.getTranslated("weebsh.action.needtomention"));
         }
     }
 }
