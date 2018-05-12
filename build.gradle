@@ -1,0 +1,16 @@
+allprojects {
+    ext {
+        jdaVersion = "3.6.0_362"
+    }
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url "https://jcenter.bintray.com" }
+        maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+    
+    group = 'moe.kyokobot'
+}
+

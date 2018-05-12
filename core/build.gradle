@@ -28,8 +28,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'net.dv8tion', name: 'JDA', version: "3.6.0_361"
-    compile 'com.j256.ormlite:ormlite-jdbc:5.1'
+    compile group: 'net.dv8tion', name: 'JDA', version: jdaVersion
     compile 'com.intellij:annotations:+@jar'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'ch.qos.logback:logback-classic:1.2.3'
@@ -38,12 +37,15 @@ dependencies {
     compile 'com.google.guava:guava:21.0'
     compile 'com.google.inject:guice:4.2.0'
     compile 'com.github.natanbc:reliqua:2.3.2'
-    compile 'mysql:mysql-connector-java:8.0.11'
-    compile 'org.xerial:sqlite-jdbc:3.7.2'
+    compile 'com.rethinkdb:rethinkdb-driver:2.3.3'
     compile 'io.sentry:sentry:1.7.3'
 }
 
 build.dependsOn shadowJar
+
+compileJava {
+    options.compilerArgs << '-parameters' // reflection fix
+}
 
 artifacts {
     archives shadowJar

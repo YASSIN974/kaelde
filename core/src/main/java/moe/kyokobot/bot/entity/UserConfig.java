@@ -1,46 +1,39 @@
 package moe.kyokobot.bot.entity;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import moe.kyokobot.bot.i18n.Language;
+import moe.kyokobot.bot.util.GsonUtil;
 
-@DatabaseTable(tableName = "users")
-public class UserConfig {
+import java.beans.Transient;
 
-    public UserConfig() {
-    }
-
-    public UserConfig(Long userId, Language language, Integer level, Integer money, Integer xp, Long claim) {
-        this.userId = userId;
+public class UserConfig implements DatabaseEntity {
+    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, long id) {
+        this.id = id;
         this.language = language;
         this.level = level;
         this.money = money;
         this.xp = xp;
         this.claim = claim;
+        this.reputation = reputation;
+        this.image = image;
     }
 
-    @DatabaseField(id = true)
-    public Integer id;
-
-
-    @DatabaseField(columnName = "userid")
-    public Long userId;
-    @DatabaseField(columnName = "lang")
-    public Language language;
-    @DatabaseField
-    public int level;
-    @DatabaseField
-    public Integer money;
-    @DatabaseField
-    public Integer xp;
-    @DatabaseField
-    public Long claim;
-    @DatabaseField
-    public Integer reputation = 0;
-    @DatabaseField
+    public long id = 0;
+    public Language language = Language.DEFAULT;
+    public long level = 1L;
+    public long money = 0L;
+    public long xp = 0L;
+    public long claim = 0L;
+    public long reputation = 0L;
     public String image = "default";
 
+    @Transient
+    @Override
+    public String getTableName() {
+        return "users";
+    }
+
+    @Override
     public String toString() {
-        return id + " " + userId + " " + language + " " + level + " " + money + " " + xp + " " + claim;
+        return GsonUtil.toJSON(this);
     }
 }

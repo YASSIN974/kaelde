@@ -9,16 +9,20 @@ import java.util.Optional;
 
 public class UserUtil {
     public static Member getMember(Guild guild, String name) {
+        return getMember(guild, name, false);
+    }
+
+    public static Member getMember(Guild guild, String name, boolean notBot) {
         String arg = name.trim();
         Optional<Member> member = guild.getMembers().stream().parallel().filter(ftr ->
-                ftr.getUser().getAsMention().equals(arg)
+                (ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
                         || arg.equals(ftr.getUser().getId())
                         || (ftr.getNickname() != null && arg.equalsIgnoreCase(ftr.getNickname()))
                         || arg.equals("<@" + ftr.getUser().getId() + ">")
                         || arg.equals("<@!" + ftr.getUser().getId() + ">")
                         || arg.equalsIgnoreCase(ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())
-                        || arg.equalsIgnoreCase("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())
+                        || arg.equalsIgnoreCase("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())) && (!notBot || !ftr.getUser().isBot())
         ).findFirst();
         return member.orElse(null);
     }
@@ -34,5 +38,9 @@ public class UserUtil {
                         || arg.equalsIgnoreCase(ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())
                         || arg.equalsIgnoreCase("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
         return ban.map(Guild.Ban::getUser).orElse(null);
+    }
+
+    public static String toDiscrim(User u) {
+        return u.getName() + "#" + u.getDiscriminator();
     }
 }

@@ -72,6 +72,7 @@ public class I18n {
             if (!languageCache.containsKey(member.getUser().getIdLong())) {
                 logger.debug("Loading user language to cache...");
                 Language l = databaseManager.getUser(member.getUser()).language;
+                if (l == Language.DEFAULT) l = getLanguage(member.getGuild());
                 languageCache.put(member.getUser().getIdLong(), l);
             }
             return languageCache.get(member.getUser().getIdLong());
@@ -84,11 +85,10 @@ public class I18n {
     public Language getLanguage(User user) {
         try {
             if (!languageCache.containsKey(user.getIdLong())) {
-                logger.debug("Loading user language to cache...");
                 Language l = databaseManager.getUser(user).language;
-                languageCache.put(user.getIdLong(), l);
-            }
-            return languageCache.get(user.getIdLong());
+                if (l == Language.DEFAULT) l = Language.ENGLISH;
+                return l;
+            } else return languageCache.get(user.getIdLong());
         } catch (Exception e) {
             e.printStackTrace();
             return Language.ENGLISH;

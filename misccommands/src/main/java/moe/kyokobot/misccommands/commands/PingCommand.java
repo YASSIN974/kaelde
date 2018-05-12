@@ -18,9 +18,9 @@ public class PingCommand extends Command {
     
     @Override
     public void execute(CommandContext context) {
-    	context.send("🏓 | Ping...", message -> {
+    	context.send("🏓  |  Ping: ...ms | Gateway: ...ms", message -> {
             long ping = context.getEvent().getMessage().getCreationTime().until(message.getCreationTime(), ChronoUnit.MILLIS);
-            message.editMessage("🏓 | Ping: " + ping + " ms | Gateway: " + context.getMessage().getJDA().getPing() + "ms").queue();
+            message.editMessage("🏓  |  Ping: " + ping + " ms | Gateway: " + context.getMessage().getJDA().getPing() + "ms").queue();
         });
     }
 }

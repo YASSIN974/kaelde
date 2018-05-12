@@ -3,18 +3,23 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
+import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.CommonErrors;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -50,10 +55,30 @@ public class CommandManagerImpl implements CommandManager {
         List<String> aliases = Arrays.asList(command.getAliases());
 
         if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases))) {
-        /*    Command c = commands.get(command.getName());
-            commands.values().removeIf(cmd -> cmd == c);*/
-            throw new IllegalArgumentException("Alias or label is already registered!");
+            logger.debug("Overriding command " + command.getName());
+            Command c = commands.get(command.getName());
+            commands.values().removeIf(cmd -> cmd == c);
+            //throw new IllegalArgumentException("Alias or label is already registered!");
         }
+
+        for (Method method : command.getClass().getMethods()) {
+            try {
+                if (method.isAnnotationPresent(SubCommand.class) && method.getParameterCount() == 1) {
+                    SubCommand subCommand = method.getAnnotation(SubCommand.class);
+                    String name = subCommand.name().isEmpty() ? method.getName() : subCommand.name();
+                    command.getSubCommands().put(name.toLowerCase(), method);
+                    logger.debug("Registered subcommand: " + name.toLowerCase() + " -> " + method);
+                    for (String alias : subCommand.aliases()) {
+                        command.getSubCommands().put(alias.toLowerCase(), method);
+                        logger.debug("Registered subcommand: " + alias.toLowerCase() + " -> " + method);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Sentry.capture(e);
+            }
+        }
+
         registered.add(command);
         commands.put(command.getName().toLowerCase(), command);
 
@@ -64,9 +89,10 @@ public class CommandManagerImpl implements CommandManager {
 
     public void unregisterCommand(Command command) {
         if (command == null) return;
-
-        registered.remove(command);
-        commands.values().remove(command);
+        commands.values().removeIf(cmd -> command == cmd);
+        registered.removeIf(cmd -> command == cmd);
+        commands.values().removeIf(cmd -> cmd.getName().equals(command.getName()));
+        registered.removeIf(cmd -> cmd.getName().equals(command.getName()));
     }
 
     public void unregisterAll() {
@@ -74,11 +100,20 @@ public class CommandManagerImpl implements CommandManager {
         commands = new HashMap<>();
     }
 
-    public void handlePrivate(MessageReceivedEvent event) {
+    @Subscribe
+    public void handleMessageEvent(MessageReceivedEvent event) {
+        if (event.getChannelType() == ChannelType.TEXT) {
+            handleGuild(event);
+        } else if (event.getChannelType() == ChannelType.PRIVATE) {
+            handlePrivate(event);
+        }
+    }
+
+    private void handlePrivate(MessageReceivedEvent event) {
         handlePrefix(event, true);
     }
 
-    public void handleGuild(MessageReceivedEvent event) {
+    private void handleGuild(MessageReceivedEvent event) {
         handlePrefix(event, false);
     }
 
@@ -105,7 +140,7 @@ public class CommandManagerImpl implements CommandManager {
         if (parts.size() != 0) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
-                if (!c.isAllowInDMs() && direct) return;
+                if (!c.isAllowedInDMs() && direct) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
@@ -115,7 +150,7 @@ public class CommandManagerImpl implements CommandManager {
                 executor.submit(() -> {
                     logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
                     try {
-                        c.execute(context);
+                        c.preExecute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Sentry.capture(e);
@@ -132,7 +167,7 @@ public class CommandManagerImpl implements CommandManager {
         if (parts.size() != 0) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
-                if (!c.isAllowInDMs() && direct) return;
+                if (!c.isAllowedInDMs() && direct) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
@@ -142,7 +177,7 @@ public class CommandManagerImpl implements CommandManager {
                 executor.submit(() -> {
                     logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
                     try {
-                        c.execute(context);
+                        c.preExecute(context);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Sentry.capture(e);

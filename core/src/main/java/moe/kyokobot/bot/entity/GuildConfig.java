@@ -1,34 +1,31 @@
 package moe.kyokobot.bot.entity;
 
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import moe.kyokobot.bot.i18n.Language;
+import moe.kyokobot.bot.util.GsonUtil;
 
-@DatabaseTable(tableName = "guilds")
-public class GuildConfig {
+import java.beans.Transient;
+import java.util.ArrayList;
 
-    public GuildConfig() {
-    }
-
-    public GuildConfig(Long guildId, Language language, String prefixes) {
+public class GuildConfig implements DatabaseEntity {
+    public GuildConfig(Long guildId, Language language, ArrayList<String> prefixes) {
         this.guildId = guildId;
         this.language = language;
         this.prefixes = prefixes;
     }
 
-    @DatabaseField(id = true)
-    public Integer id;
-
-    @DatabaseField(columnName = "guildid")
     public Long guildId;
-    @DatabaseField(columnName = "language")
     public Language language;
-    @DatabaseField(columnName = "prefixes")
-    public String prefixes;
+    public ArrayList<String> prefixes;
 
+    @Transient
+    @Override
+    public String getTableName() {
+        return "guilds";
+    }
 
+    @Override
     public String toString() {
-        return id + " " + guildId + " " + language + " " + prefixes;
+        return GsonUtil.toJSON(this);
     }
 }

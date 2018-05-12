@@ -35,8 +35,8 @@ public class ImageRequester {
         preq.discrim = user.getDiscriminator();
         preq.image = uc.image == null ? "default" : uc.image;
         preq.type = 0;
-        preq.money = Integer.toString(uc.money);
-        preq.reputation = uc.reputation > 0 ? "+" + uc.reputation : Integer.toString(uc.reputation);
+        preq.money = Long.toString(uc.money);
+        preq.reputation = uc.reputation > 0 ? "+" + uc.reputation : Long.toString(uc.reputation);
         preq.level = 1;
         preq.exp = uc.xp;
         preq.maxExp = 1000;
@@ -61,10 +61,10 @@ public class ImageRequester {
         public String discrim;
         public String reputation;
         public String money;
-        public int level;
-        public int exp;
+        public long level;
+        public long exp;
         @SerializedName("max_exp")
-        public int maxExp;
+        public long maxExp;
         public int type;
     }
 }

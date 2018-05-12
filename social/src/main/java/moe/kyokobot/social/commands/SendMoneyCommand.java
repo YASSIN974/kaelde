@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
@@ -33,24 +34,12 @@ public class SendMoneyCommand extends Command {
     public void execute(CommandContext context) {
         if (context.getArgs().length > 1) {
             sendMoney(context);
-        } else if (context.getArgs().length == 1) {
-            switch (context.getArgs()[0].toLowerCase()) {
-                case "confirm":
-                    confirm(context);
-                    break;
-                case "cancel":
-                    cancel(context);
-                    break;
-                default:
-                    CommonErrors.usage(context);
-                    break;
-            }
         } else CommonErrors.usage(context);
     }
 
     private void sendMoney(CommandContext context) {
         try {
-            int amount = Integer.parseInt(context.getArgs()[0]);
+            int amount = Integer.parseUnsignedInt(context.getArgs()[0]);
             String stringuser = context.skipConcatArgs(1);
             Member m = UserUtil.getMember(context.getGuild(), stringuser);
             if (m == null) {
@@ -62,7 +51,7 @@ public class SendMoneyCommand extends Command {
                     UserConfig sender = databaseManager.getUser(context.getSender());
                     if (sender.money >= amount) {
                         requests.put(context.getSender(), new SendMoneyRequest(amount, System.currentTimeMillis() + 30000, m.getUser()));
-                        context.send(context.info() + String.format(context.getTranslated("sendmoney.request"), amount, m.getEffectiveName(), context.getPrefix()));
+                        context.send(context.info() + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
                     } else {
                         context.send(context.error() + context.getTranslated("sendmoney.nomoney"));
                     }
@@ -77,7 +66,8 @@ public class SendMoneyCommand extends Command {
         }
     }
 
-    private void confirm(CommandContext context) {
+    @SubCommand()
+    public void confirm(CommandContext context) {
         if (requests.containsKey(context.getSender())) {
             SendMoneyRequest request = requests.remove(context.getSender());
             if (request.isExpiried()) {
@@ -89,8 +79,8 @@ public class SendMoneyCommand extends Command {
                     if (sender.money >= request.amount) {
                         sender.money -= request.amount;
                         receiver.money += request.amount;
-                        databaseManager.saveUser(context.getSender(), sender);
-                        databaseManager.saveUser(request.receiver, receiver);
+                        databaseManager.save(sender);
+                        databaseManager.save(receiver);
                         context.send(context.success() + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
                     } else {
                         context.send(context.error() + context.getTranslated("sendmoney.nomoney"));
@@ -106,7 +96,8 @@ public class SendMoneyCommand extends Command {
         }
     }
 
-    private void cancel(CommandContext context) {
+    @SubCommand()
+    public void cancel(CommandContext context) {
         if (requests.containsKey(context.getSender())) {
             requests.remove(context.getSender());
             context.send(context.info() + context.getTranslated("sendmoney.cancelled"));
