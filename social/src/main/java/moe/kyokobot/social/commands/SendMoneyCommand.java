@@ -39,7 +39,7 @@ public class SendMoneyCommand extends Command {
 
     private void sendMoney(CommandContext context) {
         try {
-            int amount = Integer.parseInt(context.getArgs()[0]);
+            int amount = Integer.parseUnsignedInt(context.getArgs()[0]);
             String stringuser = context.skipConcatArgs(1);
             Member m = UserUtil.getMember(context.getGuild(), stringuser);
             if (m == null) {
@@ -51,7 +51,7 @@ public class SendMoneyCommand extends Command {
                     UserConfig sender = databaseManager.getUser(context.getSender());
                     if (sender.money >= amount) {
                         requests.put(context.getSender(), new SendMoneyRequest(amount, System.currentTimeMillis() + 30000, m.getUser()));
-                        context.send(context.info() + String.format(context.getTranslated("sendmoney.request"), amount, m.getEffectiveName(), context.getPrefix()));
+                        context.send(context.info() + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
                     } else {
                         context.send(context.error() + context.getTranslated("sendmoney.nomoney"));
                     }

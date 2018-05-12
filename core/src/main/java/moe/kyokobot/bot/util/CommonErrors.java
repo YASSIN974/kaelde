@@ -22,9 +22,11 @@ public class CommonErrors {
     }
 
     public static void noUserFound(CommandContext context, String user) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.usernotfound"), user), false);
-        context.send(err.build());
+        context.send(context.error() + String.format(context.getTranslated("generic.usernotfound"), user));
+    }
+
+    public static void editNoUserFound(CommandContext context, String user, Message message) {
+        message.editMessage(context.error() + String.format(context.getTranslated("generic.usernotfound"), user)).override(true).queue();
     }
 
     public static void devOnly(CommandContext context) {
@@ -34,7 +36,7 @@ public class CommonErrors {
     }
 
     public static void editException(CommandContext context, Throwable e, Message message) {
-        message.editMessage(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).queue();
+        message.editMessage(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
     }
 
     public static void exception(CommandContext context, Throwable e) {

@@ -6,8 +6,10 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
+import moe.kyokobot.bot.util.UserUtil;
 import moe.kyokobot.social.requester.ImageRequester;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 
 import java.util.HashMap;
 
@@ -30,7 +32,18 @@ public class ProfileCommand extends Command {
 
         context.getChannel().sendMessage(context.working() + context.getTranslated("generic.loading")).queue(message -> {
             try {
-                byte[] image = imageRequester.getProfile(context.getSender());
+                byte[] image;
+                if (context.hasArgs()) {
+                    Member member = UserUtil.getMember(context.getGuild(), context.getConcatArgs(), true);
+                    if (member == null) {
+                        CommonErrors.editNoUserFound(context, context.getConcatArgs(), message);
+                        return;
+                    } else {
+                        image = imageRequester.getProfile(member.getUser());
+                    }
+                } else {
+                    image = imageRequester.getProfile(context.getSender());
+                }
                 context.getChannel().sendFile(image, "profile.webp").queue(success -> message.delete().queue(), error -> {
                     error.printStackTrace();
                     Sentry.capture(error);
