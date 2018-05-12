@@ -26,11 +26,12 @@ public class Module implements KyokoModule {
         commands.add(new HelpCommand(commandManager));
 
         commands.add(new CoffeeCommand());
-
+      
         commands.add(new PingCommand(commandManager));
         commands.add(new SayCommand(commandManager));
         commands.add(new AvatarCommand(commandManager));
         commands.add(new UserInfoCommand(commandManager));
+        commands.add(new ServerInfoCommand(commandManager));
 
         commands.add(new SimpleTextCommand("lenny", "( ͡° ͜ʖ ͡°)"));
         commands.add(new SimpleTextCommand("shrug", "¯\\_(ツ)_/¯"));
