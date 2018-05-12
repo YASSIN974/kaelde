@@ -169,7 +169,7 @@ public class CommandContext {
     }
 
     private boolean checkSensitive(String input) {
-        if (input.contains(settings.connection.databaseUrl) || input.contains(settings.connection.token)) return true;
+        if (input.contains(settings.connection.token)) return true;
         return settings.apiKeys.values().stream().anyMatch(input::contains);
     }
 }

@@ -43,15 +43,15 @@ public class ClaimCommand extends Command {
                         int money = 200 + (int) Math.floor(Math.random() * 50);
                         desireduc.money += money;
                         uc.claim = currentTime + 86400000;
-                        databaseManager.saveUser(context.getSender(), uc);
-                        databaseManager.saveUser(member.getUser(), desireduc);
+                        databaseManager.save(uc);
+                        databaseManager.save(desireduc);
                         context.send(MONEY_PREFIX + String.format(context.getTranslated("claim.given"), context.getSender().getAsMention(), money, member.getUser().getAsMention()));
                     }
                 } else {
                     int money = 150 + (int) Math.floor(Math.random() * 50);
                     uc.money += money;
                     uc.claim = currentTime + 86400000;
-                    databaseManager.saveUser(context.getSender(), uc);
+                    databaseManager.save(uc);
                     context.send(MONEY_PREFIX + String.format(context.getTranslated("claim.claimed"), context.getSender().getAsMention(), money));
                 }
             }

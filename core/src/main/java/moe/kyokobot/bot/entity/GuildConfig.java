@@ -2,13 +2,13 @@ package moe.kyokobot.bot.entity;
 
 
 import moe.kyokobot.bot.i18n.Language;
+import moe.kyokobot.bot.util.GsonUtil;
 
-public class GuildConfig {
+import java.beans.Transient;
+import java.util.ArrayList;
 
-    public GuildConfig() {
-    }
-
-    public GuildConfig(Long guildId, Language language, String prefixes) {
+public class GuildConfig implements DatabaseEntity {
+    public GuildConfig(Long guildId, Language language, ArrayList<String> prefixes) {
         this.guildId = guildId;
         this.language = language;
         this.prefixes = prefixes;
@@ -16,10 +16,16 @@ public class GuildConfig {
 
     public Long guildId;
     public Language language;
-    public String prefixes;
+    public ArrayList<String> prefixes;
 
+    @Transient
+    @Override
+    public String getTableName() {
+        return "guilds";
+    }
 
+    @Override
     public String toString() {
-        return guildId + " " + language + " " + prefixes;
+        return GsonUtil.toJSON(this);
     }
 }

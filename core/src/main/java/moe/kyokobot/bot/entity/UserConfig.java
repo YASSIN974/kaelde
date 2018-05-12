@@ -1,30 +1,39 @@
 package moe.kyokobot.bot.entity;
 
 import moe.kyokobot.bot.i18n.Language;
+import moe.kyokobot.bot.util.GsonUtil;
 
-public class UserConfig {
+import java.beans.Transient;
 
-    public UserConfig() {
-    }
-
-    public UserConfig(Long userId, Language language, Integer level, Integer money, Integer xp, Long claim) {
-        this.userId = userId;
+public class UserConfig implements DatabaseEntity {
+    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, long id) {
+        this.id = id;
         this.language = language;
         this.level = level;
         this.money = money;
         this.xp = xp;
         this.claim = claim;
+        this.reputation = reputation;
+        this.image = image;
     }
-    public Long userId;
-    public Language language;
-    public int level;
-    public Integer money;
-    public Integer xp;
-    public Long claim;
-    public Integer reputation = 0;
+
+    public long id = 0;
+    public Language language = Language.DEFAULT;
+    public long level = 1L;
+    public long money = 0L;
+    public long xp = 0L;
+    public long claim = 0L;
+    public long reputation = 0L;
     public String image = "default";
 
+    @Transient
+    @Override
+    public String getTableName() {
+        return "users";
+    }
+
+    @Override
     public String toString() {
-        return userId + " " + language + " " + level + " " + money + " " + xp + " " + claim;
+        return GsonUtil.toJSON(this);
     }
 }

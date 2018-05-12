@@ -43,6 +43,10 @@ dependencies {
 
 build.dependsOn shadowJar
 
+compileJava {
+    options.compilerArgs << '-parameters' // reflection fix
+}
+
 artifacts {
     archives shadowJar
 }

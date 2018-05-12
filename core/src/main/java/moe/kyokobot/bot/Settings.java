@@ -29,9 +29,20 @@ public class Settings {
         @SerializedName("token")
         public String token = "";
 
-        @SerializedName("database-url")
-        //public String databaseUrl = "jdbc:mysql://localhost:3306/<database>?user=<username>&password=<password>&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoreconnect=true";
-        public String databaseUrl = "jdbc:sqlite:kyoko.db";
+        @SerializedName("rethink-host")
+        public String rethinkHost = "localhost";
+
+        @SerializedName("rethink-port")
+        public int rethinkPort = 28015;
+
+        @SerializedName("rethink-user")
+        public String rethinkUser = "admin";
+
+        @SerializedName("rethink-password")
+        public String rethinkPassword = "";
+
+        @SerializedName("rethink-dbname")
+        public String rethinkDbName = "kyoko";
 
         @SerializedName("gateway-server")
         public String gatewayServer = "ws://localhost:8000";

@@ -79,8 +79,8 @@ public class SendMoneyCommand extends Command {
                     if (sender.money >= request.amount) {
                         sender.money -= request.amount;
                         receiver.money += request.amount;
-                        databaseManager.saveUser(context.getSender(), sender);
-                        databaseManager.saveUser(request.receiver, receiver);
+                        databaseManager.save(sender);
+                        databaseManager.save(receiver);
                         context.send(context.success() + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
                     } else {
                         context.send(context.error() + context.getTranslated("sendmoney.nomoney"));

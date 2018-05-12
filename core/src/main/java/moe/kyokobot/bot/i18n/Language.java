@@ -1,6 +1,7 @@
 package moe.kyokobot.bot.i18n;
 
 public enum Language {
+    DEFAULT(null, null, null),
     ENGLISH("en", "English", "\uD83C\uDDFA\uD83C\uDDF8");
 
     private String shortName;
