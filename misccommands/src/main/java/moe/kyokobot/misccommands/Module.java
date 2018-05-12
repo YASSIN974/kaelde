@@ -24,11 +24,16 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         commands.add(new HelpCommand(commandManager));
+        commands.add(new CoffeeCommand());
         commands.add(new PingCommand(commandManager));
         commands.add(new SayCommand(commandManager));
         commands.add(new AvatarCommand(commandManager));
         commands.add(new UserInfoCommand(commandManager));
         commands.add(new ServerInfoCommand(commandManager));
+
+        commands.add(new SimpleTextCommand("lenny", "( ͡° ͜ʖ ͡°)"));
+        commands.add(new SimpleTextCommand("shrug", "¯\\_(ツ)_/¯"));
+        commands.add(new RandomTextCommand("tableflip", new String[] {" (╯°□°）╯︵ ┻━┻", "(┛◉Д◉)┛彡┻━┻", "(ﾉ≧∇≦)ﾉ ﾐ ┸━┸", "(ノಠ益ಠ)ノ彡┻━┻", "(╯ರ ~ ರ）╯︵ ┻━┻", "(┛ಸ_ಸ)┛彡┻━┻", "(ﾉ´･ω･)ﾉ ﾐ ┸━┸", "(ノಥ,_｣ಥ)ノ彡┻━┻", "(┛✧Д✧))┛彡┻━┻"}));
 
         commands.forEach(commandManager::registerCommand);
     }
