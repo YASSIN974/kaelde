@@ -1,36 +1,35 @@
-package moe.kyokobot.nsfw.commands;
+package moe.kyokobot.misccommands.commands;
 
-import com.google.gson.Gson;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Constants;
+import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.GsonUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
-public class LewdNekoCommand extends NsfwCommand {
-    public LewdNekoCommand() {
-        name = "lewdneko";
-        category = CommandCategory.NSFW;
-        description = "lewdneko.description";
+public class CoffeeCommand extends Command {
+    public CoffeeCommand() {
+        name = "coffee";
+        description = "coffee.description";
+        category = CommandCategory.IMAGES;
     }
 
     @Override
     public void execute(CommandContext context) {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
-                String data = new String(download("https://nekos.life/api/v2/img/lewd"));
-                NekosResponse response = GsonUtil.gson.fromJson(data, NekosResponse.class);
-                if (response.url == null || response.url.isEmpty()) {
-                    message.editMessage(context.error() + context.getTranslated("api.nekoslife.error")).queue();
+                String data = new String(download("https://coffee.alexflipnote.xyz/random.json"));
+                CoffeeResponse response = GsonUtil.gson.fromJson(data, CoffeeResponse.class);
+                if (response.file == null || response.file.isEmpty()) {
+                    message.editMessage(context.error() + context.getTranslated("api.coffee.error")).queue();
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
-                    eb.addField(context.getTranslated("lewdneko.title"), Constants.POWERED_BY_NEKOSLIFE, false);
-                    eb.setImage(response.url);
+                    eb.addField(context.getTranslated("coffee.title"), Constants.POWERED_BY_ALEX, false);
+                    eb.setImage(response.file);
                     message.editMessage(eb.build()).override(true).queue();
                 }
             } catch (Exception e) {
@@ -41,7 +40,7 @@ public class LewdNekoCommand extends NsfwCommand {
         });
     }
 
-    private class NekosResponse {
-        private String url;
+    private class CoffeeResponse {
+        private String file;
     }
 }

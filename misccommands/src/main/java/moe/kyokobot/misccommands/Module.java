@@ -24,6 +24,9 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         commands.add(new HelpCommand(commandManager));
+
+        commands.add(new CoffeeCommand());
+
         commands.add(new PingCommand(commandManager));
         commands.add(new SayCommand(commandManager));
         commands.add(new AvatarCommand(commandManager));

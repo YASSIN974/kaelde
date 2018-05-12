@@ -22,18 +22,16 @@ public class Module implements KyokoModule {
     private Settings settings;
     private ArrayList<Command> commands;
     private HashMap<Guild, Long> cooldowns;
-    private Gson gson;
 
     public Module() {
         logger = LoggerFactory.getLogger(getClass());
         commands = new ArrayList<>();
         cooldowns = new HashMap<>();
-        gson = new Gson();
     }
 
     @Override
     public void startUp() {
-        commands.add(new LewdNekoCommand(gson));
+        commands.add(new LewdNekoCommand());
         commands.forEach(commandManager::registerCommand);
     }
 
