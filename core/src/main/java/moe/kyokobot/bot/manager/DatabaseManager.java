@@ -39,6 +39,7 @@ public class DatabaseManager {
 
         r.tableCreate("users").runNoReply(connection);
         r.tableCreate("guilds").runNoReply(connection);
+        r.tableCreate("botsettings").runNoReply(connection);
     }
 
     public UserConfig getUser(User user) throws Exception {
@@ -58,10 +59,14 @@ public class DatabaseManager {
     }
 
     private UserConfig newUser(long id) {
-        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id);
+        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new ArrayList<>());
     }
 
     private GuildConfig newGuild(long id) {
         return new GuildConfig(id, Language.ENGLISH, new ArrayList<>());
+    }
+
+    private UserConfig fillUserDefaults(UserConfig config) {
+        return config;
     }
 }

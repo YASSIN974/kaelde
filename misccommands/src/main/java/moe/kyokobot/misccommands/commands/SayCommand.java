@@ -14,6 +14,7 @@ public class SayCommand extends Command {
         this.commandManager = commandManager;
         name = "say";
         category = CommandCategory.UTILITY;
+        usage = "generic.textusage";
     }
 
 
