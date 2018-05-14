@@ -1,5 +1,7 @@
 package moe.kyokobot.bot.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class StringUtil {
@@ -26,5 +28,25 @@ public class StringUtil {
             }
         }
         return count;
+    }
+
+    public static List<String> createPages(List<String> input) {
+        ArrayList<String> out = new ArrayList<>();
+        boolean renderpage = true;
+        int pg = 0;
+        while (renderpage) {
+            int start = pg*10;
+            int end = input.size() < (pg+1)*10 ? input.size() : (pg+1)*10;
+            if (end <= start) {
+                renderpage = false;
+            } else {
+                StringBuilder sbuilder = new StringBuilder();
+                for (int i = start; i < end; i++)
+                    sbuilder.append("`").append(i+1).append(".` ").append(input.get(i)).append("\n");
+                out.add(sbuilder.toString());
+                pg++;
+            }
+        }
+        return out;
     }
 }

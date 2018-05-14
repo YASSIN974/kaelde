@@ -27,7 +27,7 @@ public class GuildCountService extends AbstractScheduledService {
     protected void runOneIteration() throws Exception {
         try {
             if (settings.connection.mode.equalsIgnoreCase("gateway")) {
-                jda.getPresence().setGame(Game.of(Game.GameType.DEFAULT, "kgw:gc:" + guilds));
+                // TODO gateway
             } else {
                 jda.getPresence().setGame(Game.of(settings.bot.gameType,
                         settings.bot.game
