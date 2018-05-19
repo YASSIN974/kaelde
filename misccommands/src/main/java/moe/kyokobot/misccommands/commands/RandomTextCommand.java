@@ -3,6 +3,7 @@ package moe.kyokobot.misccommands.commands;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.util.RandomUtil;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -22,6 +23,6 @@ public class RandomTextCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        context.send(texts[random.nextInt(texts.length)]);
+        context.send(RandomUtil.randomElement(texts));
     }
 }

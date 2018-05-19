@@ -168,7 +168,7 @@ public class CommandContext {
         return "<:Information:435576029680238593>  |  ";
     }
 
-    private boolean checkSensitive(String input) {
+    public boolean checkSensitive(String input) {
         if (input.contains(settings.connection.token)) return true;
         return settings.apiKeys.values().stream().anyMatch(input::contains);
     }

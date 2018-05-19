@@ -47,7 +47,7 @@ public class UserInfoCommand extends Command {
         eb.addField(context.getTranslated("userinfo.id"), member.getUser().getId(), false);
         eb.addField(context.getTranslated("userinfo.status"), prettyStatus(context, member.getOnlineStatus()), false);
         eb.addField(context.getTranslated("userinfo.game"), member.getGame() == null ? context.getTranslated("generic.none") : gameToString(member.getGame()), false);
-        eb.addField(context.getTranslated("userinfo.roles"), member.getRoles().size() == 0 ? context.getTranslated("generic.none") : "`" + member.getRoles().stream().map(Role::getName).collect(Collectors.joining("`, `")) + "`", false);
+        eb.addField(context.getTranslated("userinfo.roles"), getRoles(context, member), false);
         context.send(eb.build());
     }
 
@@ -56,6 +56,28 @@ public class UserInfoCommand extends Command {
             return game.asRichPresence().getName() + "\n" + game.asRichPresence().getDetails();
         }
         return game.getName();
+    }
+
+    private String getRoles(CommandContext context, Member member) {
+        if (member.getRoles().size() == 0) {
+            return context.getTranslated("generic.none");
+        } else {
+            int roles = member.getRoles().size();
+            String rstr = "";
+            for (Role r : member.getRoles()) {
+                if (rstr.length() > 150) {
+                    if (roles != 0)
+                        rstr += String.format(context.getTranslated("userinfo.roles.more"), roles);
+                    return rstr;
+                } else {
+                    rstr += "`" + r.getName() + "`";
+                    if (roles > 0) rstr += ", ";
+                }
+                roles--;
+            }
+            return rstr;
+        }
+
     }
 
     private String prettyStatus(CommandContext context, OnlineStatus status) {

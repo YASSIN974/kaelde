@@ -15,7 +15,6 @@ import static moe.kyokobot.bot.util.NetworkUtil.download;
 public class LewdNekoCommand extends NsfwCommand {
     public LewdNekoCommand() {
         name = "lewdneko";
-        category = CommandCategory.NSFW;
         description = "lewdneko.description";
     }
 
@@ -29,7 +28,8 @@ public class LewdNekoCommand extends NsfwCommand {
                     message.editMessage(context.error() + context.getTranslated("api.nekoslife.error")).queue();
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
-                    eb.addField(context.getTranslated("lewdneko.title"), Constants.POWERED_BY_NEKOSLIFE, false);
+                    eb.setTitle(context.getTranslated("lewdneko.title"));
+                    eb.setDescription(Constants.POWERED_BY_NEKOSLIFE);
                     eb.setImage(response.url);
                     message.editMessage(eb.build()).override(true).queue();
                 }
