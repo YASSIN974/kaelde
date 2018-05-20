@@ -23,7 +23,7 @@ public class LewdNekoCommand extends NsfwCommand {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://nekos.life/api/v2/img/lewd"));
-                NekosResponse response = GsonUtil.gson.fromJson(data, NekosResponse.class);
+                NekosResponse response = GsonUtil.fromJSON(data, NekosResponse.class);
                 if (response.url == null || response.url.isEmpty()) {
                     message.editMessage(context.error() + context.getTranslated("api.nekoslife.error")).queue();
                 } else {

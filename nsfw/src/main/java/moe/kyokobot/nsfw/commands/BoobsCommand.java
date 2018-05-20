@@ -22,7 +22,7 @@ public class BoobsCommand extends NsfwCommand {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("http://api.oboobs.ru/boobs/0/1/random"));
-                OBoobsResponse[] responses = GsonUtil.gson.fromJson(data, OBoobsResponse[].class);
+                OBoobsResponse[] responses = GsonUtil.fromJSON(data, OBoobsResponse[].class);
                 OBoobsResponse response = responses[0];
                 if (response.id == -1) {
                     message.editMessage(context.error() + context.getTranslated("api.oboobs.error")).queue();

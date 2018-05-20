@@ -424,7 +424,7 @@ public class KyokoJDABuilder {
     /**
      * This will enable sharding mode for JDA.
      * <br>In sharding mode, guilds are split up and assigned one of multiple shards (clients).
-     * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
+     * <br>The shardCount that receives all stuff related to given bot is calculated as follows: shardCount == (guildId {@literal >>} 22) % shardTotal;
      * <br><b>PMs are only sent to shard 0.</b>
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
@@ -436,7 +436,7 @@ public class KyokoJDABuilder {
      * @return The KyokoJDABuilder instance. Useful for chaining.
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException If this is used on a KyokoJDABuilder for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      * @throws java.lang.IllegalArgumentException                   If the provided shard configuration is invalid
-     *                                                              ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
+     *                                                              ({@code 0 <= shardCount < shardTotal} with {@code shardTotal > 0})
      * @see net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
      * @see net.dv8tion.jda.bot.sharding.ShardManager ShardManager
      */

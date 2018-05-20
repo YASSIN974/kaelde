@@ -1,7 +1,5 @@
 package moe.kyokobot.bot.manager;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.rethinkdb.net.Connection;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.DatabaseEntity;
@@ -44,12 +42,12 @@ public class DatabaseManager {
 
     public UserConfig getUser(User user) throws Exception {
         String json = r.table("users").get(user.getIdLong()).toJson().run(connection);
-        return (json != null && !json.equals("null")) ? GsonUtil.gson.fromJson(json, UserConfig.class) : newUser(user.getIdLong());
+        return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, UserConfig.class) : newUser(user.getIdLong());
     }
 
     public GuildConfig getGuild(Guild guild) throws Exception {
         String json = r.table("users").get(guild.getIdLong()).toJson().run(connection);
-        return (json != null && !json.equals("null")) ? GsonUtil.gson.fromJson(json, GuildConfig.class)  : newGuild(guild.getIdLong());
+        return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, GuildConfig.class)  : newGuild(guild.getIdLong());
     }
 
     public void save(@NotNull DatabaseEntity entity) {

@@ -4,6 +4,10 @@ import moe.kyokobot.bot.command.CommandContext;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class CommonUtil {
@@ -23,5 +27,16 @@ public class CommonUtil {
             }
         }
         return false;
+    }
+
+    public static String fromStream(InputStream stream) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(stream);
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        int result = bis.read();
+        while(result != -1) {
+            buf.write((byte) result);
+            result = bis.read();
+        }
+        return buf.toString("UTF-8");
     }
 }

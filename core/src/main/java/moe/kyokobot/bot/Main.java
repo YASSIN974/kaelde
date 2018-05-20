@@ -11,6 +11,8 @@ import moe.kyokobot.bot.services.KyokoService;
 import moe.kyokobot.bot.util.KyokoJDABuilder;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,7 @@ public class Main {
 
         try {
             JDA jda = jdaBuilder.buildBlocking();
+            Globals.clientId = jda.getSelfUser().getIdLong();
 
             Service kyoko = new KyokoService(settings, jda);
             Service guildCount = new GuildCountService(settings, jda);

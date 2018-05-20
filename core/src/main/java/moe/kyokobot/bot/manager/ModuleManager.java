@@ -2,8 +2,6 @@ package moe.kyokobot.bot.manager;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -14,15 +12,15 @@ import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.KyokoModuleDescription;
+import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
+import moe.kyokobot.bot.util.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -44,7 +42,6 @@ public class ModuleManager {
     private HashMap<String, URLClassLoader> classLoaders;
     private ArrayList<String> started;
     private Injector injector;
-    private Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     private EventBus moduleEventBus;
 
     public ModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
@@ -186,7 +183,8 @@ public class ModuleManager {
         if (config == null) config = cl.getResource("/plugin.json");
 
         if (config == null) throw new FileNotFoundException("Cannot find plugin.json");
-        KyokoModuleDescription description = gson.fromJson(new InputStreamReader(config.openStream()), KyokoModuleDescription.class);
+        String data = CommonUtil.fromStream(config.openStream());
+        KyokoModuleDescription description = GsonUtil.fromJSON(data, KyokoModuleDescription.class);
 
         if (description.moduleName == null) throw new IllegalArgumentException("No module name specified!");
         if (description.mainClass == null) throw new IllegalArgumentException("No main class specified!");
