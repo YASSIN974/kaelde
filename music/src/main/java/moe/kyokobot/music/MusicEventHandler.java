@@ -6,6 +6,6 @@ import moe.kyokobot.music.event.TrackEndEvent;
 public class MusicEventHandler {
     @Subscribe
     public void onTrackEnd(TrackEndEvent event) {
-        
+
     }
 }

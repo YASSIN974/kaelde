@@ -25,6 +25,7 @@ public class LavaMusicManager implements MusicManager {
     private final LavaClient lavaClient;
     private final MusicSettings settings;
     private final EventBus eventBus;
+    private LavaEventHandler handler;
     private HashMap<Long, EventWaiter> waiters;
 
     public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
@@ -32,6 +33,7 @@ public class LavaMusicManager implements MusicManager {
         this.eventBus = eventBus;
 
         waiters = new HashMap<>();
+        handler = new LavaEventHandler(eventBus);
 
         lavaClient = new LavaClientBuilder(true)
                 .setShardCount(Globals.shardCount)
@@ -54,7 +56,7 @@ public class LavaMusicManager implements MusicManager {
     public MusicPlayer getMusicPlayer(Guild guild) {
         return lavaClient.getRawPlayers().computeIfAbsent(guild.getIdLong(), player -> {
             LavaPlayer lp = new LavaPlayerImpl(lavaClient, guild.getIdLong());
-            lp.addListener(new LavaEventHandler(eventBus));
+            lp.addListener(handler);
             return lp;
         });
     }
