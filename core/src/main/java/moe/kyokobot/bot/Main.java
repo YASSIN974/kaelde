@@ -1,6 +1,7 @@
 package moe.kyokobot.bot;
 
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.gson.Gson;
@@ -17,6 +18,7 @@ import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -83,14 +85,18 @@ public class Main {
             Requester.DISCORD_API_PREFIX = settings.connection.restServer;
         }
 
+        jdaBuilder.setAudioEnabled(true);
         jdaBuilder.setAutoReconnect(true);
         jdaBuilder.setToken(settings.connection.token);
 
         try {
+            EventBus eventBus = new EventBus();
+            JDAEventHandler eventHandler = new JDAEventHandler(eventBus);
+            jdaBuilder.addEventListener(eventHandler);
             JDA jda = jdaBuilder.buildBlocking();
             Globals.clientId = jda.getSelfUser().getIdLong();
 
-            Service kyoko = new KyokoService(settings, jda);
+            Service kyoko = new KyokoService(settings, jda, eventBus);
             Service guildCount = new GuildCountService(settings, jda);
 
             ServiceManager serviceManager = new ServiceManager(asList(kyoko, guildCount));

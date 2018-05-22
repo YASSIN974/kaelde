@@ -3,13 +3,7 @@ package moe.kyokobot.bot.util;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jsoniter.JsonIterator;
 import com.jsoniter.extra.GsonCompatibilityMode;
-import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.DecodingMode;
-
-import java.io.IOException;
-import java.io.Reader;
 
 public class GsonUtil {
     private static GsonCompatibilityMode gsonCompat;

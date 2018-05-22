@@ -2,12 +2,12 @@ package moe.kyokobot.music;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicSettings {
     public AudioType type = AudioType.INTERNAL;
-    public List<AudioNode> nodes = Arrays.asList(new AudioNode());
+    public List<AudioNode> nodes = new ArrayList<>();
 
     public enum AudioType {
         INTERNAL, LAVALINK, NOZOMI;
