@@ -8,9 +8,14 @@ import java.util.Set;
 
 public interface CommandManager {
     Set<Command> getRegistered();
+
     Map<String, Command> getCommands();
+
     void registerCommand(Command command);
+
     void unregisterCommand(Command command);
+
     void unregisterAll();
+
     void handleMessageEvent(MessageReceivedEvent event);
 }

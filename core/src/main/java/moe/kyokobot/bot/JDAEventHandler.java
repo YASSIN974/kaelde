@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.handle.VoiceStateUpdateHandler;
 import net.dv8tion.jda.core.hooks.EventListener;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -66,7 +67,9 @@ public class JDAEventHandler implements EventListener {
 
         @Override
         protected Long handleInternally(JSONObject content) {
-            String channel_id = content.getString("channel_id");
+            Long channel_id = null;
+            if (!content.isNull("channel_id"))
+                channel_id = Long.valueOf(content.getString("channel_id"));
             String user_id = content.getString("user_id");
             String session_id = content.getString("session_id");
             boolean deaf = content.getBoolean("deaf");
@@ -78,7 +81,7 @@ public class JDAEventHandler implements EventListener {
             Guild guild = api.getGuildMap().get(Long.valueOf(guild_id));
 
             if (user_id.equals(api.getSelfUser().getId())) {
-                eventBus.post(new VoiceStateUpdateEvent(guild, Long.valueOf(channel_id), user_id, session_id, deaf, mute, self_deaf, self_mute, suppress));
+                eventBus.post(new VoiceStateUpdateEvent(guild, channel_id, user_id, session_id, deaf, mute, self_deaf, self_mute, suppress));
                 return super.handleInternally(content);
             } else {
                 return super.handleInternally(content);

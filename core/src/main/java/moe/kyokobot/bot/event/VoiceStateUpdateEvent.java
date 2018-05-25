@@ -3,7 +3,7 @@ package moe.kyokobot.bot.event;
 import net.dv8tion.jda.core.entities.Guild;
 
 public class VoiceStateUpdateEvent {
-    public VoiceStateUpdateEvent(Guild guild, long channel_id, String user_id, String session_id, boolean deaf, boolean mute, boolean self_deaf, boolean self_mute, boolean suppress) {
+    public VoiceStateUpdateEvent(Guild guild, Long channel_id, String user_id, String session_id, boolean deaf, boolean mute, boolean self_deaf, boolean self_mute, boolean suppress) {
         this.guild = guild;
         this.channel_id = channel_id;
         this.user_id = user_id;
@@ -16,7 +16,7 @@ public class VoiceStateUpdateEvent {
     }
 
     private Guild guild;
-    private long channel_id;
+    private Long channel_id;
     private String user_id;
     private String session_id;
     private boolean deaf;

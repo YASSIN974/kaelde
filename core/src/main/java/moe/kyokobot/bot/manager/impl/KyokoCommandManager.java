@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class CommandManagerImpl implements CommandManager {
+public class KyokoCommandManager implements CommandManager {
     private final Settings settings;
     private final Logger logger;
     private final I18n i18n;
@@ -32,7 +32,7 @@ public class CommandManagerImpl implements CommandManager {
     private Set<Command> registered;
     private Map<String, Command> commands;
 
-    public CommandManagerImpl(Settings settings, I18n i18n, ScheduledExecutorService executor) {
+    public KyokoCommandManager(Settings settings, I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();

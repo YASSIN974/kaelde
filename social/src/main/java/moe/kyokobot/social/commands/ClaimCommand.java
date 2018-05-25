@@ -5,7 +5,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.entity.UserConfig;
-import moe.kyokobot.bot.manager.DatabaseManager;
+import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.bot.util.UserUtil;
@@ -14,9 +14,9 @@ import net.dv8tion.jda.core.entities.Member;
 import static moe.kyokobot.social.SocialConstants.MONEY_PREFIX;
 
 public class ClaimCommand extends Command {
-    private final DatabaseManager databaseManager;
+    private final RethinkDatabaseManager databaseManager;
 
-    public ClaimCommand(DatabaseManager databaseManager) {
+    public ClaimCommand(RethinkDatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
         this.name = "claim";
         this.category = CommandCategory.SOCIAL;
