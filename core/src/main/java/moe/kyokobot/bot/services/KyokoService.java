@@ -6,6 +6,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.impl.ExternalModuleManager;
 import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.manager.impl.KyokoCommandManager;
@@ -35,7 +36,7 @@ public class KyokoService extends AbstractIdleService {
         databaseManager = new RethinkDatabaseManager(settings);
         i18n = new I18n(databaseManager);
         commandManager = new KyokoCommandManager(settings, i18n, executor);
-        moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
+        moduleManager = new ExternalModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);

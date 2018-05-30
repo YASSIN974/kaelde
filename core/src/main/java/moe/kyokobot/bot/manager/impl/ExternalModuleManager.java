@@ -109,7 +109,7 @@ public class ExternalModuleManager implements ModuleManager {
                         bind(Settings.class).toInstance(settings);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
-                        bind(ModuleManager.class).toInstance(ModuleManager.this);
+                        bind(ModuleManager.class).toInstance(ExternalModuleManager.this);
                         bind(EventBus.class).toInstance(moduleEventBus);
                         bind(EventWaiter.class).toInstance(eventWaiter);
                     }
