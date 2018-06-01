@@ -3,6 +3,7 @@ package moe.kyokobot.social;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.manager.CommandManager;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class Module implements KyokoModule {
     @Inject private CommandManager commandManager;
     @Inject private Settings settings;
-    @Inject private RethinkDatabaseManager databaseManager;
+    @Inject private DatabaseManager databaseManager;
     @Inject private EventWaiter eventWaiter;
 
     private Logger logger;

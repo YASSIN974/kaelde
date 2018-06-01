@@ -8,6 +8,8 @@ import java.util.List;
 public class MusicSettings {
     public AudioType type = AudioType.INTERNAL;
     public List<AudioNode> nodes = new ArrayList<>();
+    @SerializedName("queue-limit")
+    public int queueLimit = 1000;
 
     public enum AudioType {
         INTERNAL, LAVALINK, NOZOMI;

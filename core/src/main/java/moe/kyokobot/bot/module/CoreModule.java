@@ -3,6 +3,7 @@ package moe.kyokobot.bot.module;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.command.debug.*;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 
 public class CoreModule implements KyokoModule {
@@ -10,11 +11,13 @@ public class CoreModule implements KyokoModule {
     private CommandManager commandManager;
     @Inject
     private ModuleManager moduleManager;
+    @Inject
+    private DatabaseManager databaseManager;
 
     @Override
     public void startUp() {
         commandManager.registerCommand(new AvatarCommand());
-        commandManager.registerCommand(new EvalCommand());
+        commandManager.registerCommand(new EvalCommand(moduleManager, commandManager, databaseManager));
         commandManager.registerCommand(new NameCommand());
         commandManager.registerCommand(new ShellCommand());
         commandManager.registerCommand(new ModulesCommand(moduleManager));

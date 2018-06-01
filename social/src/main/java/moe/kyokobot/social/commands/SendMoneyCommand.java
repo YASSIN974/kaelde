@@ -6,7 +6,7 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.entity.UserConfig;
-import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.UserUtil;
@@ -16,10 +16,10 @@ import net.dv8tion.jda.core.entities.User;
 import java.util.HashMap;
 
 public class SendMoneyCommand extends Command {
-    private final RethinkDatabaseManager databaseManager;
+    private final DatabaseManager databaseManager;
     private HashMap<User, SendMoneyRequest> requests;
 
-    public SendMoneyCommand(RethinkDatabaseManager databaseManager, EventWaiter eventWaiter) {
+    public SendMoneyCommand(DatabaseManager databaseManager, EventWaiter eventWaiter) {
         name = "sendmoney";
         category = CommandCategory.SOCIAL;
         usage = "sendmoney.usage";

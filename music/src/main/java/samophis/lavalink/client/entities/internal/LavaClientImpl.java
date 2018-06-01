@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import samophis.lavalink.client.entities.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -78,11 +79,11 @@ public class LavaClientImpl implements LavaClient {
     }
     @Override
     public List<AudioNode> getAudioNodes() {
-        return Collections.unmodifiableList((List<AudioNode>) NODES.values());
+        return Collections.unmodifiableList(new ArrayList<AudioNode>(NODES.values()));
     }
     @Override
     public List<LavaPlayer> getPlayers() {
-        return ObjectLists.unmodifiable((ObjectList<LavaPlayer>) PLAYERS.values());
+        return Collections.unmodifiableList(new ArrayList<LavaPlayer>(PLAYERS.values()));
     }
     @Override
     public LavaPlayer getPlayerByGuildId(long guild_id) {

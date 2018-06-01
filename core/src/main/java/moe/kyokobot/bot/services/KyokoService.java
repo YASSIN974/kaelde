@@ -36,7 +36,7 @@ public class KyokoService extends AbstractIdleService {
         databaseManager = new RethinkDatabaseManager(settings);
         i18n = new I18n(databaseManager);
         commandManager = new KyokoCommandManager(settings, i18n, executor);
-        moduleManager = new ExternalModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
+        moduleManager = new ExternalModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter, jda);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);

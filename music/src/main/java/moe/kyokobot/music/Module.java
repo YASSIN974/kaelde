@@ -2,21 +2,20 @@ package moe.kyokobot.music;
 
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
-import com.jsoniter.JsonIterator;
-import com.jsoniter.output.EncodingMode;
-import com.jsoniter.output.JsonStream;
-import com.jsoniter.spi.DecodingMode;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.module.KyokoModule;
+import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
+import moe.kyokobot.music.commands.ListCommand;
 import moe.kyokobot.music.commands.PlayCommand;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
+import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +32,13 @@ public class Module implements KyokoModule {
     private Settings settings;
     @Inject
     private EventBus eventBus;
+    @Inject
+    private JDA jda;
+    @Inject
+    private EventWaiter waiter;
     private ArrayList<Command> commands;
-    private MusicManager manager;
+    private MusicManager musicManager;
     private MusicSettings musicSettings;
-    private MusicEventHandler eventHandler = new MusicEventHandler();
 
     public Module() {
         logger = LoggerFactory.getLogger(getClass());
@@ -49,20 +51,26 @@ public class Module implements KyokoModule {
 
         switch (musicSettings.type) {
             case LAVALINK:
-                manager = new LavaMusicManager(musicSettings, eventBus);
+                musicManager = new LavaMusicManager(musicSettings, eventBus, jda);
                 break;
         }
 
-        eventBus.register(eventHandler);
-        eventBus.register(manager);
-        commands.add(new PlayCommand(manager));
+        if (jda.getGuildById("375752406727786498") != null) { // Kyoko Discord Bot Support
+            MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
+        }
+
+        musicManager.registerSourceManager(new YoutubeAudioSourceManager());
+
+        eventBus.register(musicManager);
+        commands.add(new PlayCommand(musicManager));
+        commands.add(new ListCommand(musicManager, waiter));
         commands.forEach(commandManager::registerCommand);
     }
 
     @Override
     public void shutDown() {
-        eventBus.unregister(eventHandler);
-        eventBus.unregister(manager);
+        musicManager.shutdown();
+        eventBus.unregister(musicManager);
         commands.forEach(commandManager::unregisterCommand);
     }
 

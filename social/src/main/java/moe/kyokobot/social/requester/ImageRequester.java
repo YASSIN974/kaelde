@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.UserConfig;
-import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import net.dv8tion.jda.core.entities.User;
 import okhttp3.*;
 
@@ -19,9 +19,9 @@ public class ImageRequester {
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS).build();
     private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    private RethinkDatabaseManager databaseManager;
+    private DatabaseManager databaseManager;
 
-    public ImageRequester(Settings settings, RethinkDatabaseManager databaseManager) {
+    public ImageRequester(Settings settings, DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
         apiUrl = settings.apiUrls.getOrDefault("imgen", "http://127.0.0.1:8000");
     }

@@ -2,12 +2,17 @@ package moe.kyokobot.music.lavalink;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.music.MusicManager;
-import moe.kyokobot.music.MusicPlayer;
-import moe.kyokobot.music.MusicSettings;
+import moe.kyokobot.music.*;
+import moe.kyokobot.music.event.TrackEndEvent;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -19,20 +24,23 @@ import samophis.lavalink.client.entities.builders.AudioNodeEntryBuilder;
 import samophis.lavalink.client.entities.builders.LavaClientBuilder;
 import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class LavaMusicManager implements MusicManager {
     private final LavaClient lavaClient;
-    private final MusicSettings settings;
-    private final EventBus eventBus;
-    private LavaEventHandler handler;
-    private HashMap<Long, EventWaiter> waiters;
+    private final LavaEventHandler handler;
+    private final JDA jda;
+    private final List<AudioSourceManager> sourceManagers;
+    private final Long2ObjectOpenHashMap<MusicQueue> queues;
+    private final Long2ObjectOpenHashMap<EventWaiter> waiters;
 
-    public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
-        this.settings = settings;
-        this.eventBus = eventBus;
-
-        waiters = new HashMap<>();
+    public LavaMusicManager(MusicSettings settings, EventBus eventBus, JDA jda) {
+        this.jda = jda;
+        sourceManagers = new ArrayList<>();
+        queues = new Long2ObjectOpenHashMap<>();
+        waiters = new Long2ObjectOpenHashMap<>();
         handler = new LavaEventHandler(eventBus);
 
         lavaClient = new LavaClientBuilder(true)
@@ -40,7 +48,6 @@ public class LavaMusicManager implements MusicManager {
                 .setUserId(Globals.clientId).build();
 
         settings.nodes.forEach(node -> {
-            //System.out.println(node);
             AudioNodeEntryBuilder builder = new AudioNodeEntryBuilder(lavaClient);
             builder.setAddress(node.host);
             if (node.password != null && !node.password.isEmpty()) {
@@ -50,6 +57,26 @@ public class LavaMusicManager implements MusicManager {
             builder.setRestPort(node.restPort);
             lavaClient.addEntry(builder.build());
         });
+    }
+
+    @Override
+    public void registerSourceManager(AudioSourceManager manager) {
+        if (manager != null)
+            sourceManagers.add(manager);
+    }
+
+    @Override
+    public AudioItem resolve(String query) {
+        for (AudioSourceManager manager : sourceManagers) {
+            AudioItem item = manager.loadItem(null, new AudioReference(query, null));
+            if (item != null) return item;
+        }
+        return null;
+    }
+
+    @Override
+    public MusicQueue getQueue(Guild guild) {
+        return queues.computeIfAbsent(guild.getIdLong(), queue -> new MusicQueue(this, guild));
     }
 
     @Override
@@ -65,7 +92,6 @@ public class LavaMusicManager implements MusicManager {
     public void openConnection(Guild guild, VoiceChannel channel) {
         JDAImpl jda = (JDAImpl) guild.getJDA();
         jda.getClient().queueAudioConnect(channel);
-        //guild.getAudioManager().openAudioConnection(channel);
         EventWaiter waiter = getWaiter(guild.getIdLong());
         waiter.tryConnect();
     }
@@ -76,10 +102,40 @@ public class LavaMusicManager implements MusicManager {
         jda.getClient().queueAudioDisconnect(guild);
     }
 
+    @Override
+    public String getDebug() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("LavaMusicManager\n");
+        sb.append("----------------\n");
+        sb.append("Connected nodes: ").append(lavaClient.getAudioNodes().size()).append("\n");
+        sb.append("Waiters: ").append(waiters.size()).append("\n");
+        sb.append("Active player count: ").append(lavaClient.getPlayers().size()).append("\n");
+        return sb.toString();
+    }
+
+    @Override
+    public void shutdown() {
+        lavaClient.getRawPlayers().forEach((guild, lavaPlayer) -> {
+            Guild g = jda.getGuildById(guild);
+            if (g != null) ((JDAImpl) jda).getClient().queueAudioDisconnect(g);
+            //lavaPlayer.destroyPlayer();
+        });
+        lavaClient.getAudioNodes().forEach(node -> node.getSocket().sendClose());
+    }
+
+    private void clean(Guild guild) {
+        closeConnection(guild);
+        waiters.remove(guild.getIdLong());
+        queues.remove(guild.getIdLong());
+    }
+
+    private EventWaiter getWaiter(long id) {
+        return waiters.computeIfAbsent(id, waiter -> EventWaiter.from(id));
+    }
+
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
-        closeConnection(event.getGuild());
-        waiters.remove(event.getGuild().getIdLong());
+        clean(event.getGuild());
     }
 
     @Subscribe
@@ -94,7 +150,20 @@ public class LavaMusicManager implements MusicManager {
         waiter.setSessionIdAndTryConnect(event.getSessionId());
     }
 
-    private EventWaiter getWaiter(long id) {
-        return waiters.computeIfAbsent(id, waiter -> EventWaiter.from(id));
+    @Subscribe
+    public void onTrackEnd(TrackEndEvent event) {
+        MusicQueue queue = queues.get(event.getPlayer().getGuildId());
+        if (queue != null) {
+            if (queue.getTracks().size() == 0) {
+                Guild g = jda.getGuildById(event.getPlayer().getGuildId());
+                clean(g);
+            } else {
+                if (event.getReason().mayStartNext) {
+                    AudioTrack track = queue.poll();
+                    event.getPlayer().playTrack(track);
+                    queue.announce(track);
+                }
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ import moe.kyokobot.bot.module.KyokoModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
+import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ public class ExternalModuleManager implements ModuleManager {
     private final I18n i18n;
     private final CommandManager commandManager;
     private final EventWaiter eventWaiter;
+    private final JDA jda;
     private final Logger logger;
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
@@ -47,13 +49,14 @@ public class ExternalModuleManager implements ModuleManager {
     private Injector injector;
     private EventBus moduleEventBus;
 
-    public ExternalModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+    public ExternalModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter, JDA jda) {
         logger = LoggerFactory.getLogger(getClass());
         this.settings = settings;
         this.databaseManager = databaseManager;
         this.i18n = i18n;
         this.commandManager = commandManager;
         this.eventWaiter = eventWaiter;
+        this.jda = jda;
 
         modules = new HashMap<>();
         classLoaders = new HashMap<>();
@@ -106,6 +109,7 @@ public class ExternalModuleManager implements ModuleManager {
                             multibinder.addBinding().to(mod.getClass());
                         }
 
+                        bind(JDA.class).toInstance(jda);
                         bind(Settings.class).toInstance(settings);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
@@ -217,7 +221,8 @@ public class ExternalModuleManager implements ModuleManager {
         return started;
     }
 
-    @Override@Subscribe
+    @Override
+    @Subscribe
     public void onEvent(Object object) {
         if (moduleEventBus != null)
             moduleEventBus.post(object);
