@@ -16,7 +16,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
-public class PlayCommand extends Command {
+public class PlayCommand extends MusicCommand {
     private final MusicManager musicManager;
 
     public PlayCommand(MusicManager musicManager) {
@@ -25,7 +25,6 @@ public class PlayCommand extends Command {
         name = "play";
         description = "music.play.description";
         aliases = new String[] {">", "p"};
-        category = CommandCategory.MUSIC;
     }
 
     @Override

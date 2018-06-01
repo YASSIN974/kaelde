@@ -148,8 +148,14 @@ public interface LavaClient {
         }
         if (node == null)
             throw new IllegalStateException("No available Lavalink nodes!");
-        if (!node.isAvailable())
-            throw new IllegalStateException("Lavalink node wasn't available!");
+        if (!node.isAvailable()) {
+            try {
+                node.getSocket().recreate().connectAsynchronously();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new IllegalStateException("Lavalink node wasn't available!", e);
+            }
+        }
         return node;
     }
 }

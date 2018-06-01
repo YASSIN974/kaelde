@@ -5,6 +5,7 @@ import com.jsoniter.any.Any;
 import com.neovisionaries.ws.client.*;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import io.sentry.Sentry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import samophis.lavalink.client.entities.*;
@@ -61,6 +62,14 @@ public class AudioNodeImpl extends WebSocketAdapter implements AudioNode {
     @Override
     public void onError(WebSocket websocket, WebSocketException cause){
         LOGGER.error("Exception thrown during a WebSocket Connection! {}", cause.getMessage());
+        try {
+            Thread.sleep(2000);
+            websocket.recreate().connectAsynchronously(); // try reconnect
+        } catch (Exception e) {
+            LOGGER.error("Error reconnecting WebSocket!");
+            e.printStackTrace();
+            Sentry.capture(e);
+        }
         throw new RuntimeException(cause);
     }
     @Override
@@ -91,7 +100,6 @@ public class AudioNodeImpl extends WebSocketAdapter implements AudioNode {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(exc);
                 }
-                websocket.recreate().connectAsynchronously();
             }
         }
     }

@@ -1,5 +1,7 @@
 package moe.kyokobot.bot.util;
 
+import moe.kyokobot.bot.command.CommandContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -48,5 +50,9 @@ public class StringUtil {
             }
         }
         return out;
+    }
+
+    public static String toggleFormat(CommandContext context, boolean toggle) {
+        return context.getTranslated("generic." + (toggle ? "enabled" : "disabled"));
     }
 }

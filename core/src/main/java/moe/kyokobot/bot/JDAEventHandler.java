@@ -36,9 +36,7 @@ public class JDAEventHandler implements EventListener {
         } else if (event instanceof MessageReceivedEvent) {
             if (!((MessageReceivedEvent) event).getAuthor().isBot())
                 eventBus.post(event);
-        } else if (event instanceof GuildJoinEvent) {
-            eventBus.post(event);
-        } else if (event instanceof GuildLeaveEvent) {
+        } else {
             eventBus.post(event);
         }
     }

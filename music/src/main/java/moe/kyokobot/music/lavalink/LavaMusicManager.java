@@ -17,6 +17,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceUpdateEvent;
 import samophis.lavalink.client.entities.EventWaiter;
 import samophis.lavalink.client.entities.LavaClient;
 import samophis.lavalink.client.entities.LavaPlayer;
@@ -27,6 +30,8 @@ import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static moe.kyokobot.music.MusicUtil.*;
 
 public class LavaMusicManager implements MusicManager {
     private final LavaClient lavaClient;
@@ -125,6 +130,8 @@ public class LavaMusicManager implements MusicManager {
 
     private void clean(Guild guild) {
         closeConnection(guild);
+        LavaPlayer player = lavaClient.getRawPlayers().get(guild.getIdLong());
+        if (player != null) player.destroyPlayer();
         waiters.remove(guild.getIdLong());
         queues.remove(guild.getIdLong());
     }
@@ -151,17 +158,40 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Subscribe
+    public void onVoiceChannelLeft(GuildVoiceLeaveEvent event) {
+        LavaPlayer lp = lavaClient.getRawPlayers().get(event.getGuild().getIdLong());
+        if (lp != null) {
+            for (VoiceChannel vc : event.getGuild().getVoiceChannels()) {
+                if (vc.getMembers().contains(event.getGuild().getSelfMember())) {
+                    ((LavaPlayerImpl) lp).setChannelId(vc.getIdLong());
+                    break;
+                }
+            }
+
+            if (lp.getChannelId() == event.getChannelLeft().getIdLong() && isChannelEmpty(event.getGuild(), event.getChannelLeft())) {
+                clean(event.getGuild());
+            } else {
+                System.out.println("channel is not empty");
+            }
+        }
+    }
+
+    @Subscribe
     public void onTrackEnd(TrackEndEvent event) {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
-            if (queue.getTracks().size() == 0) {
-                Guild g = jda.getGuildById(event.getPlayer().getGuildId());
-                clean(g);
+            if (queue.isRepeating()) {
+                event.getPlayer().playTrack(queue.getLastTrack());
             } else {
-                if (event.getReason().mayStartNext) {
-                    AudioTrack track = queue.poll();
-                    event.getPlayer().playTrack(track);
-                    queue.announce(track);
+                if (queue.getTracks().size() == 0) {
+                    Guild g = jda.getGuildById(event.getPlayer().getGuildId());
+                    clean(g);
+                } else {
+                    if (event.getReason().mayStartNext) {
+                        AudioTrack track = queue.poll();
+                        event.getPlayer().playTrack(track);
+                        queue.announce(track);
+                    }
                 }
             }
         }

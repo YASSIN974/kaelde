@@ -54,4 +54,12 @@ public class MusicQueue {
         this.announcingChannel = announcingChannel;
         this.context = context;
     }
+
+    public void setRepeating(boolean repeating) {
+        this.repeating = repeating;
+    }
+
+    public boolean isRepeating() {
+        return repeating;
+    }
 }

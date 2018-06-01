@@ -4,6 +4,11 @@ import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
@@ -14,6 +19,8 @@ import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.music.commands.ListCommand;
 import moe.kyokobot.music.commands.PlayCommand;
+import moe.kyokobot.music.commands.RepeatCommand;
+import moe.kyokobot.music.commands.SkipCommand;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
 import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
@@ -57,13 +64,24 @@ public class Module implements KyokoModule {
 
         if (jda.getGuildById("375752406727786498") != null) { // Kyoko Discord Bot Support
             MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
+            MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
+            MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
         }
 
         musicManager.registerSourceManager(new YoutubeAudioSourceManager());
+        musicManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        musicManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        musicManager.registerSourceManager(new VimeoAudioSourceManager());
+        musicManager.registerSourceManager(new BandcampAudioSourceManager());
+        musicManager.registerSourceManager(new BeamAudioSourceManager());
 
         eventBus.register(musicManager);
+
         commands.add(new PlayCommand(musicManager));
         commands.add(new ListCommand(musicManager, waiter));
+        commands.add(new SkipCommand(musicManager));
+        commands.add(new RepeatCommand(musicManager));
+
         commands.forEach(commandManager::registerCommand);
     }
 
