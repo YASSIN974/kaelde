@@ -20,8 +20,9 @@ If you want to contribute to Kyoko [join our server first](https://discord.gg/Zv
 **Steps for building**
 
 1. Clone this repo
-2. Run `gradlew assemble` or `./gradlew assemble` on Unix
-3.
+2. Navigate to project root directory from terminal (location of cloned repo)
+3. Run `gradlew assemble` or `./gradlew assemble` on Unix
+4. After successful build, the runtime jar and modules will be placed in `deploy` directory.
 
 If you want to run Kyoko from IDE - remember to execute Gradle `assemble` task on every build, set working directory to `<project root>/deploy` and run it from `Kyoko.jar`. [Look here for example](http://i.imgur.com/EMWG6Ve.png)
 
