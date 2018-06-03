@@ -42,6 +42,10 @@ public class MusicQueue {
         }
     }
 
+    public boolean isEmpty() {
+        return tracks.size() == 0;
+    }
+
     public AudioTrack getLastTrack() {
         return lastTrack;
     }

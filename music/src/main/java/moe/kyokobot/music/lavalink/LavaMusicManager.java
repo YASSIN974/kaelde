@@ -10,7 +10,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.music.*;
+import moe.kyokobot.music.MusicManager;
+import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -18,20 +21,18 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceUpdateEvent;
 import samophis.lavalink.client.entities.EventWaiter;
 import samophis.lavalink.client.entities.LavaClient;
 import samophis.lavalink.client.entities.LavaPlayer;
 import samophis.lavalink.client.entities.builders.AudioNodeEntryBuilder;
 import samophis.lavalink.client.entities.builders.LavaClientBuilder;
+import samophis.lavalink.client.entities.internal.LavaClientImpl;
 import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import static moe.kyokobot.music.MusicUtil.*;
+import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
 
 public class LavaMusicManager implements MusicManager {
     private final LavaClient lavaClient;
@@ -86,11 +87,9 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public MusicPlayer getMusicPlayer(Guild guild) {
-        return lavaClient.getRawPlayers().computeIfAbsent(guild.getIdLong(), player -> {
-            LavaPlayer lp = new LavaPlayerImpl(lavaClient, guild.getIdLong());
-            lp.addListener(handler);
-            return lp;
-        });
+        LavaPlayer lavaPlayer = lavaClient.getPlayerByGuildId(guild.getIdLong());
+        lavaPlayer.addListener(handler);
+        return new MusicPlayerWrapper(lavaPlayer);
     }
 
     @Override
@@ -120,18 +119,19 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public void shutdown() {
-        lavaClient.getRawPlayers().forEach((guild, lavaPlayer) -> {
-            Guild g = jda.getGuildById(guild);
+        lavaClient.getPlayers().forEach((lavaPlayer) -> {
+            Guild g = jda.getGuildById(lavaPlayer.getGuildId());
             if (g != null) ((JDAImpl) jda).getClient().queueAudioDisconnect(g);
             //lavaPlayer.destroyPlayer();
         });
         lavaClient.getAudioNodes().forEach(node -> node.getSocket().sendClose());
     }
 
-    private void clean(Guild guild) {
+    @Override
+    public void clean(Guild guild) {
         closeConnection(guild);
-        LavaPlayer player = lavaClient.getRawPlayers().get(guild.getIdLong());
-        if (player != null) player.destroyPlayer();
+        LavaPlayer lp = lavaClient.getPlayerMap().get(guild.getIdLong());
+        if (lp != null) lp.destroyPlayer();
         waiters.remove(guild.getIdLong());
         queues.remove(guild.getIdLong());
     }
@@ -159,7 +159,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Subscribe
     public void onVoiceChannelLeft(GuildVoiceLeaveEvent event) {
-        LavaPlayer lp = lavaClient.getRawPlayers().get(event.getGuild().getIdLong());
+        LavaPlayer lp = lavaClient.getPlayerMap().get(event.getGuild().getIdLong());
         if (lp != null) {
             for (VoiceChannel vc : event.getGuild().getVoiceChannels()) {
                 if (vc.getMembers().contains(event.getGuild().getSelfMember())) {
@@ -183,14 +183,18 @@ public class LavaMusicManager implements MusicManager {
             if (queue.isRepeating()) {
                 event.getPlayer().playTrack(queue.getLastTrack());
             } else {
-                if (queue.getTracks().size() == 0) {
-                    Guild g = jda.getGuildById(event.getPlayer().getGuildId());
+                Guild g = jda.getGuildById(event.getPlayer().getGuildId());
+                if (queue.getTracks().size() == 0 && queue.getLastTrack() == null) {
                     clean(g);
                 } else {
                     if (event.getReason().mayStartNext) {
                         AudioTrack track = queue.poll();
-                        event.getPlayer().playTrack(track);
-                        queue.announce(track);
+                        if (track == null) {
+                            clean(g);
+                        } else {
+                            event.getPlayer().playTrack(track);
+                            queue.announce(track);
+                        }
                     }
                 }
             }

@@ -51,7 +51,7 @@ public class RethinkDatabaseManager implements DatabaseManager {
     @Override
     public GuildConfig getGuild(Guild guild) throws Exception {
         String json = r.table("users").get(guild.getIdLong()).toJson().run(connection);
-        return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, GuildConfig.class)  : newGuild(guild.getId());
+        return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, GuildConfig.class) : newGuild(guild.getId());
     }
 
     @Override

@@ -6,6 +6,8 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
@@ -66,6 +68,7 @@ public class Module implements KyokoModule {
             MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
             MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
             MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
+            MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
         }
 
         musicManager.registerSourceManager(new YoutubeAudioSourceManager());
@@ -74,6 +77,8 @@ public class Module implements KyokoModule {
         musicManager.registerSourceManager(new VimeoAudioSourceManager());
         musicManager.registerSourceManager(new BandcampAudioSourceManager());
         musicManager.registerSourceManager(new BeamAudioSourceManager());
+        musicManager.registerSourceManager(new LocalAudioSourceManager());
+        musicManager.registerSourceManager(new HttpAudioSourceManager());
 
         eventBus.register(musicManager);
 

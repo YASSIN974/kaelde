@@ -8,6 +8,7 @@ sourceCompatibility = 1.8
 repositories {
     jcenter()
     maven { url "https://jitpack.io" }
+    maven { url "https://dl.bintray.com/gabixdev/kyoko/"}
     maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
     maven { url "http://repo.maven.apache.org/maven2" }
 }

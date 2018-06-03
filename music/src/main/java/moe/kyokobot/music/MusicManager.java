@@ -12,6 +12,7 @@ public interface MusicManager {
     MusicPlayer getMusicPlayer(Guild guild);
     void openConnection(Guild guild, VoiceChannel channel);
     void closeConnection(Guild guild);
+    void clean(Guild guild);
     String getDebug();
     void shutdown();
 }

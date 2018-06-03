@@ -196,6 +196,8 @@ public class ExternalModuleManager implements ModuleManager {
         if (description.moduleName == null) throw new IllegalArgumentException("No module name specified!");
         if (description.mainClass == null) throw new IllegalArgumentException("No main class specified!");
 
+        if (isLoaded(description.moduleName)) throw new IllegalArgumentException("Module is already loaded!");
+
         Class jarClass = cl.loadClass(description.mainClass);
 
         if (!KyokoModule.class.isAssignableFrom(jarClass)) throw new IllegalArgumentException("Module main class does not implement KyokoModule!");

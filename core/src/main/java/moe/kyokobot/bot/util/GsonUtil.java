@@ -3,14 +3,11 @@ package moe.kyokobot.bot.util;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jsoniter.extra.GsonCompatibilityMode;
 
 public class GsonUtil {
-    private static GsonCompatibilityMode gsonCompat;
     public static Gson gson;
 
     static {
-        gsonCompat = new GsonCompatibilityMode.Builder().disableHtmlEscaping().build();
         gson = new GsonBuilder().disableHtmlEscaping().create();
         //JsonIterator.setMode(DecodingMode.REFLECTION_MODE);
     }

@@ -152,19 +152,19 @@ public class CommandContext {
     }
 
     // TODO get from config
-    public String working() {
+    public static String working() {
         return "<a:working:440090198500573184>  |  ";
     }
 
-    public String success() {
+    public static String success() {
         return "<:Success:435574370107129867>  |  ";
     }
 
-    public String error() {
+    public static String error() {
         return "<:Error:435574504522121216>  |  ";
     }
 
-    public String info() {
+    public static String info() {
         return "<:Information:435576029680238593>  |  ";
     }
 

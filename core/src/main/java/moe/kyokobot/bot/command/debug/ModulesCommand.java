@@ -7,7 +7,14 @@ import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.manager.ModuleManager;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static moe.kyokobot.bot.command.CommandContext.*;
 
 public class ModulesCommand extends Command {
     private ModuleManager moduleManager;
@@ -27,13 +34,13 @@ public class ModulesCommand extends Command {
         else {
             if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
-                    context.send(context.error() + "Module  `" + modname + "` is already started!");
+                    context.send(error() + "Module  `" + modname + "` is already started!");
                 } else {
                     moduleManager.startModule(modname);
-                    context.send(context.success() + "Module `" + modname + "` started!");
+                    context.send(success() + "Module `" + modname + "` started!");
                 }
             } else {
-                context.send(context.error() + "Cannot find module `" + modname + "`");
+                context.send(error() + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -44,28 +51,77 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(context.error() + "Cannot stop `core` module!");
+                context.send(error() + "Cannot stop `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
-                    context.send(context.success() + "Module `" + modname + "` stopped!");
+                    context.send(success() + "Module `" + modname + "` stopped!");
                 } else {
-                    context.send(context.error() + "Module  `" + modname + "` is already stopped!");
+                    context.send(error() + "Module  `" + modname + "` is already stopped!");
                 }
             } else {
-                context.send(context.error() + "Cannot find module `" + modname + "`");
+                context.send(error() + "Cannot find module `" + modname + "`");
             }
         }
     }
 
     @SubCommand
-    public void reload(CommandContext context) {
-        context.send(context.working() + "Reloading all modules...", msg -> {
+    public void unload(CommandContext context) {
+        String modname = Joiner.on(" ").join(Arrays.stream(context.getArgs()).skip(1).toArray()).toLowerCase();
+        if (modname.isEmpty()) printModules(context);
+        else {
+            if (modname.equalsIgnoreCase("core")) {
+                context.send(error() + "Cannot unload `core` module!");
+            } else if (moduleManager.isLoaded(modname)) {
+                if (moduleManager.isStarted(modname)) {
+                    moduleManager.stopModule(modname);
+                }
+                moduleManager.unload(modname, true);
+                context.send(success() + "Module `" + modname + "` unloaded!");
+            } else {
+                context.send(error() + "Cannot find module `" + modname + "`");
+            }
+        }
+    }
+
+    @SubCommand
+    public void load(CommandContext context) {
+        String modname = Joiner.on(" ").join(Arrays.stream(context.getArgs()).skip(1).toArray()).toLowerCase();
+        if (modname.isEmpty()) context.send(error() + "Please specify module path!");
+        else {
+            File f = new File(modname);
+            if (f.exists()) {
+                try {
+                    ZipFile zipFile = new ZipFile(f);
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        if (entry.getName().equals("plugin.json")) {
+                            moduleManager.load(f.getAbsolutePath());
+                            context.send(success() + "Module loaded!");
+                            return;
+                        }
+                    }
+                    context.send(error() + "Not a valid module!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    context.send(error() + "Error while loading module `" + modname + "`: " + e.getMessage());
+                }
+            } else {
+                context.send(error() + "Cannot find file `" + modname + "`");
+            }
+        }
+    }
+
+    @SubCommand
+    public void reloadall(CommandContext context) {
+        context.send(working() + "Reloading all modules...", msg -> {
             try {
                 moduleManager.loadModules();
-                msg.editMessage(context.success() + "Modules reloaded!").queue();
+                msg.editMessage(success() + "Modules reloaded!").queue();
             } catch (Exception e) {
-                msg.editMessage(context.error() + "Error reloading modules: " + e.getMessage()).queue();
+                msg.editMessage(error() + "Error reloading modules: " + e.getMessage()).queue();
                 e.printStackTrace();
             }
         });
@@ -76,7 +132,7 @@ public class ModulesCommand extends Command {
         long free = rt.freeMemory() / 1024;
         long total = rt.totalMemory() / 1024;
         long used = total - free;
-        context.send("```\nFree: " + free + "KB\nTotal: " + total + "KB\nUsed: " + used + "KB\n```");
+        context.send("```css\nFree: " + free + "KB\nTotal: " + total + "KB\nUsed: " + used + "KB\n```");
     }
 
     @Override
@@ -86,10 +142,10 @@ public class ModulesCommand extends Command {
 
     private void printModules(CommandContext context) {
         StringBuilder sb = new StringBuilder();
-        sb.append("```markdown\n");
-        sb.append("# Modules loaded: ").append(moduleManager.getModules().size()).append("\n");
+        sb.append("```css\n");
+        sb.append("Modules loaded (").append(moduleManager.getModules().size()).append("): ");
         sb.append(Joiner.on(", ").join(moduleManager.getModules().keySet())).append("\n");
-        sb.append("# Modules started: ").append(moduleManager.getStarted().size()).append("\n");
+        sb.append("Modules started (").append(moduleManager.getStarted().size()).append("): ");
         sb.append(Joiner.on(", ").join(moduleManager.getStarted())).append("\n");
         sb.append("```");
         context.send(sb.toString());

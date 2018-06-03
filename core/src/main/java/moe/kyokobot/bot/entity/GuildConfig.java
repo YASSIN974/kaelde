@@ -1,5 +1,6 @@
 package moe.kyokobot.bot.entity;
 
+import com.google.gson.annotations.SerializedName;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.util.GsonUtil;
 
@@ -13,9 +14,11 @@ public class GuildConfig implements DatabaseEntity {
         this.prefixes = prefixes;
     }
 
-    public String guildId;
-    public Language language;
-    public ArrayList<String> prefixes;
+    @SerializedName("guild-id")
+    public String guildId = "";
+    public Language language = Language.ENGLISH;
+    public ArrayList<String> prefixes = new ArrayList<>();
+    public MusicConfig musicConfig = new MusicConfig();
 
     @Transient
     @Override
@@ -26,5 +29,10 @@ public class GuildConfig implements DatabaseEntity {
     @Override
     public String toString() {
         return GsonUtil.toJSON(this);
+    }
+
+    public class MusicConfig {
+        @SerializedName("dj-role")
+        public String djRole = "";
     }
 }

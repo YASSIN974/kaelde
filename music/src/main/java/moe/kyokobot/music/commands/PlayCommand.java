@@ -1,5 +1,9 @@
 package moe.kyokobot.music.commands;
 
+import com.sedmelluq.discord.lavaplayer.container.MediaContainer;
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
+import com.sedmelluq.discord.lavaplayer.container.xm.XmContainerProbe;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -34,7 +38,6 @@ public class PlayCommand extends MusicCommand {
             if (voiceChannel != null) {
                 MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
                 MusicQueue queue = musicManager.getQueue(context.getGuild());
-
                 AudioItem item = musicManager.resolve(context.getConcatArgs().trim());
 
                 // TODO: enable/disable announcing
