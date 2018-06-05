@@ -85,6 +85,8 @@ public class KyokoCommandManager implements CommandManager {
         aliases.forEach(alias -> {
             commands.put(alias, command);
         });
+
+        command.onRegister();
     }
 
     public void unregisterCommand(Command command) {
@@ -93,9 +95,15 @@ public class KyokoCommandManager implements CommandManager {
         registered.removeIf(cmd -> command == cmd);
         commands.values().removeIf(cmd -> cmd.getName().equals(command.getName()));
         registered.removeIf(cmd -> cmd.getName().equals(command.getName()));
+
+        command.onUnregister();
     }
 
     public void unregisterAll() {
+        for (Command cmd : registered) {
+            cmd.onUnregister();
+        }
+
         registered = new HashSet<>();
         commands = new HashMap<>();
     }
