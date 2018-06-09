@@ -3,9 +3,9 @@ package moe.kyokobot.misccommands.commands;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 
-public class CreditsCommand extends Command {
-    public CreditsCommand() {
-
+public class AboutCommand extends Command {
+    public AboutCommand() {
+        name = "about";
     }
 
     @Override

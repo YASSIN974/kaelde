@@ -17,20 +17,28 @@ public class Paginator {
     private static final String LEFT_CHEVRON = "445293361255940117";
     private static final String RIGHT_CHEVRON = "445293425601019926";
 
-    private int page = 0;
-    private String title;
-    private List<String> pageContents;
-    private EventWaiter eventWaiter;
+    protected int page = 0;
+    protected String title;
+    protected String footer;
+    protected List<String> pageContents;
+    protected EventWaiter eventWaiter;
 
     private Message message;
     private long messageId = 0;
     private long userId = 0;
 
-    public Paginator(EventWaiter eventWaiter, List<String> pageContents, String title, User user) {
+    public Paginator(EventWaiter eventWaiter, List<String> pageContents, User user) {
         this.eventWaiter = eventWaiter;
         this.pageContents = pageContents;
-        this.title = title;
         this.userId = user.getIdLong();
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setFooter(String footer) {
+        this.footer = footer;
     }
 
     public void setPageContents(List<String> pageContents) {
@@ -65,11 +73,13 @@ public class Paginator {
                 this::handleReaction, 15, TimeUnit.SECONDS, this::removeReactions);
     }
 
-    private Message render(int page) {
+    protected Message render(int page) {
         MessageBuilder mb = new MessageBuilder();
         if (page < 0) page = 0; else if (page > pageContents.size()) page = pageContents.size() - 1;
         String content = pageContents.size() == 0 ? "" : pageContents.get(page);
-        mb.append(title.replace("{page}", (page + 1) + "/" + pageContents.size())).append("\n").append(content);
+        if (title != null) mb.append(title.replace("{page}", (page + 1) + "/" + pageContents.size())).append("\n");
+        mb.append(content);
+        if (footer != null) mb.append("\n").append(title.replace("{page}", (page + 1) + "/" + pageContents.size()));
         return mb.build();
     }
 

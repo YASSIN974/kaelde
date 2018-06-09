@@ -53,7 +53,8 @@ public class WeebCommand extends Command {
             EmbedBuilder eb = context.getNormalEmbed();
 
             Image image = weeb4J.getRandomImage(context.getConcatArgs(), HiddenMode.DEFAULT, context.getChannel().isNSFW() ? NsfwFilter.ALLOW_NSFW : NsfwFilter.NO_NSFW).execute();
-            eb.addField(getTitle(context, context.getConcatArgs().toLowerCase()), Constants.POWERED_BY_WEEB, false);
+            eb.setTitle(getTitle(context, context.getConcatArgs().toLowerCase()));
+            eb.setFooter(Constants.POWERED_BY_WEEB, null);
             eb.setImage(image.getUrl());
             context.send(eb.build());
         }
@@ -63,7 +64,8 @@ public class WeebCommand extends Command {
         EmbedBuilder eb = context.getNormalEmbed();
         StringBuilder sb = new StringBuilder();
         sb.append(context.getTranslated("weebsh.types")).append("\n").append(cachedTypes);
-        eb.addField(context.getTranslated("weebsh.title"), sb.toString(), false);
+        eb.setTitle(context.getTranslated("weebsh.title"));
+        eb.setDescription(sb.toString());
         context.send(eb.build());
     }
 

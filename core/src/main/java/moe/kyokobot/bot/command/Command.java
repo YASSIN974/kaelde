@@ -48,6 +48,14 @@ public abstract class Command {
         return subCommands;
     }
 
+    public void onRegister() {
+        //
+    }
+
+    public void onUnregister() {
+        //
+    }
+
     public void preExecute(CommandContext context) {
         if (context.hasArgs()) {
             String subcommand = context.getArgs()[0].toLowerCase();

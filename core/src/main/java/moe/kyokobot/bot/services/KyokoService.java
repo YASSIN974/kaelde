@@ -3,53 +3,44 @@ package moe.kyokobot.bot.services;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 import io.sentry.Sentry;
-import moe.kyokobot.bot.JDAEventHandler;
 import moe.kyokobot.bot.Settings;
-import moe.kyokobot.bot.command.debug.ModulesCommand;
 import moe.kyokobot.bot.i18n.I18n;
-import moe.kyokobot.bot.manager.DatabaseManager;
-import moe.kyokobot.bot.manager.impl.CommandManagerImpl;
-import moe.kyokobot.bot.util.EventWaiter;
-import moe.kyokobot.bot.util.KyokoJDABuilder;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.impl.ExternalModuleManager;
+import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
-import net.dv8tion.jda.core.AccountType;
+import moe.kyokobot.bot.manager.impl.KyokoCommandManager;
+import moe.kyokobot.bot.util.EventWaiter;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class KyokoService extends AbstractIdleService {
     private final Logger logger;
     private JDA jda;
     private ModuleManager moduleManager;
-    private DatabaseManager databaseManager;
+    private RethinkDatabaseManager databaseManager;
     private CommandManager commandManager;
     private EventWaiter eventWaiter;
-    private JDAEventHandler eventHandler;
     private I18n i18n;
 
-    public KyokoService(Settings settings, JDA jda) {
+    public KyokoService(Settings settings, JDA jda, EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
-        EventBus eventBus = new EventBus();
         eventWaiter = new EventWaiter();
-
         this.jda = jda;
 
-        databaseManager = new DatabaseManager(settings);
+        databaseManager = new RethinkDatabaseManager(settings);
         i18n = new I18n(databaseManager);
-        commandManager = new CommandManagerImpl(settings, i18n, executor);
-        eventHandler = new JDAEventHandler(eventBus);
-        moduleManager = new ModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
+        commandManager = new KyokoCommandManager(settings, i18n, executor);
+        moduleManager = new ExternalModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter, jda);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);
+        eventBus.register(moduleManager);
     }
 
     @Override
@@ -58,8 +49,6 @@ public class KyokoService extends AbstractIdleService {
             logger.debug("Starting Kyoko service...");
             databaseManager.load();
             moduleManager.loadModules();
-
-            jda.addEventListener(eventHandler);
             jda.addEventListener(eventWaiter);
         } catch (Exception e) {
             e.printStackTrace();

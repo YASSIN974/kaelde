@@ -6,6 +6,7 @@ import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.module.KyokoModule;
+import moe.kyokobot.nsfw.commands.BoobsCommand;
 import moe.kyokobot.nsfw.commands.LewdNekoCommand;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         commands.add(new LewdNekoCommand());
+        commands.add(new BoobsCommand());
         commands.forEach(commandManager::registerCommand);
     }
 

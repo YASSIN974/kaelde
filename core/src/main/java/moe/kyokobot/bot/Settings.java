@@ -3,7 +3,6 @@ package moe.kyokobot.bot;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import moe.kyokobot.bot.util.ColorTypeAdapter;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 
 import java.awt.*;
@@ -13,11 +12,11 @@ public class Settings {
     @SerializedName("debug")
     public boolean debug = false;
 
-    @SerializedName("bot")
-    public BotSettings bot = new BotSettings();
-
     @SerializedName("connection")
     public ConnectionSettings connection = new ConnectionSettings();
+
+    @SerializedName("bot")
+    public BotSettings bot = new BotSettings();
 
     @SerializedName("apikeys")
     public HashMap<String, String> apiKeys = new HashMap<>();
@@ -26,6 +25,23 @@ public class Settings {
     public HashMap<String, String> apiUrls = new HashMap<>();
 
     public class ConnectionSettings {
+        /*public ConnectionSettings() {
+
+        }
+
+        public ConnectionSettings(String token, String rethinkHost, int rethinkPort, String rethinkUser, String rethinkPassword, String rethinkDbName, String gatewayServer, String restServer, String mode, int shardCount) {
+            this.token = token;
+            this.rethinkHost = rethinkHost;
+            this.rethinkPort = rethinkPort;
+            this.rethinkUser = rethinkUser;
+            this.rethinkPassword = rethinkPassword;
+            this.rethinkDbName = rethinkDbName;
+            this.gatewayServer = gatewayServer;
+            this.restServer = restServer;
+            this.mode = mode;
+            this.shardCount = shardCount;
+        }*/
+
         @SerializedName("token")
         public String token = "";
 
@@ -53,8 +69,8 @@ public class Settings {
         @SerializedName("mode")
         public String mode = "single"; // single, gateway
 
-        @SerializedName("shard-id")
-        public int shardId = 0;
+        @SerializedName("shard-count")
+        public int shardCount = 0;
     }
 
     public class BotSettings {

@@ -23,7 +23,7 @@ public class WhyCommand extends Command {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://nekos.life/api/v2/why"));
-                NekosResponse response = GsonUtil.gson.fromJson(data, NekosResponse.class);
+                NekosResponse response = GsonUtil.fromJSON(data, NekosResponse.class);
                 if (response.why == null || response.why.isEmpty()) {
                     message.editMessage(context.error() + context.getTranslated("api.nekoslife.error")).queue();
                 } else {

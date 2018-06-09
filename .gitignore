@@ -8,10 +8,14 @@ weebsh/build
 social/build
 core/build
 misccommands/build
+nsfw/build
+music/build
 weebsh/out
 social/out
 core/out
 misccommands/out
+nsfw/out
+music/out
 
 # ----------------------------------- #
 # ----- Java Language Gitignore ----- #

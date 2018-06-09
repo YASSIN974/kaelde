@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserConfig implements DatabaseEntity {
-    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, long id, ArrayList<String> tags) {
+    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, ArrayList<String> tags) {
         this.id = id;
         this.language = language;
         this.level = level;
@@ -20,7 +20,7 @@ public class UserConfig implements DatabaseEntity {
         this.tags = tags;
     }
 
-    public long id = 0;
+    public String id = "";
     public Language language = Language.DEFAULT;
     public long level = 1L;
     public long money = 0L;

@@ -15,7 +15,6 @@ import static moe.kyokobot.bot.util.NetworkUtil.download;
 public class LewdNekoCommand extends NsfwCommand {
     public LewdNekoCommand() {
         name = "lewdneko";
-        category = CommandCategory.NSFW;
         description = "lewdneko.description";
     }
 
@@ -24,12 +23,13 @@ public class LewdNekoCommand extends NsfwCommand {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://nekos.life/api/v2/img/lewd"));
-                NekosResponse response = GsonUtil.gson.fromJson(data, NekosResponse.class);
+                NekosResponse response = GsonUtil.fromJSON(data, NekosResponse.class);
                 if (response.url == null || response.url.isEmpty()) {
                     message.editMessage(context.error() + context.getTranslated("api.nekoslife.error")).queue();
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
-                    eb.addField(context.getTranslated("lewdneko.title"), Constants.POWERED_BY_NEKOSLIFE, false);
+                    eb.setTitle(context.getTranslated("lewdneko.title"));
+                    eb.setDescription(Constants.POWERED_BY_NEKOSLIFE);
                     eb.setImage(response.url);
                     message.editMessage(eb.build()).override(true).queue();
                 }

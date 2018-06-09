@@ -23,7 +23,7 @@ public class CoffeeCommand extends Command {
         context.send(context.working() + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://coffee.alexflipnote.xyz/random.json"));
-                CoffeeResponse response = GsonUtil.gson.fromJson(data, CoffeeResponse.class);
+                CoffeeResponse response = GsonUtil.fromJSON(data, CoffeeResponse.class);
                 if (response.file == null || response.file.isEmpty()) {
                     message.editMessage(context.error() + context.getTranslated("api.coffee.error")).queue();
                 } else {

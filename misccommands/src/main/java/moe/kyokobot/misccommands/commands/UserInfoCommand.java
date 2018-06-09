@@ -13,6 +13,10 @@ import net.dv8tion.jda.core.entities.Member;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Role;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.stream.Collectors;
 
 public class UserInfoCommand extends Command {
@@ -40,14 +44,16 @@ public class UserInfoCommand extends Command {
     }
 
     private void sendProfile(CommandContext context, Member member) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(context.getLanguage().getLocale());
         EmbedBuilder eb = context.getNormalEmbed();
         eb.setThumbnail(member.getUser().getEffectiveAvatarUrl());
         eb.setTitle(context.getTranslated("userinfo.user"));
-        eb.addField(context.getTranslated("userinfo.tag"), member.getUser().getName() + "#" + member.getUser().getDiscriminator(), false);
-        eb.addField(context.getTranslated("userinfo.id"), member.getUser().getId(), false);
-        eb.addField(context.getTranslated("userinfo.status"), prettyStatus(context, member.getOnlineStatus()), false);
-        eb.addField(context.getTranslated("userinfo.game"), member.getGame() == null ? context.getTranslated("generic.none") : gameToString(member.getGame()), false);
-        eb.addField(context.getTranslated("userinfo.roles"), member.getRoles().size() == 0 ? context.getTranslated("generic.none") : "`" + member.getRoles().stream().map(Role::getName).collect(Collectors.joining("`, `")) + "`", false);
+        eb.addField(context.getTranslated("userinfo.tag"), member.getUser().getName() + "#" + member.getUser().getDiscriminator(), true);
+        eb.addField(context.getTranslated("userinfo.id"), member.getUser().getId(), true);
+        eb.addField(context.getTranslated("userinfo.status"), prettyStatus(context, member.getOnlineStatus()), true);
+        eb.addField(context.getTranslated("userinfo.game"), member.getGame() == null ? context.getTranslated("generic.none") : gameToString(member.getGame()), true);
+        eb.addField(context.getTranslated("userinfo.joindate"), member.getJoinDate().format(formatter),true);
+        eb.addField(context.getTranslated("userinfo.roles"), getRoles(context, member), true);
         context.send(eb.build());
     }
 
@@ -56,6 +62,29 @@ public class UserInfoCommand extends Command {
             return game.asRichPresence().getName() + "\n" + game.asRichPresence().getDetails();
         }
         return game.getName();
+    }
+
+    private String getRoles(CommandContext context, Member member) {
+        if (member.getRoles().size() == 0) {
+            return context.getTranslated("generic.none");
+        } else {
+            int roles = member.getRoles().size();
+            String rstr = "";
+            for (Role r : member.getRoles()) {
+                if (rstr.length() > 150) {
+                    if (rstr.endsWith(", ")) rstr = rstr.substring(rstr.length() - 2);
+                    if (roles != 0)
+                        rstr += String.format(context.getTranslated("userinfo.roles.more"), roles);
+                    return rstr;
+                } else {
+                    rstr += "`" + r.getName() + "`";
+                    if (roles > 1) rstr += ", ";
+                }
+                roles--;
+            }
+            return rstr;
+        }
+
     }
 
     private String prettyStatus(CommandContext context, OnlineStatus status) {

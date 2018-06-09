@@ -1,7 +1,7 @@
 package moe.kyokobot.bot.i18n;
 
 import com.google.common.base.Charsets;
-import moe.kyokobot.bot.manager.DatabaseManager;
+import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
@@ -9,19 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
 
 public class I18n {
-    private DatabaseManager databaseManager;
+    private RethinkDatabaseManager databaseManager;
     private Logger logger;
     private HashMap<Language, Properties> langs;
     private HashMap<Long, Language> languageCache;
 
-    public I18n(DatabaseManager databaseManager) {
+    public I18n(RethinkDatabaseManager databaseManager) {
         logger = LoggerFactory.getLogger(getClass());
         this.databaseManager = databaseManager;
         languageCache = new HashMap<>();

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.DatabaseManager;
+import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.EventWaiter;
