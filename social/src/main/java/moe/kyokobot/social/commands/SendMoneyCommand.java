@@ -46,7 +46,7 @@ public class SendMoneyCommand extends Command {
                     context.send(CommandIcons.error + context.getTranslated("sendmoney.self"));
                 } else {
                     UserConfig sender = databaseManager.getUser(context.getSender());
-                    if (sender.money >= amount) {
+                    if (sender.getMoney() >= amount) {
                         requests.put(context.getSender(), new SendMoneyRequest(amount, System.currentTimeMillis() + 30000, m.getUser()));
                         context.send(CommandIcons.info + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
                     } else {
@@ -73,9 +73,9 @@ public class SendMoneyCommand extends Command {
                 try {
                     UserConfig sender = databaseManager.getUser(context.getSender());
                     UserConfig receiver = databaseManager.getUser(request.receiver);
-                    if (sender.money >= request.amount) {
-                        sender.money -= request.amount;
-                        receiver.money += request.amount;
+                    if (sender.getMoney() >= request.amount) {
+                        sender.setMoney(sender.getMoney() - request.amount);
+                        receiver.setMoney(receiver.getMoney() + request.amount);
                         databaseManager.save(sender);
                         databaseManager.save(receiver);
                         context.send(CommandIcons.success + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));

@@ -86,7 +86,7 @@ class CommandContext(val settings: Settings, val i18n: I18n, val command: Comman
 
     @JvmOverloads
     fun send(message: MessageEmbed, callback: Consumer<Message>? = null) {
-        event.channel.sendMessage(message).queue()
+        event.channel.sendMessage(message).queue(callback)
     }
 
     fun getTranslated(key: String): String {

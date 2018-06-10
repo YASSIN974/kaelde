@@ -11,21 +11,21 @@ import moe.kyokobot.bot.manager.ModuleManager;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-public class EvalCommand extends Command {
+public class KtsCommand extends Command {
     private final ModuleManager moduleManager;
     private final CommandManager commandManager;
     private final DatabaseManager databaseManager;
 
     private ScriptEngine engine;
 
-    public EvalCommand(ModuleManager moduleManager, CommandManager commandManager, DatabaseManager databaseManager) {
+    public KtsCommand(ModuleManager moduleManager, CommandManager commandManager, DatabaseManager databaseManager) {
         this.moduleManager = moduleManager;
         this.commandManager = commandManager;
         this.databaseManager = databaseManager;
 
-        name = "eval";
+        name = "kts";
         type = CommandType.DEBUG;
-        engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        engine = new ScriptEngineManager().getEngineByExtension("kts");
     }
 
     @Override
