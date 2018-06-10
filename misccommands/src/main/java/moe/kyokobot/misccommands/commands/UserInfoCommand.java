@@ -1,23 +1,19 @@
 package moe.kyokobot.misccommands.commands;
 
-import com.google.common.base.Joiner;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
-import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Role;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.stream.Collectors;
 
 public class UserInfoCommand extends Command {
     private CommandManager commandManager;

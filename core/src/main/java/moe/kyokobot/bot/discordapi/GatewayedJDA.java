@@ -3,7 +3,6 @@ package moe.kyokobot.bot.discordapi;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 import org.slf4j.MDC;

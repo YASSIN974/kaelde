@@ -12,17 +12,13 @@ import moe.kyokobot.bot.services.KyokoService;
 import moe.kyokobot.bot.util.KyokoJDABuilder;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.requests.Requester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
-import java.util.Arrays;
 
 import static java.util.Arrays.asList;
 

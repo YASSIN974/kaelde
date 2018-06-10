@@ -1,20 +1,14 @@
 package moe.kyokobot.bot.command.debug;
 
 import com.google.common.base.Joiner;
-import moe.kyokobot.bot.command.Command;
-import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.CommandType;
-import moe.kyokobot.bot.command.SubCommand;
+import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.manager.ModuleManager;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import static moe.kyokobot.bot.command.CommandContext.*;
 
 public class ModulesCommand extends Command {
     private ModuleManager moduleManager;
@@ -34,13 +28,13 @@ public class ModulesCommand extends Command {
         else {
             if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
-                    context.send(error() + "Module  `" + modname + "` is already started!");
+                    context.send(CommandIcons.error + "Module  `" + modname + "` is already started!");
                 } else {
                     moduleManager.startModule(modname);
-                    context.send(success() + "Module `" + modname + "` started!");
+                    context.send(CommandIcons.success + "Module `" + modname + "` started!");
                 }
             } else {
-                context.send(error() + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -51,16 +45,16 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(error() + "Cannot stop `core` module!");
+                context.send(CommandIcons.error + "Cannot stop `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
-                    context.send(success() + "Module `" + modname + "` stopped!");
+                    context.send(CommandIcons.success + "Module `" + modname + "` stopped!");
                 } else {
-                    context.send(error() + "Module  `" + modname + "` is already stopped!");
+                    context.send(CommandIcons.error + "Module  `" + modname + "` is already stopped!");
                 }
             } else {
-                context.send(error() + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -71,15 +65,15 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(error() + "Cannot unload `core` module!");
+                context.send(CommandIcons.error + "Cannot unload `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
                 }
                 moduleManager.unload(modname, true);
-                context.send(success() + "Module `" + modname + "` unloaded!");
+                context.send(CommandIcons.success + "Module `" + modname + "` unloaded!");
             } else {
-                context.send(error() + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -87,7 +81,7 @@ public class ModulesCommand extends Command {
     @SubCommand
     public void load(CommandContext context) {
         String modname = Joiner.on(" ").join(Arrays.stream(context.getArgs()).skip(1).toArray()).toLowerCase();
-        if (modname.isEmpty()) context.send(error() + "Please specify module path!");
+        if (modname.isEmpty()) context.send(CommandIcons.error + "Please specify module path!");
         else {
             File f = new File(modname);
             if (f.exists()) {
@@ -99,29 +93,29 @@ public class ModulesCommand extends Command {
                         ZipEntry entry = entries.nextElement();
                         if (entry.getName().equals("plugin.json")) {
                             moduleManager.load(f.getAbsolutePath());
-                            context.send(success() + "Module loaded!");
+                            context.send(CommandIcons.success + "Module loaded!");
                             return;
                         }
                     }
-                    context.send(error() + "Not a valid module!");
+                    context.send(CommandIcons.error + "Not a valid module!");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    context.send(error() + "Error while loading module `" + modname + "`: " + e.getMessage());
+                    context.send(CommandIcons.error + "Error while loading module `" + modname + "`: " + e.getMessage());
                 }
             } else {
-                context.send(error() + "Cannot find file `" + modname + "`");
+                context.send(CommandIcons.error + "Cannot find file `" + modname + "`");
             }
         }
     }
 
     @SubCommand
     public void reloadall(CommandContext context) {
-        context.send(working() + "Reloading all modules...", msg -> {
+        context.send(CommandIcons.working + "Reloading all modules...", msg -> {
             try {
                 moduleManager.loadModules();
-                msg.editMessage(success() + "Modules reloaded!").queue();
+                msg.editMessage(CommandIcons.success + "Modules reloaded!").queue();
             } catch (Exception e) {
-                msg.editMessage(error() + "Error reloading modules: " + e.getMessage()).queue();
+                msg.editMessage(CommandIcons.error + "Error reloading modules: " + e.getMessage()).queue();
                 e.printStackTrace();
             }
         });

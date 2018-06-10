@@ -2,8 +2,8 @@ package moe.kyokobot.bot.command;
 
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Settings;
-import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.i18n.I18n;
+import moe.kyokobot.bot.i18n.Language;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -111,7 +111,7 @@ public class CommandContext {
 
     public void send(CharSequence message, Consumer<Message> callback) {
         if (checkSensitive(message.toString())) {
-            event.getChannel().sendMessage(error() + getTranslated("generic.sensitive")).queue(callback);
+            event.getChannel().sendMessage(CommandIcons.error + getTranslated("generic.sensitive")).queue(callback);
         } else {
             event.getChannel().sendMessage(message).queue(callback);
         }
@@ -149,23 +149,6 @@ public class CommandContext {
         eb.setColor(settings.bot.errorColor);
         eb.setFooter(settings.bot.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
-    }
-
-    // TODO get from config
-    public static String working() {
-        return "<a:working:440090198500573184>  |  ";
-    }
-
-    public static String success() {
-        return "<:Success:435574370107129867>  |  ";
-    }
-
-    public static String error() {
-        return "<:Error:435574504522121216>  |  ";
-    }
-
-    public static String info() {
-        return "<:Information:435576029680238593>  |  ";
     }
 
     public boolean checkSensitive(String input) {

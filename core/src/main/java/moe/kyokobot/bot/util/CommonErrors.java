@@ -2,8 +2,8 @@ package moe.kyokobot.bot.util;
 
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.concurrent.TimeUnit;
@@ -22,11 +22,11 @@ public class CommonErrors {
     }
 
     public static void noUserFound(CommandContext context, String user) {
-        context.send(context.error() + String.format(context.getTranslated("generic.usernotfound"), user));
+        context.send(CommandIcons.error + String.format(context.getTranslated("generic.usernotfound"), user));
     }
 
     public static void editNoUserFound(CommandContext context, String user, Message message) {
-        message.editMessage(context.error() + String.format(context.getTranslated("generic.usernotfound"), user)).override(true).queue();
+        message.editMessage(CommandIcons.error + String.format(context.getTranslated("generic.usernotfound"), user)).override(true).queue();
     }
 
     public static void devOnly(CommandContext context) {
@@ -36,11 +36,11 @@ public class CommonErrors {
     }
 
     public static void editException(CommandContext context, Throwable e, Message message) {
-        message.editMessage(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
+        message.editMessage(CommandIcons.error + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
     }
 
     public static void exception(CommandContext context, Throwable e) {
-        context.send(context.error() + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
+        context.send(CommandIcons.error + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
     }
 
     public static void notANumber(CommandContext context, String arg) {
@@ -56,7 +56,7 @@ public class CommonErrors {
     }
 
     public static void cooldown(CommandContext context) {
-        context.send(context.error() + context.getTranslated("generic.cooldown"), message -> message.delete().queueAfter(2, TimeUnit.SECONDS));
+        context.send(CommandIcons.error + context.getTranslated("generic.cooldown"), message -> message.delete().queueAfter(2, TimeUnit.SECONDS));
     }
 
     public static void owner(CommandContext context) {

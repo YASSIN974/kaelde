@@ -5,7 +5,6 @@ import moe.kyokobot.bot.util.GsonUtil;
 
 import java.beans.Transient;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UserConfig implements DatabaseEntity {
     public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, ArrayList<String> tags) {

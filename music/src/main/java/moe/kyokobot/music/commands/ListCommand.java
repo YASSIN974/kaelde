@@ -1,7 +1,7 @@
 package moe.kyokobot.music.commands;
 
-import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.EmbedPaginator;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.StringUtil;
@@ -29,7 +29,7 @@ public class ListCommand extends MusicCommand {
     public void execute(CommandContext context) {
         MusicQueue queue = manager.getQueue(context.getGuild());
         if (queue.getTracks().size() == 0) {
-            context.send(context.error() + "Queue is empty!");
+            context.send(CommandIcons.error + "Queue is empty!");
         } else {
             List<String> pages = StringUtil.createPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
             EmbedPaginator paginator = new EmbedPaginator(waiter, pages, context.getSender(), context.getNormalEmbed());

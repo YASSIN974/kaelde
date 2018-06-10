@@ -9,6 +9,7 @@ import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.StringUtil;
@@ -63,7 +64,7 @@ public class ActionCommand extends Command {
                 CommonErrors.exception(context, e);
             }
         } else {
-            context.send(context.error() + context.getTranslated("weebsh.action.needtomention"));
+            context.send(CommandIcons.error + context.getTranslated("weebsh.action.needtomention"));
         }
     }
 }

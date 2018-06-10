@@ -16,7 +16,7 @@ public class CoreModule implements KyokoModule {
 
     @Override
     public void startUp() {
-        commandManager.registerCommand(new AvatarCommand());
+        commandManager.registerCommand(new UpdateAvatarCommand());
         commandManager.registerCommand(new EvalCommand(moduleManager, commandManager, databaseManager));
         commandManager.registerCommand(new NameCommand());
         commandManager.registerCommand(new ShellCommand());

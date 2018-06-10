@@ -1,15 +1,10 @@
 package moe.kyokobot.music.commands;
 
-import com.sedmelluq.discord.lavaplayer.container.MediaContainer;
-import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection;
-import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
-import com.sedmelluq.discord.lavaplayer.container.xm.XmContainerProbe;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import moe.kyokobot.bot.command.Command;
-import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
@@ -44,7 +39,7 @@ public class PlayCommand extends MusicCommand {
                 queue.setAnnouncing(context.getChannel(), context);
 
                 if (item == null) {
-                    context.send(context.error() + String.format(context.getTranslated("music.nothingfound"), context.getConcatArgs()));
+                    context.send(CommandIcons.error + String.format(context.getTranslated("music.nothingfound"), context.getConcatArgs()));
                 } else {
                     if (item instanceof AudioPlaylist) {
                         int tracks = 0;
@@ -64,7 +59,7 @@ public class PlayCommand extends MusicCommand {
                     }
                 }
             } else {
-                context.send(context.error() + context.getTranslated("music.joinchannel"));
+                context.send(CommandIcons.error + context.getTranslated("music.joinchannel"));
             }
         } else {
             CommonErrors.usage(context);

@@ -3,10 +3,10 @@ package moe.kyokobot.misccommands;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.command.Command;
+import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.misccommands.commands.*;
-import moe.kyokobot.bot.module.KyokoModule;
-import moe.kyokobot.bot.manager.CommandManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,7 +3,6 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;

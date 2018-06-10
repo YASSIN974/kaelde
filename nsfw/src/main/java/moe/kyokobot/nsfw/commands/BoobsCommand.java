@@ -2,6 +2,7 @@ package moe.kyokobot.nsfw.commands;
 
 import io.sentry.Sentry;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.bot.util.RandomUtil;
@@ -19,13 +20,13 @@ public class BoobsCommand extends NsfwCommand {
 
     @Override
     public void execute(CommandContext context) {
-        context.send(context.working() + context.getTranslated("generic.loading"), message -> {
+        context.send(CommandIcons.working + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("http://api.oboobs.ru/boobs/0/1/random"));
                 OBoobsResponse[] responses = GsonUtil.fromJSON(data, OBoobsResponse[].class);
                 OBoobsResponse response = responses[0];
                 if (response.id == -1) {
-                    message.editMessage(context.error() + context.getTranslated("api.oboobs.error")).queue();
+                    message.editMessage(CommandIcons.error + context.getTranslated("api.oboobs.error")).queue();
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
                     eb.setTitle(RandomUtil.randomElement(BOOBIES), "http://oboobs.ru/b/" + response.id);

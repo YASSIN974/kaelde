@@ -26,7 +26,6 @@ import samophis.lavalink.client.entities.LavaClient;
 import samophis.lavalink.client.entities.LavaPlayer;
 import samophis.lavalink.client.entities.builders.AudioNodeEntryBuilder;
 import samophis.lavalink.client.entities.builders.LavaClientBuilder;
-import samophis.lavalink.client.entities.internal.LavaClientImpl;
 import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 
 import java.util.ArrayList;

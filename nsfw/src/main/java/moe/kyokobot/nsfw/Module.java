@@ -1,6 +1,5 @@
 package moe.kyokobot.nsfw;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;

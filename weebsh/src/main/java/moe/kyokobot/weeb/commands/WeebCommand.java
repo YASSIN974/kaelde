@@ -8,7 +8,6 @@ import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;

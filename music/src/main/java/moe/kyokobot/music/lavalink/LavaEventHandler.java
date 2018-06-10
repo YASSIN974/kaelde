@@ -1,7 +1,6 @@
 package moe.kyokobot.music.lavalink;
 
 import com.google.common.eventbus.EventBus;
-import moe.kyokobot.music.MusicPlayer;
 import samophis.lavalink.client.entities.events.*;
 
 public class LavaEventHandler implements AudioEventListener {

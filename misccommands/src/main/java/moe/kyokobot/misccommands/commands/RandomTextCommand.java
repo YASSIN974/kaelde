@@ -5,7 +5,6 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.RandomUtil;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class RandomTextCommand extends Command {

@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
@@ -32,12 +33,12 @@ public class ClaimCommand extends Command {
             UserConfig uc = databaseManager.getUser(context.getSender());
 
             if (uc.claim > currentTime) {
-                context.send(context.error() + String.format(context.getTranslated("claim.wait"), StringUtil.prettyPeriod(uc.claim - currentTime)));
+                context.send(CommandIcons.error + String.format(context.getTranslated("claim.wait"), StringUtil.prettyPeriod(uc.claim - currentTime)));
             } else {
                 if (context.hasArgs()) {
                     Member member = UserUtil.getMember(context.getGuild(), context.getConcatArgs());
                     if (member == null) {
-                        context.send(context.error() + String.format(context.getTranslated("generic.usernotfound"), context.getConcatArgs()));
+                        context.send(CommandIcons.error + String.format(context.getTranslated("generic.usernotfound"), context.getConcatArgs()));
                     } else {
                         UserConfig desireduc = databaseManager.getUser(member.getUser());
                         int money = 200 + (int) Math.floor(Math.random() * 50);
