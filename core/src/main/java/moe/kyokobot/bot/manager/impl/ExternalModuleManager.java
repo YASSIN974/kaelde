@@ -70,7 +70,6 @@ public class ExternalModuleManager implements ModuleManager {
         try {
             new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
-            Sentry.capture(e);
             e.printStackTrace();
         }
 
