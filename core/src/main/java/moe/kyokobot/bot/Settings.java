@@ -25,23 +25,6 @@ public class Settings {
     public HashMap<String, String> apiUrls = new HashMap<>();
 
     public class ConnectionSettings {
-        /*public ConnectionSettings() {
-
-        }
-
-        public ConnectionSettings(String token, String rethinkHost, int rethinkPort, String rethinkUser, String rethinkPassword, String rethinkDbName, String gatewayServer, String restServer, String mode, int shardCount) {
-            this.token = token;
-            this.rethinkHost = rethinkHost;
-            this.rethinkPort = rethinkPort;
-            this.rethinkUser = rethinkUser;
-            this.rethinkPassword = rethinkPassword;
-            this.rethinkDbName = rethinkDbName;
-            this.gatewayServer = gatewayServer;
-            this.restServer = restServer;
-            this.mode = mode;
-            this.shardCount = shardCount;
-        }*/
-
         @SerializedName("token")
         public String token = "";
 
@@ -60,17 +43,11 @@ public class Settings {
         @SerializedName("rethink-dbname")
         public String rethinkDbName = "kyoko";
 
-        @SerializedName("gateway-server")
-        public String gatewayServer = "ws://localhost:8000";
-
-        @SerializedName("rest-server")
-        public String restServer = "http://localhost:9000/api/";
-
         @SerializedName("mode")
-        public String mode = "single"; // single, gateway
+        public String mode = "single"; // single, sharded
 
-        @SerializedName("shard-count")
-        public int shardCount = 0;
+        @SerializedName("shard-string")
+        public String shardString = "0:3:4"; // min:max:count
     }
 
     public class BotSettings {
@@ -78,7 +55,7 @@ public class Settings {
         public String botName = "Kyoko";
 
         @SerializedName("bot-icon")
-        public String botIcon = "<:kyoko:440219494267355146>";
+        public String botIcon = "<:kyoko:456199924132872213>";
 
         @SerializedName("owner")
         public String owner = "219067402174988290";

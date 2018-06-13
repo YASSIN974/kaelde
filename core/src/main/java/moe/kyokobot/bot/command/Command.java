@@ -25,11 +25,11 @@ public abstract class Command {
     }
 
     public String getUsage() {
-        return usage;
+        return usage == null ? name + ".usage" : usage;
     }
 
     public String getDescription() {
-        return description;
+        return description == null ? name + ".description" : description;
     }
 
     public CommandCategory getCategory() {

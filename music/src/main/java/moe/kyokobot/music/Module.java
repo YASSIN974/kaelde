@@ -13,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
@@ -42,8 +43,6 @@ public class Module implements KyokoModule {
     @Inject
     private EventBus eventBus;
     @Inject
-    private JDA jda;
-    @Inject
     private EventWaiter waiter;
     private ArrayList<Command> commands;
     private MusicManager musicManager;
@@ -60,11 +59,11 @@ public class Module implements KyokoModule {
 
         switch (musicSettings.type) {
             case LAVALINK:
-                musicManager = new LavaMusicManager(musicSettings, eventBus, jda);
+                musicManager = new LavaMusicManager(musicSettings, eventBus);
                 break;
         }
 
-        if (jda.getGuildById("375752406727786498") != null) { // Kyoko Discord Bot Support
+        if (Globals.inKyokoServer) { // Kyoko Discord Bot Support
             MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
             MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
             MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";

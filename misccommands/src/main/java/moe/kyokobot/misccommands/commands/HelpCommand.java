@@ -22,7 +22,7 @@ public class HelpCommand extends Command {
 
         name = "help";
         category = CommandCategory.BASIC;
-        description = "help.description";
+        usage = "";
     }
 
     @Override

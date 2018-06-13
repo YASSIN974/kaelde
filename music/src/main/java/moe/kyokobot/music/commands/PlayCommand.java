@@ -12,6 +12,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicUtil;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
@@ -54,7 +55,7 @@ public class PlayCommand extends MusicCommand {
                     }
 
                     if (player.getPlayingTrack() == null) {
-                        musicManager.openConnection(context.getGuild(), voiceChannel);
+                        musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
                         player.playTrack(queue.poll());
                     }
                 }

@@ -18,7 +18,6 @@ public class AvatarCommand extends Command {
 
         name = "avatar";
         category = CommandCategory.UTILITY;
-        description = "avatar.description";
     }
 
     @Override

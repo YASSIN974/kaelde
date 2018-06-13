@@ -31,6 +31,8 @@ public class I18n {
         langs = new HashMap<>();
 
         for (Language l : Language.values()) {
+            if (l == Language.DEFAULT) continue;
+
             try {
                 Properties p = new Properties();
                 File f = new File("./messages/messages_" + l.getShortName() + ".properties");

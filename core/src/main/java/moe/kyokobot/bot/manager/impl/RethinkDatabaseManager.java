@@ -56,9 +56,8 @@ public class RethinkDatabaseManager implements DatabaseManager {
 
     @Override
     public void save(@NotNull DatabaseEntity entity) {
-        System.out.println(UserConfig.class.getConstructors()[0].getParameters()[0].getName());
         logger.debug("Saved entity on " + entity.getTableName() + ": " + entity.getClass().getName() + ": " + entity.toString());
-        r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "replace").runNoReply(connection);
+        r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
     }
 
     private UserConfig newUser(String id) {

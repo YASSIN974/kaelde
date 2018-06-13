@@ -6,10 +6,12 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
 public class MusicQueue {
+    private final JDAImpl jda;
     private final MusicManager manager;
     private final Guild guild;
     private TextChannel announcingChannel;
@@ -18,7 +20,8 @@ public class MusicQueue {
     private AudioTrack lastTrack;
     private boolean repeating;
 
-    public MusicQueue(MusicManager manager, Guild guild) {
+    public MusicQueue(JDAImpl jda, MusicManager manager, Guild guild) {
+        this.jda = jda;
         this.manager = manager;
         this.guild = guild;
         tracks = new ObjectLinkedOpenHashSet<>();
@@ -52,6 +55,10 @@ public class MusicQueue {
 
     public ObjectLinkedOpenHashSet<AudioTrack> getTracks() {
         return tracks;
+    }
+
+    public JDAImpl getJDA() {
+        return jda;
     }
 
     public void setAnnouncing(TextChannel announcingChannel, CommandContext context) {
