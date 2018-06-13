@@ -1,5 +1,4 @@
 buildscript {
-    ext.kotlin_version = '1.2.41'
     repositories {
         mavenCentral()
         jcenter()
@@ -7,7 +6,6 @@ buildscript {
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -15,7 +13,6 @@ group 'moe.kyokobot'
 version "2.0.0-SNAPSHOT"
 
 apply plugin: 'java'
-apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
@@ -31,7 +28,6 @@ repositories {
 
 dependencies {
     compileOnly project(":core")
-    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 build.dependsOn shadowJar
@@ -43,14 +39,4 @@ artifacts {
 shadowJar {
     archiveName = "music.jar"
     destinationDir project.file('../deploy/modules')
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
