@@ -9,7 +9,7 @@ Kyoko is an open-source music bot with many other features. It's developed every
 
 ### Self-hosting
 
-**We do not recommend self-hosting Kyoko, as it's hard to setup, requires a lot of API keys and it's not well documented. We may do release selfhost-friendly edition in future.**
+**We do not recommend self-hosting Kyoko, as it's hard to setup, requires a lot of API keys and services (image generator server, Lavalink with custom plugins and more) to be fully functional and it's not well documented. We may do release selfhost-friendly edition in future.**
 
 **You have been warned, you are doing everything at your own risk and we will not help you if something went wrong.**
 
@@ -33,3 +33,15 @@ If you want to run Kyoko from IDE - remember to execute Gradle `assemble` task o
 [Website](https://kyokobot.moe)
 
 [Commands and features](https://kyokobot.moe/commands)
+
+### Kyoko <3 and uses
+
+[JDA](https://github.com/DV8FromTheWorld/JDA) by [DV8FromTheWorld](https://github.com/DV8FromTheWorld)
+
+[LavaClient](https://github.com/SamOphis/LavaClient) by [SamOphis](https://github.com/SamOphis)
+
+[weeb4j](https://github.com/natanbc/weeb4j) by [natanbc](https://github.com/natanbc)
+
+[RethinkDB](https://rethinkdb.com)
+
+and many other things...
