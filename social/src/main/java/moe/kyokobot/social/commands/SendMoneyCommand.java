@@ -1,30 +1,27 @@
 package moe.kyokobot.social.commands;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
-import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
-import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class SendMoneyCommand extends Command {
     private final DatabaseManager databaseManager;
-    private HashMap<User, SendMoneyRequest> requests;
+    private Cache<User, SendMoneyRequest> requests;
 
-    public SendMoneyCommand(DatabaseManager databaseManager, EventWaiter eventWaiter) {
+    public SendMoneyCommand(DatabaseManager databaseManager) {
         name = "sendmoney";
         category = CommandCategory.SOCIAL;
-        usage = "sendmoney.usage";
-        description = "sendmoney.description";
-
         this.databaseManager = databaseManager;
-
-        requests = new HashMap<>();
+        requests = Caffeine.newBuilder().expireAfterWrite(90, TimeUnit.SECONDS).maximumSize(500).build();
     }
 
     @Override
@@ -65,8 +62,9 @@ public class SendMoneyCommand extends Command {
 
     @SubCommand()
     public void confirm(CommandContext context) {
-        if (requests.containsKey(context.getSender())) {
-            SendMoneyRequest request = requests.remove(context.getSender());
+        if (requests.asMap().containsKey(context.getSender())) {
+            SendMoneyRequest request = requests.getIfPresent(context.getSender());
+            requests.invalidate(context.getSender());
             if (request.isExpiried()) {
                 context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
             } else {
@@ -95,8 +93,8 @@ public class SendMoneyCommand extends Command {
 
     @SubCommand()
     public void cancel(CommandContext context) {
-        if (requests.containsKey(context.getSender())) {
-            requests.remove(context.getSender());
+        if (requests.asMap().containsKey(context.getSender())) {
+            requests.invalidate(context.getSender());
             context.send(CommandIcons.info + context.getTranslated("sendmoney.cancelled"));
         } else {
             context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));

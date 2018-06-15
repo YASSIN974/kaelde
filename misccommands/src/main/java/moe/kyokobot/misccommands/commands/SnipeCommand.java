@@ -42,7 +42,11 @@ public class SnipeCommand extends Command {
     @Override
     public void onUnregister() {
         snipes = null;
-        eventBus.unregister(this);
+        try {
+            eventBus.unregister(this);
+        } catch (IllegalArgumentException ignored) {
+            // because there's no way to check the handler was already (un)registered, we will just ignore the exception.
+        }
     }
 
     @Override

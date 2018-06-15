@@ -36,7 +36,7 @@ public class Module implements KyokoModule {
         requester = new ImageRequester(settings, databaseManager);
         commands.add(new ProfileCommand(requester));
         commands.add(new ClaimCommand(databaseManager));
-        commands.add(new SendMoneyCommand(databaseManager, eventWaiter));
+        commands.add(new SendMoneyCommand(databaseManager));
         commands.forEach(commandManager::registerCommand);
     }
 
