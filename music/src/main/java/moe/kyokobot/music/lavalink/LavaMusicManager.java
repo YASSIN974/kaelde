@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import samophis.lavalink.client.entities.EventWaiter;
 import samophis.lavalink.client.entities.LavaClient;
 import samophis.lavalink.client.entities.LavaPlayer;
 import samophis.lavalink.client.entities.State;
@@ -50,11 +49,9 @@ public class LavaMusicManager implements MusicManager {
         queues = new Long2ObjectOpenHashMap<>();
         //waiters = new Long2ObjectOpenHashMap<>();
         handler = new LavaEventHandler(eventBus);
-
         lavaClient = new LavaClientBuilder(true)
                 .setShardCount(Globals.shardCount)
                 .setUserId(Globals.clientId).build();
-
         settings.nodes.forEach(node -> {
             AudioNodeEntryBuilder builder = new AudioNodeEntryBuilder(lavaClient);
             builder.setAddress(node.host);
@@ -120,6 +117,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public void shutdown() {
+        System.out.println("Shutdown");
         lavaClient.shutdown();
     }
 

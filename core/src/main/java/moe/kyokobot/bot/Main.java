@@ -139,6 +139,13 @@ public class Main {
 
             logger.info("Setup complete, starting!");
             ServiceManager serviceManager = new ServiceManager(services);
+            serviceManager.addListener(new ServiceManager.Listener() {
+                @Override
+                public void failure(Service service) {
+                    logger.error("Service " + service.getClass().getName() + "failed!");
+                    service.failureCause().printStackTrace();
+                }
+            });
             serviceManager.startAsync();
 
         } catch (Exception e) {

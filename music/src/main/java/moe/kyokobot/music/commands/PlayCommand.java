@@ -5,12 +5,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
-import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.music.*;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -19,7 +17,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import java.util.concurrent.TimeUnit;
 
 import static moe.kyokobot.music.MusicIcons.PLAY;
-import static moe.kyokobot.music.SearchManager.*;
 
 public class PlayCommand extends MusicCommand {
     private final MusicManager musicManager;
@@ -44,6 +41,7 @@ public class PlayCommand extends MusicCommand {
         if (context.hasArgs()) {
             VoiceChannel voiceChannel = MusicUtil.getCurrentChannel(context.getGuild(), context.getMember());
             if (voiceChannel != null) {
+                locks.put(context.getGuild(), true);
                 MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
                 MusicQueue queue = musicManager.getQueue(context.getGuild());
                 AudioItem item = musicManager.resolve(context.getConcatArgs().trim());
@@ -55,6 +53,7 @@ public class PlayCommand extends MusicCommand {
                     SearchManager.SearchResult result = searchManager.searchYouTube(context.getConcatArgs());
                     if (result == null) {
                         context.send(CommandIcons.error + String.format(context.getTranslated("music.nothingfound"), context.getConcatArgs()));
+                        locks.invalidate(context.getGuild());
                         return;
                     } else {
                         item = musicManager.resolve(result.getEntries().get(0).getUrl());
@@ -75,12 +74,11 @@ public class PlayCommand extends MusicCommand {
 
                 if (player.getPlayingTrack() == null) {
                     int timeout = 0;
-                    locks.put(context.getGuild(), true);
                     musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
 
                     while (!player.isConnected()) { // wait for connect
                         if (timeout == 100) { // wait max 10 seconds
-                            context.send(CommandIcons.error + "Music node connect timeout!");
+                            context.send(CommandIcons.error + "Music node connect timeout! Try using `{prefix}stop` to reset audio connection".replace("{prefix}", context.getPrefix()));
                             locks.invalidate(context.getGuild());
                             return;
                         }
@@ -88,6 +86,7 @@ public class PlayCommand extends MusicCommand {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
+                            locks.invalidate(context.getGuild());
                             // ignored
                         }
                         timeout++;

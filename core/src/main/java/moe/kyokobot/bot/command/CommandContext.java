@@ -4,7 +4,7 @@ import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.i18n.Language;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 

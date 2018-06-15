@@ -8,7 +8,7 @@ import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicQueue;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;

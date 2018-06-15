@@ -6,7 +6,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.bot.util.RandomUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 

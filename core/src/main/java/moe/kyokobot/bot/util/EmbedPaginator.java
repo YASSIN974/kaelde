@@ -1,7 +1,7 @@
 package moe.kyokobot.bot.util;
 
 import lombok.Setter;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;

@@ -6,7 +6,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.UserUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
