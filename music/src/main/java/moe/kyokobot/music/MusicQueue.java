@@ -36,7 +36,7 @@ public class MusicQueue {
     }
 
     public AudioTrack poll() {
-        return lastTrack = tracks.removeFirst();
+        return tracks.isEmpty() ? null : (lastTrack = tracks.removeFirst());
     }
 
     public void announce(AudioTrack track) {

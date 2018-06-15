@@ -31,9 +31,11 @@ public class ListCommand extends MusicCommand {
         if (queue.getTracks().size() == 0) {
             context.send(CommandIcons.error + "Queue is empty!");
         } else {
-            List<String> pages = StringUtil.createPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
+            List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
             EmbedPaginator paginator = new EmbedPaginator(waiter, pages, context.getSender(), context.getNormalEmbed());
             paginator.setTitle(MUSIC + "Track listing ({page})");
+            paginator.setTop("```markdown");
+            paginator.setBottom("```");
             paginator.create(context.getChannel());
         }
     }

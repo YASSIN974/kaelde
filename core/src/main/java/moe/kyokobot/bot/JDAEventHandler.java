@@ -71,14 +71,14 @@ public class JDAEventHandler implements EventListener {
             boolean self_mute = content.getBoolean("self_mute");
             boolean suppress = content.getBoolean("suppress");
             String guild_id = content.getString("guild_id");
-            Guild guild = api.getGuildMap().get(Long.valueOf(guild_id));
+            long guild_idl = Long.valueOf(guild_id);
+            Guild guild = api.getGuildMap().get(guild_idl);
 
             if (user_id.equals(api.getSelfUser().getId())) {
                 eventBus.post(new VoiceStateUpdateEvent(guild, channel_id, user_id, session_id, deaf, mute, self_deaf, self_mute, suppress));
-                return super.handleInternally(content);
-            } else {
-                return super.handleInternally(content);
             }
+            api.getClient().updateAudioConnection(guild_idl, guild.getVoiceChannelById(channel_id == null ? -1 : channel_id));
+            return super.handleInternally(content);
         }
     }
 }

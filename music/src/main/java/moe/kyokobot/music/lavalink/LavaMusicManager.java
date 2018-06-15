@@ -15,15 +15,18 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.VoiceState;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samophis.lavalink.client.entities.EventWaiter;
 import samophis.lavalink.client.entities.LavaClient;
 import samophis.lavalink.client.entities.LavaPlayer;
+import samophis.lavalink.client.entities.State;
 import samophis.lavalink.client.entities.builders.AudioNodeEntryBuilder;
 import samophis.lavalink.client.entities.builders.LavaClientBuilder;
 import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
@@ -34,6 +37,7 @@ import java.util.List;
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
 
 public class LavaMusicManager implements MusicManager {
+    private final Logger logger;
     private final LavaClient lavaClient;
     private final LavaEventHandler handler;
     private final List<AudioSourceManager> sourceManagers;
@@ -41,6 +45,7 @@ public class LavaMusicManager implements MusicManager {
     private final Long2ObjectOpenHashMap<EventWaiter> waiters;
 
     public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
+        logger = LoggerFactory.getLogger(this.getClass());
         sourceManagers = new ArrayList<>();
         queues = new Long2ObjectOpenHashMap<>();
         waiters = new Long2ObjectOpenHashMap<>();
@@ -56,7 +61,7 @@ public class LavaMusicManager implements MusicManager {
             if (node.password != null && !node.password.isEmpty()) {
                 builder.setPassword(node.password);
             }
-            builder.setWsPort(node.wsPort);
+            builder.setWebSocketPort(node.wsPort);
             builder.setRestPort(node.restPort);
             lavaClient.addEntry(builder.build());
         });
@@ -84,16 +89,17 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public MusicPlayer getMusicPlayer(Guild guild) {
-        LavaPlayer lavaPlayer = lavaClient.getPlayerByGuildId(guild.getIdLong());
+        LavaPlayer lavaPlayer = lavaClient.newPlayer(guild.getIdLong());
         lavaPlayer.addListener(handler);
-        return new MusicPlayerWrapper(lavaPlayer);
+        return new LavaPlayerWrapper(lavaPlayer);
     }
 
     @Override
     public void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel) {
         jda.getClient().queueAudioConnect(channel);
-        EventWaiter waiter = getWaiter(guild.getIdLong());
-        waiter.tryConnect();
+
+        //EventWaiter waiter = getWaiter(guild.getIdLong());
+        //waiter.tryConnect();
     }
 
     @Override
@@ -114,7 +120,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public void shutdown() {
-        // TODO shutdown
+        lavaClient.shutdown();
     }
 
     @Override
@@ -126,9 +132,9 @@ public class LavaMusicManager implements MusicManager {
         queues.remove(guild.getIdLong());
     }
 
-    private EventWaiter getWaiter(long id) {
-        return waiters.computeIfAbsent(id, waiter -> EventWaiter.from(id));
-    }
+    /* private EventWaiter getWaiter(long id) {
+        return waiters.computeIfAbsent(id, waiter -> EventWaiter.from(lavaClient, id));
+    }*/
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
@@ -137,31 +143,33 @@ public class LavaMusicManager implements MusicManager {
 
     @Subscribe
     public void onVoiceServerUpdate(VoiceServerUpdateEvent event) {
-        EventWaiter waiter = getWaiter(event.getGuild().getIdLong());
-        waiter.setServerAndTryConnect(event.getToken(), event.getEndpoint());
+        //EventWaiter waiter = getWaiter(event.getGuild().getIdLong());
+        //waiter.setServerAndTryConnect(event.getToken(), event.getEndpoint());
+        VoiceState voiceState = event.getGuild().getSelfMember().getVoiceState();
+        if (voiceState != null)
+            lavaClient.newPlayer(event.getGuild().getIdLong()).connect(voiceState.getSessionId(), event.getToken(), event.getEndpoint());
+        else logger.warn("VoiceState == null?");
     }
 
     @Subscribe
     public void onVoiceStateUpdate(VoiceStateUpdateEvent event) {
-        EventWaiter waiter = getWaiter(event.getGuild().getIdLong());
-        waiter.setSessionIdAndTryConnect(event.getSessionId());
+        //EventWaiter waiter = getWaiter(event.getGuild().getIdLong());
+        //waiter.setSessionIdAndTryConnect(event.getSessionId());
+        LavaPlayer lavaPlayer = lavaClient.newPlayer(event.getGuild().getIdLong());
+        if (event.getChannelId() != null) {
+            ((LavaPlayerImpl) lavaPlayer).setChannelId(event.getChannelId());
+        } else {
+            if (lavaPlayer.getState() == State.CONNECTED)
+                lavaPlayer.destroyPlayer();
+        }
     }
 
     @Subscribe
     public void onVoiceChannelLeft(GuildVoiceLeaveEvent event) {
         LavaPlayer lp = lavaClient.getPlayerMap().get(event.getGuild().getIdLong());
         if (lp != null) {
-            for (VoiceChannel vc : event.getGuild().getVoiceChannels()) {
-                if (vc.getMembers().contains(event.getGuild().getSelfMember())) {
-                    ((LavaPlayerImpl) lp).setChannelId(vc.getIdLong());
-                    break;
-                }
-            }
-
             if (lp.getChannelId() == event.getChannelLeft().getIdLong() && isChannelEmpty(event.getGuild(), event.getChannelLeft())) {
                 clean((JDAImpl) event.getJDA(), event.getGuild());
-            } else {
-                System.out.println("channel is not empty");
             }
         }
     }

@@ -94,6 +94,8 @@ public class Main {
                 builder.addEventListener(eventHandler);
                 JDA jda = builder.buildBlocking();
 
+                if (jda.getGuildById("375752406727786498") != null) Globals.inKyokoServer = true;
+
                 Globals.clientId = jda.getSelfUser().getIdLong();
 
                 services.add(new KyokoService(settings, jda, eventBus));

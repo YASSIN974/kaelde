@@ -3,13 +3,14 @@ package moe.kyokobot.music.lavalink;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
 import samophis.lavalink.client.entities.LavaPlayer;
+import samophis.lavalink.client.entities.State;
 
 import javax.annotation.Nonnull;
 
-public class MusicPlayerWrapper implements MusicPlayer {
+public class LavaPlayerWrapper implements MusicPlayer {
     private final LavaPlayer player;
 
-    public MusicPlayerWrapper(LavaPlayer player) {
+    public LavaPlayerWrapper(LavaPlayer player) {
         this.player = player;
     }
 
@@ -91,5 +92,10 @@ public class MusicPlayerWrapper implements MusicPlayer {
     @Override
     public void setVolume(int volume) {
         player.setVolume(volume);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return player.getState() == State.CONNECTED;
     }
 }

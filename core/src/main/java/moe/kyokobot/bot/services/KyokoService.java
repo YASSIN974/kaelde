@@ -66,11 +66,11 @@ public class KyokoService extends AbstractIdleService {
 
             if (sharded) {
                 shardManager.addEventListener(eventWaiter);
-                //shardManager.getShards().forEach(shardJDA -> shardJDA.addEventListener(eventWaiter));
             } else {
                 jda.addEventListener(eventWaiter);
             }
         } catch (Exception e) {
+            logger.error("Something really went wrong while starting Kyoko!");
             e.printStackTrace();
             Sentry.capture(e);
             this.stopAsync();
@@ -80,5 +80,6 @@ public class KyokoService extends AbstractIdleService {
     @Override
     public void shutDown() throws Exception {
         if (jda != null) jda.shutdown();
+        if (shardManager != null) shardManager.shutdown();
     }
 }

@@ -21,4 +21,5 @@ public interface MusicPlayer {
     void destroyPlayer();
     void seek(long position);
     void setVolume(int volume);
+    boolean isConnected();
 }

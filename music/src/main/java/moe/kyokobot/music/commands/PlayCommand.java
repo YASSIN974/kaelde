@@ -7,6 +7,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
@@ -55,7 +56,22 @@ public class PlayCommand extends MusicCommand {
                     }
 
                     if (player.getPlayingTrack() == null) {
+                        int timeout = 0;
                         musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
+
+                        while (!player.isConnected()) { // wait for connect
+                            if (timeout == 100) {
+                                context.send(CommandIcons.error + "Music node connect timeout!");
+                                return;
+                            }
+
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                // ignored
+                            }
+                            timeout++;
+                        }
                         player.playTrack(queue.poll());
                     }
                 }
