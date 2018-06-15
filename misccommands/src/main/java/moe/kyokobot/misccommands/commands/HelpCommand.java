@@ -1,6 +1,7 @@
 package moe.kyokobot.misccommands.commands;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Ordering;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
@@ -39,8 +40,10 @@ public class HelpCommand extends Command {
             commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
             categories.forEach((category, commands) -> {
-                if (commands.size() != 0)
+                if (commands.size() != 0) {
+                    commands.sort(Ordering.usingToString());
                     eb.addField(context.getTranslated("help.category." + category.name().toLowerCase()) + " - (" + commands.size() + ")", "`" + Joiner.on("`, `").join(commands) + "`", false);
+                }
             });
 
             context.send(eb.build());
