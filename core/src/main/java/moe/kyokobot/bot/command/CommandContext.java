@@ -110,6 +110,11 @@ public class CommandContext {
     }
 
     public void send(CharSequence message, Consumer<Message> callback) {
+        event.getChannel().sendMessage(message).queue(callback);
+    }
+
+    // use this method only for debug commands to prevent theoretical token guessing
+    public void sendChecked(CharSequence message, Consumer<Message> callback) {
         if (checkSensitive(message.toString())) {
             event.getChannel().sendMessage(CommandIcons.error + getTranslated("generic.sensitive")).queue(callback);
         } else {
