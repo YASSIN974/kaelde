@@ -17,6 +17,7 @@ import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 public class Module implements KyokoModule {
     private Logger logger;
     @Inject
+    private ModuleManager moduleManager;
+    @Inject
     private CommandManager commandManager;
     @Inject
     private Settings settings;
@@ -55,6 +58,12 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        if (!settings.apiKeys.containsKey("youtube")) {
+            logger.warn("No YouTube API key found, disabling the module!");
+            moduleManager.stopModule("music");
+            return;
+        }
+
         loadConfig();
 
         switch (musicSettings.type) {
@@ -81,7 +90,9 @@ public class Module implements KyokoModule {
 
         eventBus.register(musicManager);
 
-        commands.add(new PlayCommand(musicManager));
+        SearchManager searchManager = new SearchManager(settings.apiKeys.get("youtube"));
+
+        commands.add(new PlayCommand(musicManager, searchManager));
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));
         commands.add(new RepeatCommand(musicManager));
@@ -91,8 +102,11 @@ public class Module implements KyokoModule {
 
     @Override
     public void shutDown() {
-        musicManager.shutdown();
-        eventBus.unregister(musicManager);
+        if (musicManager != null) {
+            musicManager.shutdown();
+            eventBus.unregister(musicManager);
+        }
+
         commands.forEach(commandManager::unregisterCommand);
     }
 

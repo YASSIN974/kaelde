@@ -5,12 +5,15 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.EmbedPaginator;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.StringUtil;
+import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static moe.kyokobot.bot.command.CommandIcons.*;
 import static moe.kyokobot.music.MusicIcons.MUSIC;
 
 public class ListCommand extends MusicCommand {
@@ -29,11 +32,14 @@ public class ListCommand extends MusicCommand {
     public void execute(CommandContext context) {
         MusicQueue queue = manager.getQueue(context.getGuild());
         if (queue.getTracks().size() == 0) {
-            context.send(CommandIcons.error + "Queue is empty!");
+            EmbedBuilder eb = context.getNormalEmbed();
+            eb.setTitle(MUSIC + context.getTranslated("music.list.title"));
+            eb.setDescription(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
+            context.send(eb.build());
         } else {
             List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
             EmbedPaginator paginator = new EmbedPaginator(waiter, pages, context.getSender(), context.getNormalEmbed());
-            paginator.setTitle(MUSIC + "Track listing ({page})");
+            paginator.setTitle(MUSIC + context.getTranslated("music.list.title") + " ({page})");
             paginator.setTop("```markdown");
             paginator.setBottom("```");
             paginator.create(context.getChannel());

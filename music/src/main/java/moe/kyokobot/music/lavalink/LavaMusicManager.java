@@ -42,13 +42,13 @@ public class LavaMusicManager implements MusicManager {
     private final LavaEventHandler handler;
     private final List<AudioSourceManager> sourceManagers;
     private final Long2ObjectOpenHashMap<MusicQueue> queues;
-    private final Long2ObjectOpenHashMap<EventWaiter> waiters;
+    //private final Long2ObjectOpenHashMap<EventWaiter> waiters;
 
     public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
         logger = LoggerFactory.getLogger(this.getClass());
         sourceManagers = new ArrayList<>();
         queues = new Long2ObjectOpenHashMap<>();
-        waiters = new Long2ObjectOpenHashMap<>();
+        //waiters = new Long2ObjectOpenHashMap<>();
         handler = new LavaEventHandler(eventBus);
 
         lavaClient = new LavaClientBuilder(true)
@@ -113,7 +113,7 @@ public class LavaMusicManager implements MusicManager {
         sb.append("LavaMusicManager\n");
         sb.append("----------------\n");
         sb.append("Connected nodes: ").append(lavaClient.getAudioNodes().size()).append("\n");
-        sb.append("Waiters: ").append(waiters.size()).append("\n");
+        //sb.append("Waiters: ").append(waiters.size()).append("\n");
         sb.append("Active player count: ").append(lavaClient.getPlayers().size()).append("\n");
         return sb.toString();
     }
@@ -127,8 +127,8 @@ public class LavaMusicManager implements MusicManager {
     public void clean(JDAImpl jda, Guild guild) {
         closeConnection(jda, guild);
         LavaPlayer lp = lavaClient.getPlayerMap().get(guild.getIdLong());
-        if (lp != null) lp.destroyPlayer();
-        waiters.remove(guild.getIdLong());
+        if (lp != null && lp.getState() == State.CONNECTED) lp.destroyPlayer();
+        //waiters.remove(guild.getIdLong());
         queues.remove(guild.getIdLong());
     }
 
