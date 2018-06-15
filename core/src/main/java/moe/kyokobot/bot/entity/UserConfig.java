@@ -11,6 +11,10 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class UserConfig implements DatabaseEntity {
+    public UserConfig() {
+
+    }
+
     public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, ArrayList<String> tags) {
         this.id = id;
         this.language = language;

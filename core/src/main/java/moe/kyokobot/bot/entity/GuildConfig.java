@@ -12,6 +12,10 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class GuildConfig implements DatabaseEntity {
+    public GuildConfig() {
+
+    }
+
     public GuildConfig(String guildId, Language language, ArrayList<String> prefixes) {
         this.guildId = guildId;
         this.language = language;
