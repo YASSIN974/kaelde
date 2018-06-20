@@ -2,6 +2,7 @@ package moe.kyokobot.music.lavalink;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
+import net.dv8tion.jda.core.entities.Guild;
 import samophis.lavalink.client.entities.LavaPlayer;
 import samophis.lavalink.client.entities.State;
 
@@ -12,6 +13,10 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     public LavaPlayerWrapper(LavaPlayer player) {
         this.player = player;
+    }
+
+    public LavaPlayer getPlayer() {
+        return player;
     }
 
     @Override

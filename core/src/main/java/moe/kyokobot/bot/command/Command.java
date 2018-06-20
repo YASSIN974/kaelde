@@ -3,11 +3,14 @@ package moe.kyokobot.bot.command;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.util.CommonErrors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public abstract class Command {
+    protected static Logger logger = LoggerFactory.getLogger(Command.class);
     @Getter
     protected String name;
     @Getter

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 public class Module implements KyokoModule {
+
     private Logger logger;
     @Inject
     private CommandManager commandManager;
@@ -33,11 +34,11 @@ public class Module implements KyokoModule {
 
         commands.add(new CoffeeCommand());
 
-        commands.add(new PingCommand(commandManager));
-        commands.add(new SayCommand(commandManager));
-        commands.add(new AvatarCommand(commandManager));
-        commands.add(new UserInfoCommand(commandManager));
-        commands.add(new ServerInfoCommand(commandManager));
+        commands.add(new PingCommand());
+        commands.add(new SayCommand());
+        commands.add(new AvatarCommand());
+        commands.add(new UserInfoCommand());
+        commands.add(new ServerInfoCommand());
 
         commands.add(new WhyCommand());
         commands.add(new OwOifyCommand());

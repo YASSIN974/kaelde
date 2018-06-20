@@ -57,8 +57,8 @@ public class KyokoCommandManager implements CommandManager {
             logger.debug("Overriding command " + command.getName());
             Command c = commands.get(command.getName());
             commands.values().removeIf(cmd -> cmd == c);
-            //throw new IllegalArgumentException("Alias or label is already registered!");
         }
+        logger.debug("Registered command: " + command.getName() + " -> " + command);
 
         for (Method method : command.getClass().getMethods()) {
             try {
@@ -66,14 +66,14 @@ public class KyokoCommandManager implements CommandManager {
                     SubCommand subCommand = method.getAnnotation(SubCommand.class);
                     String name = subCommand.name().isEmpty() ? method.getName() : subCommand.name();
                     command.getSubCommands().put(name.toLowerCase(), method);
-                    logger.debug("Registered subcommand: " + name.toLowerCase() + " -> " + method);
+                    logger.debug("Registered subcommand: " + command.getName() + " -> " + name.toLowerCase() + " -> " + method);
                     for (String alias : subCommand.aliases()) {
                         command.getSubCommands().put(alias.toLowerCase(), method);
-                        logger.debug("Registered subcommand: " + alias.toLowerCase() + " -> " + method);
+                        logger.debug("Registered subcommand: " + command.getName() + " -> " + alias.toLowerCase() + " -> " + method);
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error while registering subcommand!", e);
                 Sentry.capture(e);
             }
         }

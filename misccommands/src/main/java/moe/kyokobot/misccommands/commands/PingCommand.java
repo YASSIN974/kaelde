@@ -8,11 +8,8 @@ import moe.kyokobot.bot.manager.CommandManager;
 import java.time.temporal.ChronoUnit;
 
 public class PingCommand extends Command {
-	private CommandManager commandManager;
 
-    public PingCommand(CommandManager commandManager) {
-    	this.commandManager = commandManager;
-    	
+    public PingCommand() {
     	name = "ping";
     	category = CommandCategory.UTILITY;
     }

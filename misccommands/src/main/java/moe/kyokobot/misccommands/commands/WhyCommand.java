@@ -11,13 +11,12 @@ import moe.kyokobot.bot.util.GsonUtil;
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
 public class WhyCommand extends Command {
+
     public WhyCommand() {
         name = "why";
-        description = "why.description";
         aliases = new String[] {"huh", "hmm"};
         category = CommandCategory.FUN;
     }
-
 
     @Override
     public void execute(CommandContext context) {
@@ -31,7 +30,7 @@ public class WhyCommand extends Command {
                     message.editMessage(response.why).override(true).queue();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("API error?", e);
                 Sentry.capture(e);
                 CommonErrors.editException(context, e, message);
             }

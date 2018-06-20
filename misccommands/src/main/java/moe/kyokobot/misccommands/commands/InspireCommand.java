@@ -10,6 +10,7 @@ import moe.kyokobot.bot.util.NetworkUtil;
 import moe.kyokobot.bot.util.EmbedBuilder;
 
 public class InspireCommand extends Command {
+
     public InspireCommand() {
         name = "inspire";
         category = CommandCategory.FUN;

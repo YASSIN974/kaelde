@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 public interface MusicManager {
     void registerSourceManager(AudioSourceManager manager);
-    AudioItem resolve(String query);
+    AudioItem resolve(Guild guild, String query);
     MusicQueue getQueue(Guild guild);
     MusicPlayer getMusicPlayer(Guild guild);
     void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel);
@@ -16,4 +16,5 @@ public interface MusicManager {
     void clean(JDAImpl jda, Guild guild);
     String getDebug();
     void shutdown();
+    String getDebugString(Guild guild, MusicPlayer player);
 }

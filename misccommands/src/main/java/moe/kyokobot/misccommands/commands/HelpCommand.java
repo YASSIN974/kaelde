@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {
+
     private CommandManager commandManager;
 
     public HelpCommand(CommandManager commandManager) {

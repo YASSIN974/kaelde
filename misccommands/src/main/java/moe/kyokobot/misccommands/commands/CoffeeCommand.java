@@ -13,6 +13,7 @@ import moe.kyokobot.bot.util.EmbedBuilder;
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
 public class CoffeeCommand extends Command {
+
     public CoffeeCommand() {
         name = "coffee";
         description = "coffee.description";

@@ -3,8 +3,8 @@ package moe.kyokobot.misccommands.commands;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.bot.util.UserUtil;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -16,13 +16,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 public class UserInfoCommand extends Command {
-    private CommandManager commandManager;
-
-    public UserInfoCommand(CommandManager commandManager) {
-        this.commandManager = commandManager;
+    public UserInfoCommand() {
         name = "userinfo";
         category = CommandCategory.UTILITY;
-        description = "userinfo.description";
     }
 
     @Override
@@ -61,31 +57,17 @@ public class UserInfoCommand extends Command {
     }
 
     private String getRoles(CommandContext context, Member member) {
-        if (member.getRoles().size() == 0) {
+        if (member.getRoles().isEmpty()) {
             return context.getTranslated("generic.none");
         } else {
-            int roles = member.getRoles().size();
-            String rstr = "";
-            for (Role r : member.getRoles()) {
-                if (rstr.length() > 150) {
-                    if (rstr.endsWith(", ")) rstr = rstr.substring(rstr.length() - 2);
-                    if (roles != 0)
-                        rstr += String.format(context.getTranslated("userinfo.roles.more"), roles);
-                    return rstr;
-                } else {
-                    rstr += "`" + r.getName() + "`";
-                    if (roles > 1) rstr += ", ";
-                }
-                roles--;
-            }
-            return rstr;
+            return member.getRoles().stream().map(Role::getName).collect(StringUtil.limitingJoin(", ", 128, " and more"));
         }
 
     }
 
     private String prettyStatus(CommandContext context, OnlineStatus status) {
         String s = "";
-        if (context.getEvent().getJDA().getGuildById("110373943822540800") != null) { // Discord Bots > DBL
+        if (context.getEvent().getJDA().getGuildById("110373943822540800") != null) {
             switch (status) {
                 case ONLINE:
                     s = "<:online:313956277808005120>";

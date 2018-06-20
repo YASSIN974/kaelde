@@ -1,19 +1,17 @@
 package moe.kyokobot.music.commands;
 
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.CommandIcons;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.EmbedPaginator;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.StringUtil;
-import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicQueue;
-import moe.kyokobot.bot.util.EmbedBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static moe.kyokobot.bot.command.CommandIcons.*;
 import static moe.kyokobot.music.MusicIcons.MUSIC;
 
 public class ListCommand extends MusicCommand {
@@ -33,7 +31,7 @@ public class ListCommand extends MusicCommand {
         MusicQueue queue = manager.getQueue(context.getGuild());
         if (queue.getTracks().size() == 0) {
             EmbedBuilder eb = context.getNormalEmbed();
-            eb.setTitle(MUSIC + context.getTranslated("music.list.title"));
+            eb.setTitle((Globals.inKyokoServer ? "<:iclist:435576062894931968> " : "") + context.getTranslated("music.list.title"));
             eb.setDescription(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
             context.send(eb.build());
         } else {

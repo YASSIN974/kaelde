@@ -8,7 +8,7 @@ import moe.kyokobot.bot.util.RandomUtil;
 import java.util.Random;
 
 public class RandomTextCommand extends Command {
-    private static final Random random = new Random();
+
     private final String[] texts;
 
     public RandomTextCommand(String name, String[] texts) {

@@ -70,10 +70,10 @@ public class KyokoService extends AbstractIdleService {
                 jda.addEventListener(eventWaiter);
             }
         } catch (Exception e) {
-            logger.error("Something really went wrong while starting Kyoko!");
-            e.printStackTrace();
+            logger.error("Oops, something went really wrong while starting Kyoko!", e);
             Sentry.capture(e);
             this.stopAsync();
+            System.exit(1);
         }
     }
 

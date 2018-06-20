@@ -3,7 +3,6 @@ package moe.kyokobot.misccommands.commands;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -11,10 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ServerInfoCommand extends Command {
-    private CommandManager commandManager;
 
-    public ServerInfoCommand(CommandManager commandManager) {
-        this.commandManager = commandManager;
+    public ServerInfoCommand() {
         name = "serverinfo";
         category = CommandCategory.UTILITY;
     }

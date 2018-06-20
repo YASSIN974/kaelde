@@ -52,8 +52,7 @@ public class Main {
                     System.exit(1);
                 }
             } catch (Exception e) {
-                logger.error("Error creating default configuration!");
-                e.printStackTrace();
+                logger.error("Error creating default configuration!", e);
                 System.exit(1);
             }
         }
@@ -61,8 +60,7 @@ public class Main {
         try {
             settings = gson.fromJson(new FileReader(cfg), Settings.class);
         } catch (Exception e) {
-            logger.error("Cannot read configuration file!");
-            e.printStackTrace();
+            logger.error("Cannot read configuration file!", e);
             System.exit(1);
         }
 
@@ -142,14 +140,15 @@ public class Main {
             serviceManager.addListener(new ServiceManager.Listener() {
                 @Override
                 public void failure(Service service) {
-                    logger.error("Service " + service.getClass().getName() + "failed!");
-                    service.failureCause().printStackTrace();
+                    logger.error("Service " + service.getClass().getName() + "failed!", service.failureCause());
                 }
             });
             serviceManager.startAsync();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Oops, something went really wrong while starting Kyoko!", e);
+            Sentry.capture(e);
+            System.exit(1);
         }
     }
 }
