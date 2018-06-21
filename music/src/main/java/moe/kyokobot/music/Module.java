@@ -92,6 +92,8 @@ public class Module implements KyokoModule {
 
         SearchManager searchManager = new SearchManager(settings.apiKeys.get("youtube"));
 
+        commands = new ArrayList<>();
+
         commands.add(new PlayCommand(musicManager, searchManager));
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));

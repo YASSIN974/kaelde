@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.basic;
 
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
@@ -11,7 +11,7 @@ public class PingCommand extends Command {
 
     public PingCommand() {
     	name = "ping";
-    	category = CommandCategory.UTILITY;
+    	category = CommandCategory.BASIC;
     }
     
     @Override

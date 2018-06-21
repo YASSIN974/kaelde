@@ -34,6 +34,9 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         requester = new ImageRequester(settings, databaseManager);
+
+        commands = new ArrayList<>();
+
         commands.add(new ProfileCommand(requester));
         commands.add(new ClaimCommand(databaseManager));
         commands.add(new SendMoneyCommand(databaseManager));

@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.basic;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Ordering;

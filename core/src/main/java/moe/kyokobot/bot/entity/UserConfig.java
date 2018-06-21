@@ -34,6 +34,7 @@ public class UserConfig implements DatabaseEntity {
     private long xp = 0L;
     private long claim = 0L;
     private long reputation = 0L;
+    private int theme = 0;
     private String image = "default";
     private ArrayList<String> tags = new ArrayList<>();
 

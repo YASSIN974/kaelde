@@ -8,6 +8,7 @@ import moe.kyokobot.bot.util.GsonUtil;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,11 +23,16 @@ public class GuildConfig implements DatabaseEntity {
         this.prefixes = prefixes;
     }
 
-    @SerializedName("guild-id")
+    @SerializedName("id")
     private String guildId = "";
     private Language language = Language.ENGLISH;
     private ArrayList<String> prefixes = new ArrayList<>();
+    @SerializedName("music-config")
     private MusicConfig musicConfig = new MusicConfig();
+    @SerializedName("auto-role")
+    private String autoRole = "";
+    @SerializedName("self-assignable")
+    private List<String> selfAssignable = new ArrayList<>();
 
     @Transient
     @Override

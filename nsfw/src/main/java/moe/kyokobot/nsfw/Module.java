@@ -31,6 +31,8 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        commands = new ArrayList<>();
+
         commands.add(new LewdNekoCommand());
         commands.add(new BoobsCommand());
         commands.forEach(commandManager::registerCommand);

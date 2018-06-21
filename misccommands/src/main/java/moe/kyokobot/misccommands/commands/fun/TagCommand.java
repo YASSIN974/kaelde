@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.fun;
 
 import moe.kyokobot.bot.command.Command;
 

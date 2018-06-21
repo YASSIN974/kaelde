@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.fun;
 
 import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;

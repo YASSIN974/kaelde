@@ -41,6 +41,8 @@ public class Module implements KyokoModule {
     public void startUp() {
         if (settings.apiKeys.containsKey("weebsh")) {
             weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
+            commands = new ArrayList<>();
+
             commands.add(new WeebCommand(weeb4J));
             commands.add(new ActionCommand(weeb4J, cooldowns, "hug"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "pat"));

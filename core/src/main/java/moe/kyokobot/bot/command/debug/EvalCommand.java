@@ -38,7 +38,9 @@ public class EvalCommand extends Command {
                 engine.put("commandManager", commandManager);
                 engine.put("databaseManager", databaseManager);
 
-                String e = engine.eval(context.getConcatArgs()).toString();
+                Object o = engine.eval(context.getConcatArgs());
+                String e = o == null ? "null" : o.toString();
+
                 if (e.length() > 1990) e = e.substring(1990);
                 if (context.checkSensitive(e)) {
                     message.editMessage(CommandIcons.error + context.getTranslated("generic.sensitive")).queue();
@@ -46,7 +48,7 @@ public class EvalCommand extends Command {
                     message.editMessage("```\n" + e + "\n```").queue();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Caught exception in eval", e);
                 message.editMessage(CommandIcons.error + e.getMessage()).queue();
             }
         });

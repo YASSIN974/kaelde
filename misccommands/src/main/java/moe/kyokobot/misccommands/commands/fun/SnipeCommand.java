@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.fun;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
