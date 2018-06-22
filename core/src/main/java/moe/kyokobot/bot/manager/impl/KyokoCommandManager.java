@@ -74,9 +74,7 @@ public class KyokoCommandManager implements CommandManager {
         registered.add(command);
         commands.put(command.getName().toLowerCase(), command);
 
-        aliases.forEach(alias -> {
-            commands.put(alias, command);
-        });
+        aliases.forEach(alias -> commands.put(alias, command));
 
         command.onRegister();
         logger.debug("Registered command: {} -> {}", command.getName(), command.toString());
@@ -127,11 +125,9 @@ public class KyokoCommandManager implements CommandManager {
         } else if (content.startsWith(settings.bot.normalPrefix)) {
             content = content.trim().substring(settings.bot.normalPrefix.length()).trim();
             handleNormal(event, settings.bot.normalPrefix, content, direct);
-        } else if (content.startsWith(settings.bot.debugPrefix)) {
-            if (settings.bot.owner.equals(event.getAuthor().getId())) {
-                content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
-                handleDebug(event, settings.bot.debugPrefix, content, direct);
-            }
+        } else if (content.startsWith(settings.bot.debugPrefix) && settings.bot.owner.equals(event.getAuthor().getId())) {
+            content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
+            handleDebug(event, settings.bot.debugPrefix, content, direct);
         }
     }
 
