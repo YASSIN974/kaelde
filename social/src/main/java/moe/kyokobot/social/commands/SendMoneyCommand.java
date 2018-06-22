@@ -10,6 +10,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -62,8 +63,9 @@ public class SendMoneyCommand extends Command {
 
     @SubCommand()
     public void confirm(CommandContext context) {
-        if (requests.asMap().containsKey(context.getSender())) {
-            SendMoneyRequest request = requests.getIfPresent(context.getSender());
+        SendMoneyRequest request = requests.getIfPresent(context.getSender());
+
+        if (request != null) {
             requests.invalidate(context.getSender());
             if (request.isExpiried()) {
                 context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
@@ -81,7 +83,7 @@ public class SendMoneyCommand extends Command {
                         context.send(CommandIcons.error + context.getTranslated("sendmoney.nomoney"));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Caught exception in SendMoneyCommand!", e);
                     Sentry.capture(e);
                     CommonErrors.exception(context, e);
                 }

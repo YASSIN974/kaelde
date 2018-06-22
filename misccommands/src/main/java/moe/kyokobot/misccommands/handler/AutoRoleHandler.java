@@ -6,6 +6,7 @@ import moe.kyokobot.bot.entity.GuildConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,8 @@ public class AutoRoleHandler {
                     event.getGuild().getController().addSingleRoleToMember(event.getMember(), role).queue();
                 }
             }
+        } catch (PermissionException e) {
+            // ignore
         } catch (Exception e) {
             logger.error("Caught error in AutoRoleHandler!", e);
             Sentry.capture(e);

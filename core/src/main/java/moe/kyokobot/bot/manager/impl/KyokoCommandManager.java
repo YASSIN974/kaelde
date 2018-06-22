@@ -53,23 +53,16 @@ public class KyokoCommandManager implements CommandManager {
 
         List<String> aliases = Arrays.asList(command.getAliases());
 
-        if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases))) {
-            logger.debug("Overriding command " + command.getName());
-            Command c = commands.get(command.getName());
-            commands.values().removeIf(cmd -> cmd == c);
-        }
-        logger.debug("Registered command: " + command.getName() + " -> " + command);
-
         for (Method method : command.getClass().getMethods()) {
             try {
                 if (method.isAnnotationPresent(SubCommand.class) && method.getParameterCount() == 1) {
                     SubCommand subCommand = method.getAnnotation(SubCommand.class);
                     String name = subCommand.name().isEmpty() ? method.getName() : subCommand.name();
                     command.getSubCommands().put(name.toLowerCase(), method);
-                    logger.debug("Registered subcommand: " + command.getName() + " -> " + name.toLowerCase() + " -> " + method);
+                    logger.debug("Registered subcommand: {} -> {}", name, method);
                     for (String alias : subCommand.aliases()) {
                         command.getSubCommands().put(alias.toLowerCase(), method);
-                        logger.debug("Registered subcommand: " + command.getName() + " -> " + alias.toLowerCase() + " -> " + method);
+                        logger.debug("Registered subcommand: {} -> {}", alias, method);
                     }
                 }
             } catch (Exception e) {
@@ -86,6 +79,7 @@ public class KyokoCommandManager implements CommandManager {
         });
 
         command.onRegister();
+        logger.debug("Registered command: {} -> {}", command.getName(), command.toString());
     }
 
     public void unregisterCommand(Command command) {
@@ -144,7 +138,7 @@ public class KyokoCommandManager implements CommandManager {
     private void handleNormal(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
-        if (parts.size() != 0) {
+        if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
                 if (!c.isAllowedInDMs() && direct) return;
@@ -155,11 +149,11 @@ public class KyokoCommandManager implements CommandManager {
                 CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
-                    logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
+                    logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     try {
                         c.preExecute(context);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Caught error while executing command!", e);
                         Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }
@@ -171,7 +165,7 @@ public class KyokoCommandManager implements CommandManager {
     private void handleDebug(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
-        if (parts.size() != 0) {
+        if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
                 if (!c.isAllowedInDMs() && direct) return;
@@ -182,11 +176,11 @@ public class KyokoCommandManager implements CommandManager {
                 CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
-                    logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
+                    logger.info("User {}#{} ({}) on guild {} ({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     try {
                         c.preExecute(context);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Caught error while executing command!", e);
                         Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }
