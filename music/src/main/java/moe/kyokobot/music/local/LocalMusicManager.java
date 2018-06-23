@@ -21,6 +21,7 @@ import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -99,6 +101,7 @@ public class LocalMusicManager implements MusicManager {
             return new LocalPlayerWrapper(player, guild);
         });
     }
+
     @Override
     public void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel) {
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
@@ -108,13 +111,14 @@ public class LocalMusicManager implements MusicManager {
 
     @Override
     public void closeConnection(JDAImpl jda, Guild guild) {
-        AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-        audioManager.closeAudioConnection();
+        jda.pool.submit(() -> {
+            AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
+            audioManager.closeAudioConnection();
+        });
     }
 
     @Override
     public void clean(JDAImpl jda, Guild guild) {
-        guild.getAudioManager().setSendingHandler(null);
         closeConnection(jda, guild);
         MusicPlayer player = players.remove(guild.getIdLong());
         if (player != null)
@@ -155,18 +159,19 @@ public class LocalMusicManager implements MusicManager {
         String endpoint = event.getEndpoint().replace(":80", "");
 
         AudioManagerImpl audioManager = (AudioManagerImpl) event.getGuild().getAudioManager();
-        if (audioManager.isConnected())
-            audioManager.prepareForRegionChange();
-        if (!audioManager.isAttemptingToConnect())
-        {
-            logger.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
-            return;
-        }
+        MiscUtil.locked(audioManager.CONNECTION_LOCK, () -> {
+            if (audioManager.isConnected())
+                audioManager.prepareForRegionChange();
+            if (!audioManager.isAttemptingToConnect()) {
+                logger.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
+                return;
+            }
 
-        AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, jda, event.getGuild(), event.getSessionId(), event.getToken(), audioManager.isAutoReconnect());
-        AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-        audioManager.setAudioConnection(connection);
-        socket.startConnection();
+            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, jda, event.getGuild(), event.getSessionId(), event.getToken(), audioManager.isAutoReconnect());
+            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+            audioManager.setAudioConnection(connection);
+            socket.startConnection();
+        });
     }
 
     @Subscribe
@@ -178,7 +183,6 @@ public class LocalMusicManager implements MusicManager {
 
     @Subscribe
     public void onTrackEnd(TrackEndEvent event) {
-        logger.debug("Track end");
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
             if (queue.isRepeating()) {
