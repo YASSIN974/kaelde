@@ -50,6 +50,11 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public float getNightcore() {
+        return 1.0f;
+    }
+
+    @Override
     public boolean isPaused() {
         return player.isPaused();
     }
@@ -82,6 +87,11 @@ public class LavaPlayerWrapper implements MusicPlayer {
     @Override
     public void setVolume(int volume) {
         player.setVolume(volume);
+    }
+
+    @Override
+    public void setNightcore(float speed) {
+
     }
 
     @Override

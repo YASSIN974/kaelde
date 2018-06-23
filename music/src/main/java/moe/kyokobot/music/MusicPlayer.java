@@ -11,6 +11,7 @@ public interface MusicPlayer {
     long getTimestamp();
     long getPosition();
     int getVolume();
+    float getNightcore();
     boolean isPaused();
     void playTrack(@Nonnull AudioTrack track);
     void stopTrack();
@@ -18,5 +19,6 @@ public interface MusicPlayer {
     void destroyPlayer();
     void seek(long position);
     void setVolume(int volume);
+    void setNightcore(float speed);
     boolean isConnected();
 }

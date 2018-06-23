@@ -1,5 +1,8 @@
 package moe.kyokobot.music.local;
 
+import com.google.common.collect.ImmutableList;
+import com.sedmelluq.discord.lavaplayer.filter.ResamplingPcmAudioFilter;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
@@ -8,8 +11,11 @@ import net.dv8tion.jda.core.entities.Guild;
 import javax.annotation.Nonnull;
 
 public class LocalPlayerWrapper implements MusicPlayer {
+    static AudioConfiguration configuration;
     private final AudioPlayer player;
     private final Guild guild;
+
+    private float nightcore = 1.0f;
 
     public LocalPlayerWrapper(AudioPlayer player, Guild guild) {
         this.player = player;
@@ -51,6 +57,11 @@ public class LocalPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public float getNightcore() {
+        return nightcore;
+    }
+
+    @Override
     public boolean isPaused() {
         return player.isPaused();
     }
@@ -84,6 +95,25 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public void setVolume(int volume) {
         player.setVolume(volume);
+    }
+
+    @Override
+    public void setNightcore(float speed) {
+        if (speed == 0.f) speed = 1.0f;
+        speed = Math.abs(speed);
+        nightcore = speed;
+
+        if (nightcore == 1.0f) {
+            player.setFilterFactory(null);
+        } else {
+            player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(new ResamplingPcmAudioFilter(
+                    configuration,
+                    audioDataFormat.channelCount,
+                    audioFilter,
+                    audioDataFormat.sampleRate,
+                    (int) (audioDataFormat.sampleRate * (1f / nightcore))
+            )));
+        }
     }
 
     @Override

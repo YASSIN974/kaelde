@@ -21,10 +21,7 @@ import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
-import moe.kyokobot.music.commands.ListCommand;
-import moe.kyokobot.music.commands.PlayCommand;
-import moe.kyokobot.music.commands.RepeatCommand;
-import moe.kyokobot.music.commands.SkipCommand;
+import moe.kyokobot.music.commands.*;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
 import moe.kyokobot.music.local.LocalMusicManager;
 import net.dv8tion.jda.core.JDA;
@@ -104,6 +101,8 @@ public class Module implements KyokoModule {
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));
         commands.add(new RepeatCommand(musicManager));
+        commands.add(new NightcoreCommand(musicManager));
+        commands.add(new PauseCommand(musicManager));
 
         commands.forEach(commandManager::registerCommand);
     }

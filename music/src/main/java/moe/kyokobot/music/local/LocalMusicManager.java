@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -21,21 +22,16 @@ import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
-import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.handle.VoiceServerUpdateHandler;
-import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +54,13 @@ public class LocalMusicManager implements MusicManager {
         queues = new Long2ObjectOpenHashMap<>();
         resultCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
         playerManager = new DefaultAudioPlayerManager();
+        playerManager.setFrameBufferDuration(2000);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
+
+        playerManager.getConfiguration().setOpusEncodingQuality(10);
+        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
+
+        LocalPlayerWrapper.configuration = playerManager.getConfiguration();
         this.eventBus = eventBus;
     }
 
@@ -186,7 +189,7 @@ public class LocalMusicManager implements MusicManager {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
             if (queue.isRepeating()) {
-                event.getPlayer().playTrack(queue.getLastTrack());
+                event.getPlayer().playTrack(queue.getLastTrack().makeClone());
             } else {
                 Guild g = queue.getJDA().getGuildById(event.getPlayer().getGuildId());
 
