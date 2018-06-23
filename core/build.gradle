@@ -7,7 +7,8 @@ buildscript {
 
     dependencies {
         classpath 'io.franzbecker:gradle-lombok:1.14'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.50'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
@@ -15,10 +16,13 @@ group 'moe.kyokobot'
 version "2.0.0-SNAPSHOT"
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
 apply plugin: 'io.franzbecker.gradle-lombok'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     jcenter()
@@ -60,6 +64,10 @@ build.dependsOn shadowJar
 
 compileJava {
     options.compilerArgs << '-parameters' // reflection fix
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '1.8'
 }
 
 artifacts {
