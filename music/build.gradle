@@ -7,27 +7,10 @@ buildscript {
 
     dependencies {
         classpath 'io.franzbecker:gradle-lombok:1.14'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
     }
 }
 
-group 'moe.kyokobot'
-version "2.0.0-SNAPSHOT"
-
-apply plugin: 'java'
 apply plugin: 'io.franzbecker.gradle-lombok'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-sourceCompatibility = 1.8
-
-repositories {
-    jcenter()
-    maven { url "https://jitpack.io" }
-    maven { url "https://jcenter.bintray.com" }
-    maven { url "https://dl.bintray.com/gabixdev/kyoko/"}
-    maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-}
 
 dependencies {
     compileOnly project(":core")
