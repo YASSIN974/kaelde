@@ -27,8 +27,10 @@ public class SkipCommand extends MusicCommand {
     public void execute(CommandContext context) {
         // TODO voteskip
 
-        VoiceChannel voiceChannel = MusicUtil.getCurrentChannel(context.getGuild(), context.getMember());
+        VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
+            // TODO check that user is in same channel as Kyoko.
+
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             MusicQueue queue = musicManager.getQueue(context.getGuild());
 

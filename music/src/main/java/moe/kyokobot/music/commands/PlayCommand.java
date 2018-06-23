@@ -42,13 +42,13 @@ public class PlayCommand extends MusicCommand {
         }
 
         if (context.hasArgs()) {
-            VoiceChannel voiceChannel = MusicUtil.getCurrentChannel(context.getGuild(), context.getMember());
+            VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
             if (voiceChannel != null) {
                 locks.put(context.getGuild(), true);
                 MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
+                System.out.println(player.toString());
                 MusicQueue queue = musicManager.getQueue(context.getGuild());
 
-                // TODO: enable/disable announcing
                 queue.setAnnouncing(context.getChannel(), context);
 
                 if (loadTracks(context, queue))
@@ -76,12 +76,12 @@ public class PlayCommand extends MusicCommand {
 
         if (item == null) {
             SearchManager.SearchResult result = searchManager.searchYouTube(context.getConcatArgs());
-            if (result == null) {
+            if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
+                item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
+            } else {
                 context.send(CommandIcons.error + String.format(context.getTranslated("music.nothingfound"), context.getConcatArgs()));
                 locks.invalidate(context.getGuild());
                 return false;
-            } else {
-                item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
             }
         }
 

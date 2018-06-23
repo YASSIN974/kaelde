@@ -1,6 +1,6 @@
 allprojects {
     ext {
-        jdaVersion = "3.6.0_362"
+        jdaVersion = "3.6.0_376"
     }
     repositories {
         jcenter()

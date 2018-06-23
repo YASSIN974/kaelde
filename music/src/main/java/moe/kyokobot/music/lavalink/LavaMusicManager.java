@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
@@ -41,7 +42,7 @@ public class LavaMusicManager implements MusicManager {
     private final LavaClient lavaClient;
     private final LavaEventHandler handler;
     private final List<AudioSourceManager> sourceManagers;
-    private final Long2ObjectOpenHashMap<MusicQueue> queues;
+    private final Long2ObjectMap<MusicQueue> queues;
     private final HashMap<AudioNodeEntry, String> nodeNames;
     private Cache<String, AudioItem> resultCache;
 
@@ -133,12 +134,10 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public String getDebug() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("LavaMusicManager\n");
-        sb.append("----------------\n");
-        sb.append("Connected nodes: ").append(lavaClient.getAudioNodes().size()).append("\n");
-        sb.append("Active player count: ").append(lavaClient.getPlayers().size()).append("\n");
-        return sb.toString();
+        return "LavaMusicManager\n" +
+                "----------------\n" +
+                "Connected nodes: " + lavaClient.getAudioNodes().size() + "\n" +
+                "Active player count: " + lavaClient.getPlayers().size() + "\n";
     }
 
     @Override

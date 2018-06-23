@@ -26,6 +26,7 @@ import moe.kyokobot.music.commands.PlayCommand;
 import moe.kyokobot.music.commands.RepeatCommand;
 import moe.kyokobot.music.commands.SkipCommand;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
+import moe.kyokobot.music.local.LocalMusicManager;
 import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,12 @@ public class Module implements KyokoModule {
 
         switch (musicSettings.type) {
             case LAVALINK:
+                logger.info("Using Lavalink music manager.");
                 musicManager = new LavaMusicManager(musicSettings, eventBus);
+                break;
+            case INTERNAL:
+                logger.info("Using internal music manager.");
+                musicManager = new LocalMusicManager(musicSettings, eventBus);
                 break;
         }
 

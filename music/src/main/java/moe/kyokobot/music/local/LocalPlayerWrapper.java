@@ -1,21 +1,22 @@
-package moe.kyokobot.music.lavalink;
+package moe.kyokobot.music.local;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.Guild;
-import samophis.lavalink.client.entities.LavaPlayer;
-import samophis.lavalink.client.entities.State;
 
 import javax.annotation.Nonnull;
 
-public class LavaPlayerWrapper implements MusicPlayer {
-    private final LavaPlayer player;
+public class LocalPlayerWrapper implements MusicPlayer {
+    private final AudioPlayer player;
+    private final Guild guild;
 
-    public LavaPlayerWrapper(LavaPlayer player) {
+    public LocalPlayerWrapper(AudioPlayer player, Guild guild) {
         this.player = player;
+        this.guild = guild;
     }
 
-    public LavaPlayer getPlayer() {
+    public AudioPlayer getPlayer() {
         return player;
     }
 
@@ -26,22 +27,22 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public long getGuildId() {
-        return player.getGuildId();
+        return guild.getIdLong();
     }
 
     @Override
     public long getChannelId() {
-        return player.getChannelId();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getTimestamp() {
-        return player.getTimestamp();
+        return 0;
     }
 
     @Override
     public long getPosition() {
-        return player.getPosition();
+        return player.getPlayingTrack() != null ? player.getPlayingTrack().getPosition() : 0L;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public void playTrack(@Nonnull AudioTrack track) {
-        player.playTrack(track);
+        player.startTrack(track, false);
     }
 
     @Override
@@ -71,12 +72,13 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public void destroyPlayer() {
-        player.destroyPlayer();
+        player.destroy();
     }
 
     @Override
     public void seek(long position) {
-        player.seek(position);
+        if (player.getPlayingTrack() != null)
+            player.getPlayingTrack().setPosition(position);
     }
 
     @Override
@@ -86,6 +88,6 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public boolean isConnected() {
-        return player.getState() == State.CONNECTED;
+        return guild.getAudioManager().isConnected();
     }
 }

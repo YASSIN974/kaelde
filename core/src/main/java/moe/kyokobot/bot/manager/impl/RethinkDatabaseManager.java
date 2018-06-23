@@ -43,20 +43,20 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public UserConfig getUser(User user) throws Exception {
+    public UserConfig getUser(User user) {
         String json = r.table("users").get(user.getId()).toJson().run(connection);
         return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, UserConfig.class) : newUser(user.getId());
     }
 
     @Override
-    public GuildConfig getGuild(Guild guild) throws Exception {
+    public GuildConfig getGuild(Guild guild) {
         String json = r.table("guilds").get(guild.getId()).toJson().run(connection);
         return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, GuildConfig.class) : newGuild(guild.getId());
     }
 
     @Override
     public void save(@NotNull DatabaseEntity entity) {
-        logger.debug("Saved entity on " + entity.getTableName() + ": " + entity.getClass().getName() + ": " + entity.toString());
+        logger.debug("Saved entity on {} -> {} -> {}", entity.getTableName(), entity.getClass().getName(), entity.toString());
         r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
     }
 

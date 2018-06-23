@@ -13,9 +13,6 @@ public interface MusicPlayer {
     int getVolume();
     boolean isPaused();
     void playTrack(@Nonnull AudioTrack track);
-    void playTrack(@Nonnull AudioTrack track, long startTime, long endTime);
-    void playTrack(@Nonnull String identifier);
-    void playTrack(@Nonnull String identifier, long startTime, long endTime);
     void stopTrack();
     void setPaused(boolean isPaused);
     void destroyPlayer();

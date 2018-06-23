@@ -6,8 +6,8 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
-import moe.kyokobot.bot.util.EventWaiter;
-import moe.kyokobot.misccommands.commands.*;
+import moe.kyokobot.misccommands.commands.RandomTextCommand;
+import moe.kyokobot.misccommands.commands.SimpleTextCommand;
 import moe.kyokobot.misccommands.commands.basic.HelpCommand;
 import moe.kyokobot.misccommands.commands.basic.PingCommand;
 import moe.kyokobot.misccommands.commands.basic.ServerInfoCommand;
@@ -15,27 +15,21 @@ import moe.kyokobot.misccommands.commands.basic.UserInfoCommand;
 import moe.kyokobot.misccommands.commands.fun.*;
 import moe.kyokobot.misccommands.commands.images.CoffeeCommand;
 import moe.kyokobot.misccommands.handler.AutoRoleHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class Module implements KyokoModule {
 
-    private Logger logger;
     @Inject
     private CommandManager commandManager;
     @Inject
     private DatabaseManager databaseManager;
-    @Inject
-    private EventWaiter eventWaiter;
     @Inject
     private EventBus eventBus;
     private ArrayList<Command> commands;
     private AutoRoleHandler autoRoleHandler;
 
     public Module() {
-        logger = LoggerFactory.getLogger(getClass());
         commands = new ArrayList<>();
     }
 
