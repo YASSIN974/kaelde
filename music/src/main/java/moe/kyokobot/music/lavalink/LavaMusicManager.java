@@ -14,7 +14,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.music.*;
+import moe.kyokobot.music.MusicManager;
+import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -156,7 +159,7 @@ public class LavaMusicManager implements MusicManager {
     @Override
     public String getDebugString(Guild guild, MusicPlayer player) {
         String s = guild.getJDA().getShardInfo() == null ? "nil" : String.valueOf(guild.getJDA().getShardInfo().getShardId());
-        String n = nodeNames.get(((LavaPlayer) player).getConnectedNode().getEntry());
+        String n = nodeNames.get((((LavaPlayerWrapper) player).getPlayer()).getConnectedNode().getEntry());
         return s + ":" + (n == null ? "nil" : n) + ":" + guild.getId();
     }
 
