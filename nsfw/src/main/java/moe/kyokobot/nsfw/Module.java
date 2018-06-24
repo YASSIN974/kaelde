@@ -1,6 +1,5 @@
 package moe.kyokobot.nsfw;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
@@ -32,6 +31,8 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        commands = new ArrayList<>();
+
         commands.add(new LewdNekoCommand());
         commands.add(new BoobsCommand());
         commands.forEach(commandManager::registerCommand);

@@ -2,15 +2,21 @@ package moe.kyokobot.music.lavalink;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
+import net.dv8tion.jda.core.entities.Guild;
 import samophis.lavalink.client.entities.LavaPlayer;
+import samophis.lavalink.client.entities.State;
 
 import javax.annotation.Nonnull;
 
-public class MusicPlayerWrapper implements MusicPlayer {
+public class LavaPlayerWrapper implements MusicPlayer {
     private final LavaPlayer player;
 
-    public MusicPlayerWrapper(LavaPlayer player) {
+    public LavaPlayerWrapper(LavaPlayer player) {
         this.player = player;
+    }
+
+    public LavaPlayer getPlayer() {
+        return player;
     }
 
     @Override
@@ -44,6 +50,11 @@ public class MusicPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public float getNightcore() {
+        return 1.0f;
+    }
+
+    @Override
     public boolean isPaused() {
         return player.isPaused();
     }
@@ -51,21 +62,6 @@ public class MusicPlayerWrapper implements MusicPlayer {
     @Override
     public void playTrack(@Nonnull AudioTrack track) {
         player.playTrack(track);
-    }
-
-    @Override
-    public void playTrack(@Nonnull AudioTrack track, long startTime, long endTime) {
-        player.playTrack(track, startTime, endTime);
-    }
-
-    @Override
-    public void playTrack(@Nonnull String identifier) {
-        player.playTrack(identifier);
-    }
-
-    @Override
-    public void playTrack(@Nonnull String identifier, long startTime, long endTime) {
-        player.playTrack(identifier, startTime, endTime);
     }
 
     @Override
@@ -91,5 +87,15 @@ public class MusicPlayerWrapper implements MusicPlayer {
     @Override
     public void setVolume(int volume) {
         player.setVolume(volume);
+    }
+
+    @Override
+    public void setNightcore(float speed) {
+
+    }
+
+    @Override
+    public boolean isConnected() {
+        return player.getState() == State.CONNECTED;
     }
 }

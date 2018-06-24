@@ -1,12 +1,13 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.basic;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Ordering;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.CommandManager;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {
+
     private CommandManager commandManager;
 
     public HelpCommand(CommandManager commandManager) {
@@ -22,7 +24,7 @@ public class HelpCommand extends Command {
 
         name = "help";
         category = CommandCategory.BASIC;
-        description = "help.description";
+        usage = "";
     }
 
     @Override
@@ -39,8 +41,10 @@ public class HelpCommand extends Command {
             commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
             categories.forEach((category, commands) -> {
-                if (commands.size() != 0)
+                if (commands.size() != 0) {
+                    commands.sort(Ordering.usingToString());
                     eb.addField(context.getTranslated("help.category." + category.name().toLowerCase()) + " - (" + commands.size() + ")", "`" + Joiner.on("`, `").join(commands) + "`", false);
+                }
             });
 
             context.send(eb.build());

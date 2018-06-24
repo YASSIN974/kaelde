@@ -1,5 +1,6 @@
 package moe.kyokobot.bot.util;
 
+import moe.kyokobot.bot.Globals;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -7,7 +8,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +54,8 @@ public class Paginator {
         channel.sendMessage(render(page)).override(true).queue(message -> {
             this.message = message;
             messageId = message.getIdLong();
-            addReactions(message);
+            if (pageContents.size() > 1)
+                addReactions(message);
             waitForReaction();
         });
     }
@@ -63,7 +64,8 @@ public class Paginator {
         message.editMessage(render(page)).override(true).queue();
         this.message = message;
         messageId = message.getIdLong();
-        addReactions(message);
+        if (pageContents.size() > 1)
+            addReactions(message);
         waitForReaction();
     }
 
@@ -84,9 +86,12 @@ public class Paginator {
     }
 
     private void addReactions(Message message) {
-        if (message.getJDA().getGuildById("375752406727786498") != null) { // Kyoko Discord Bot Support
+        if (Globals.inKyokoServer) {
             message.addReaction(message.getJDA().getEmoteById(LEFT_CHEVRON)).queue(); // previous page
             message.addReaction(message.getJDA().getEmoteById(RIGHT_CHEVRON)).queue(); // next page
+        } else {
+            message.addReaction(LEFT_EMOJI).queue();
+            message.addReaction(RIGHT_EMOJI).queue();
         }
     }
 

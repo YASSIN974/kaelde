@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.UserUtil;
@@ -30,7 +31,7 @@ public class ProfileCommand extends Command {
     public void execute(CommandContext context) {
         if (CommonUtil.checkCooldown(cooldowns, context, 5000)) return;
 
-        context.getChannel().sendMessage(context.working() + context.getTranslated("generic.loading")).queue(message -> {
+        context.getChannel().sendMessage(CommandIcons.working + context.getTranslated("generic.loading")).queue(message -> {
             try {
                 byte[] image;
                 if (context.hasArgs()) {

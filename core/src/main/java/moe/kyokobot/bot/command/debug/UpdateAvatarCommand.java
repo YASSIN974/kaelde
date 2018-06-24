@@ -3,6 +3,7 @@ package moe.kyokobot.bot.command.debug;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.NetworkUtil;
@@ -10,8 +11,8 @@ import net.dv8tion.jda.core.entities.Icon;
 
 import java.io.IOException;
 
-public class AvatarCommand extends Command {
-    public AvatarCommand() {
+public class UpdateAvatarCommand extends Command {
+    public UpdateAvatarCommand() {
         name = "updateavatar";
         type = CommandType.DEBUG;
     }
@@ -31,11 +32,11 @@ public class AvatarCommand extends Command {
         try {
             byte[] data = NetworkUtil.download(url);
             context.getMessage().getJDA().getSelfUser().getManager().setAvatar(Icon.from(data)).queue(
-                    success -> context.send(context.success() + "Avatar updated!"),
+                    success -> context.send(CommandIcons.success + "Avatar updated!"),
                     error -> {
                         error.printStackTrace();
                         Sentry.capture(error);
-                        context.send(context.error() + "Error while updating avatar! `" + error.getMessage() + "`");
+                        context.send(CommandIcons.error + "Error while updating avatar! `" + error.getMessage() + "`");
                     });
         } catch (IOException e) {
             e.printStackTrace();

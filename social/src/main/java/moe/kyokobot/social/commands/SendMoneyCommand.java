@@ -1,33 +1,28 @@
 package moe.kyokobot.social.commands;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.sentry.Sentry;
-import moe.kyokobot.bot.command.Command;
-import moe.kyokobot.bot.command.CommandCategory;
-import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.SubCommand;
+import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
-import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
-import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class SendMoneyCommand extends Command {
     private final DatabaseManager databaseManager;
-    private HashMap<User, SendMoneyRequest> requests;
+    private Cache<User, SendMoneyRequest> requests;
 
-    public SendMoneyCommand(DatabaseManager databaseManager, EventWaiter eventWaiter) {
+    public SendMoneyCommand(DatabaseManager databaseManager) {
         name = "sendmoney";
         category = CommandCategory.SOCIAL;
-        usage = "sendmoney.usage";
-        description = "sendmoney.description";
-
         this.databaseManager = databaseManager;
-
-        requests = new HashMap<>();
+        requests = Caffeine.newBuilder().expireAfterWrite(90, TimeUnit.SECONDS).maximumSize(500).build();
     }
 
     @Override
@@ -46,14 +41,14 @@ public class SendMoneyCommand extends Command {
                 CommonErrors.noUserFound(context, stringuser);
             } else {
                 if (context.getSender() == m.getUser()) {
-                    context.send(context.error() + context.getTranslated("sendmoney.self"));
+                    context.send(CommandIcons.error + context.getTranslated("sendmoney.self"));
                 } else {
                     UserConfig sender = databaseManager.getUser(context.getSender());
-                    if (sender.money >= amount) {
+                    if (sender.getMoney() >= amount) {
                         requests.put(context.getSender(), new SendMoneyRequest(amount, System.currentTimeMillis() + 30000, m.getUser()));
-                        context.send(context.info() + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
+                        context.send(CommandIcons.info + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
                     } else {
-                        context.send(context.error() + context.getTranslated("sendmoney.nomoney"));
+                        context.send(CommandIcons.error + context.getTranslated("sendmoney.nomoney"));
                     }
                 }
             }
@@ -68,41 +63,43 @@ public class SendMoneyCommand extends Command {
 
     @SubCommand()
     public void confirm(CommandContext context) {
-        if (requests.containsKey(context.getSender())) {
-            SendMoneyRequest request = requests.remove(context.getSender());
+        SendMoneyRequest request = requests.getIfPresent(context.getSender());
+
+        if (request != null) {
+            requests.invalidate(context.getSender());
             if (request.isExpiried()) {
-                context.send(context.error() + context.getTranslated("sendmoney.expiried"));
+                context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
             } else {
                 try {
                     UserConfig sender = databaseManager.getUser(context.getSender());
                     UserConfig receiver = databaseManager.getUser(request.receiver);
-                    if (sender.money >= request.amount) {
-                        sender.money -= request.amount;
-                        receiver.money += request.amount;
+                    if (sender.getMoney() >= request.amount) {
+                        sender.setMoney(sender.getMoney() - request.amount);
+                        receiver.setMoney(receiver.getMoney() + request.amount);
                         databaseManager.save(sender);
                         databaseManager.save(receiver);
-                        context.send(context.success() + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
+                        context.send(CommandIcons.success + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
                     } else {
-                        context.send(context.error() + context.getTranslated("sendmoney.nomoney"));
+                        context.send(CommandIcons.error + context.getTranslated("sendmoney.nomoney"));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Caught exception in SendMoneyCommand!", e);
                     Sentry.capture(e);
                     CommonErrors.exception(context, e);
                 }
             }
         } else {
-            context.send(context.error() + context.getTranslated("sendmoney.expiried"));
+            context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
         }
     }
 
     @SubCommand()
     public void cancel(CommandContext context) {
-        if (requests.containsKey(context.getSender())) {
-            requests.remove(context.getSender());
-            context.send(context.info() + context.getTranslated("sendmoney.cancelled"));
+        if (requests.asMap().containsKey(context.getSender())) {
+            requests.invalidate(context.getSender());
+            context.send(CommandIcons.info + context.getTranslated("sendmoney.cancelled"));
         } else {
-            context.send(context.error() + context.getTranslated("sendmoney.expiried"));
+            context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
         }
     }
 

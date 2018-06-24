@@ -13,17 +13,17 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
-import moe.kyokobot.music.commands.ListCommand;
-import moe.kyokobot.music.commands.PlayCommand;
-import moe.kyokobot.music.commands.RepeatCommand;
-import moe.kyokobot.music.commands.SkipCommand;
+import moe.kyokobot.music.commands.*;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
+import moe.kyokobot.music.local.LocalMusicManager;
 import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +36,13 @@ import java.util.ArrayList;
 public class Module implements KyokoModule {
     private Logger logger;
     @Inject
+    private ModuleManager moduleManager;
+    @Inject
     private CommandManager commandManager;
     @Inject
     private Settings settings;
     @Inject
     private EventBus eventBus;
-    @Inject
-    private JDA jda;
     @Inject
     private EventWaiter waiter;
     private ArrayList<Command> commands;
@@ -56,19 +56,32 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        if (!settings.apiKeys.containsKey("youtube")) {
+            logger.warn("No YouTube API key found, disabling the module!");
+            moduleManager.stopModule("music");
+            return;
+        }
+
         loadConfig();
 
         switch (musicSettings.type) {
             case LAVALINK:
-                musicManager = new LavaMusicManager(musicSettings, eventBus, jda);
+                logger.info("Using Lavalink music manager.");
+                musicManager = new LavaMusicManager(musicSettings, eventBus);
+                break;
+            case INTERNAL:
+                logger.info("Using internal music manager.");
+                musicManager = new LocalMusicManager(musicSettings, eventBus);
                 break;
         }
 
-        if (jda.getGuildById("375752406727786498") != null) { // Kyoko Discord Bot Support
+        if (Globals.inKyokoServer) { // Kyoko Discord Bot Support
             MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
             MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
             MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
             MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
+            MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
+            MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
         }
 
         musicManager.registerSourceManager(new YoutubeAudioSourceManager());
@@ -82,18 +95,28 @@ public class Module implements KyokoModule {
 
         eventBus.register(musicManager);
 
-        commands.add(new PlayCommand(musicManager));
+        SearchManager searchManager = new SearchManager(settings.apiKeys.get("youtube"));
+
+        commands = new ArrayList<>();
+
+        commands.add(new PlayCommand(musicManager, searchManager));
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));
         commands.add(new RepeatCommand(musicManager));
+        commands.add(new NightcoreCommand(musicManager));
+        commands.add(new PauseCommand(musicManager));
+        commands.add(new ResumeCommand(musicManager));
 
         commands.forEach(commandManager::registerCommand);
     }
 
     @Override
     public void shutDown() {
-        musicManager.shutdown();
-        eventBus.unregister(musicManager);
+        if (musicManager != null) {
+            musicManager.shutdown();
+            eventBus.unregister(musicManager);
+        }
+
         commands.forEach(commandManager::unregisterCommand);
     }
 

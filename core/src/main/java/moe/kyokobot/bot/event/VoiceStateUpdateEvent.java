@@ -29,7 +29,7 @@ public class VoiceStateUpdateEvent {
         return guild;
     }
 
-    public long getChannelId() {
+    public Long getChannelId() {
         return channel_id;
     }
 

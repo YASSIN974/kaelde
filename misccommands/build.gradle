@@ -1,22 +1,7 @@
-group 'moe.kyokobot'
-version "2.0.0-SNAPSHOT"
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-
-repositories {
-    jcenter()
-    maven { url "https://jitpack.io" }
-    maven { url "https://dl.bintray.com/gabixdev/kyoko/"}
-    maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-}
-
 dependencies {
     compile project(":core")
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
-
 
 jar {
     archiveName = "misccommands.jar"

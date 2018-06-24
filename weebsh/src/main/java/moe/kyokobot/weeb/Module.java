@@ -41,6 +41,8 @@ public class Module implements KyokoModule {
     public void startUp() {
         if (settings.apiKeys.containsKey("weebsh")) {
             weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
+            commands = new ArrayList<>();
+
             commands.add(new WeebCommand(weeb4J));
             commands.add(new ActionCommand(weeb4J, cooldowns, "hug"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "pat"));
@@ -66,9 +68,17 @@ public class Module implements KyokoModule {
         for (String name : commands) {
             String srcname = name;
 
-            if (name.equals("cat")) srcname = "animal_cat";
-            else if (name.equals("discordmeme")) srcname = "discord_memes";
-            else if (name.equals("initiald")) srcname = "initial_d";
+            switch (name) {
+                case "cat":
+                    srcname = "animal_cat";
+                    break;
+                case "discordmeme":
+                    srcname = "discord_memes";
+                    break;
+                case "initiald":
+                    srcname = "initial_d";
+                    break;
+            }
 
             cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{srcname}));
         }

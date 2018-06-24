@@ -43,22 +43,21 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public UserConfig getUser(User user) throws Exception {
-        String json = r.table("users").get(user.getIdLong()).toJson().run(connection);
+    public UserConfig getUser(User user) {
+        String json = r.table("users").get(user.getId()).toJson().run(connection);
         return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, UserConfig.class) : newUser(user.getId());
     }
 
     @Override
-    public GuildConfig getGuild(Guild guild) throws Exception {
-        String json = r.table("users").get(guild.getIdLong()).toJson().run(connection);
+    public GuildConfig getGuild(Guild guild) {
+        String json = r.table("guilds").get(guild.getId()).toJson().run(connection);
         return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, GuildConfig.class) : newGuild(guild.getId());
     }
 
     @Override
     public void save(@NotNull DatabaseEntity entity) {
-        System.out.println(UserConfig.class.getConstructors()[0].getParameters()[0].getName());
-        logger.debug("Saved entity on " + entity.getTableName() + ": " + entity.getClass().getName() + ": " + entity.toString());
-        r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "replace").runNoReply(connection);
+        logger.debug("Saved entity on {} -> {} -> {}", entity.getTableName(), entity.getClass().getName(), entity.toString());
+        r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
     }
 
     private UserConfig newUser(String id) {

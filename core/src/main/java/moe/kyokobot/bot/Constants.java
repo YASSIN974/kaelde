@@ -16,6 +16,7 @@ public class Constants {
     public static final String POWERED_BY_DOGCEO = "powered by dog.ceo";
     public static final String POWERED_BY_NEKOSLIFE = "powered by nekos.life";
     public static final String POWERED_BY_ALEX = "powered by AlexFlipnote's API";
+    public static final String POWERED_BY_LOLISLIFE = "powered by lolis.life";
 
     static {
         VERSION = "2.0.0";

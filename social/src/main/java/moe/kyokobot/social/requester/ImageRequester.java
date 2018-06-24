@@ -33,12 +33,12 @@ public class ImageRequester {
         preq.avatarUrl = user.getEffectiveAvatarUrl();
         preq.name = user.getName();
         preq.discrim = user.getDiscriminator();
-        preq.image = uc.image == null ? "default" : uc.image;
+        preq.image = uc.getImage() == null ? "default" : uc.getImage();
         preq.type = 0;
-        preq.money = Long.toString(uc.money);
-        preq.reputation = uc.reputation > 0 ? "+" + uc.reputation : Long.toString(uc.reputation);
+        preq.money = Long.toString(uc.getMoney());
+        preq.reputation = uc.getReputation() > 0 ? "+" + uc.getReputation() : Long.toString(uc.getReputation());
         preq.level = 1;
-        preq.exp = uc.xp;
+        preq.exp = uc.getXp();
         preq.maxExp = 1000;
 
         String json = gson.toJson(preq);

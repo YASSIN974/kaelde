@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.basic;
 
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;

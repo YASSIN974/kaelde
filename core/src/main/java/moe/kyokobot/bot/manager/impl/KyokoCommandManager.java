@@ -3,7 +3,6 @@ package moe.kyokobot.bot.manager.impl;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
@@ -54,27 +53,20 @@ public class KyokoCommandManager implements CommandManager {
 
         List<String> aliases = Arrays.asList(command.getAliases());
 
-        if (commands.keySet().contains(command.getName().toLowerCase()) || (!aliases.isEmpty() && commands.keySet().containsAll(aliases))) {
-            logger.debug("Overriding command " + command.getName());
-            Command c = commands.get(command.getName());
-            commands.values().removeIf(cmd -> cmd == c);
-            //throw new IllegalArgumentException("Alias or label is already registered!");
-        }
-
         for (Method method : command.getClass().getMethods()) {
             try {
                 if (method.isAnnotationPresent(SubCommand.class) && method.getParameterCount() == 1) {
                     SubCommand subCommand = method.getAnnotation(SubCommand.class);
                     String name = subCommand.name().isEmpty() ? method.getName() : subCommand.name();
                     command.getSubCommands().put(name.toLowerCase(), method);
-                    logger.debug("Registered subcommand: " + name.toLowerCase() + " -> " + method);
+                    logger.debug("Registered subcommand: {} -> {}", name, method);
                     for (String alias : subCommand.aliases()) {
                         command.getSubCommands().put(alias.toLowerCase(), method);
-                        logger.debug("Registered subcommand: " + alias.toLowerCase() + " -> " + method);
+                        logger.debug("Registered subcommand: {} -> {}", alias, method);
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error while registering subcommand!", e);
                 Sentry.capture(e);
             }
         }
@@ -82,11 +74,10 @@ public class KyokoCommandManager implements CommandManager {
         registered.add(command);
         commands.put(command.getName().toLowerCase(), command);
 
-        aliases.forEach(alias -> {
-            commands.put(alias, command);
-        });
+        aliases.forEach(alias -> commands.put(alias, command));
 
         command.onRegister();
+        logger.debug("Registered command: {} -> {}", command.getName(), command.toString());
     }
 
     public void unregisterCommand(Command command) {
@@ -134,18 +125,16 @@ public class KyokoCommandManager implements CommandManager {
         } else if (content.startsWith(settings.bot.normalPrefix)) {
             content = content.trim().substring(settings.bot.normalPrefix.length()).trim();
             handleNormal(event, settings.bot.normalPrefix, content, direct);
-        } else if (content.startsWith(settings.bot.debugPrefix)) {
-            if (settings.bot.owner.equals(event.getAuthor().getId())) {
-                content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
-                handleDebug(event, settings.bot.debugPrefix, content, direct);
-            }
+        } else if (content.startsWith(settings.bot.debugPrefix) && settings.bot.owner.equals(event.getAuthor().getId())) {
+            content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
+            handleDebug(event, settings.bot.debugPrefix, content, direct);
         }
     }
 
     private void handleNormal(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
-        if (parts.size() != 0) {
+        if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
                 if (!c.isAllowedInDMs() && direct) return;
@@ -156,11 +145,11 @@ public class KyokoCommandManager implements CommandManager {
                 CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
-                    logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
+                    logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     try {
                         c.preExecute(context);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Caught error while executing command!", e);
                         Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }
@@ -172,7 +161,7 @@ public class KyokoCommandManager implements CommandManager {
     private void handleDebug(MessageReceivedEvent event, String prefix, String content, boolean direct) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
-        if (parts.size() != 0) {
+        if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
                 if (!c.isAllowedInDMs() && direct) return;
@@ -183,11 +172,11 @@ public class KyokoCommandManager implements CommandManager {
                 CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
-                    logger.info("User " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator() + " (" + event.getAuthor().getId() + ") on guild " + event.getGuild().getName() + "(" + event.getGuild().getId() + ") executed " + content);
+                    logger.info("User {}#{} ({}) on guild {} ({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     try {
                         c.preExecute(context);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Caught error while executing command!", e);
                         Sentry.capture(e);
                         CommonErrors.exception(context, e);
                     }

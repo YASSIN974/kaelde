@@ -1,13 +1,20 @@
 package moe.kyokobot.bot.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.util.GsonUtil;
 
 import java.beans.Transient;
 import java.util.ArrayList;
-import java.util.List;
 
+@Getter
+@Setter
 public class UserConfig implements DatabaseEntity {
+    public UserConfig() {
+
+    }
+
     public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, ArrayList<String> tags) {
         this.id = id;
         this.language = language;
@@ -20,15 +27,16 @@ public class UserConfig implements DatabaseEntity {
         this.tags = tags;
     }
 
-    public String id = "";
-    public Language language = Language.DEFAULT;
-    public long level = 1L;
-    public long money = 0L;
-    public long xp = 0L;
-    public long claim = 0L;
-    public long reputation = 0L;
-    public String image = "default";
-    public ArrayList<String> tags = new ArrayList<>();
+    private String id = "";
+    private Language language = Language.DEFAULT;
+    private long level = 1L;
+    private long money = 0L;
+    private long xp = 0L;
+    private long claim = 0L;
+    private long reputation = 0L;
+    private int theme = 0;
+    private String image = "default";
+    private ArrayList<String> tags = new ArrayList<>();
 
     @Transient
     @Override

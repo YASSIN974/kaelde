@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 
 public class SimpleTextCommand extends Command {
+
     private final String text;
 
     public SimpleTextCommand(String name, String text) {

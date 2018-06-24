@@ -3,19 +3,14 @@ package moe.kyokobot.bot;
 import com.google.common.eventbus.EventBus;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.bot.manager.CommandManager;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.handle.VoiceStateUpdateHandler;
 import net.dv8tion.jda.core.hooks.EventListener;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -76,14 +71,14 @@ public class JDAEventHandler implements EventListener {
             boolean self_mute = content.getBoolean("self_mute");
             boolean suppress = content.getBoolean("suppress");
             String guild_id = content.getString("guild_id");
-            Guild guild = api.getGuildMap().get(Long.valueOf(guild_id));
+            long guild_idl = Long.valueOf(guild_id);
+            Guild guild = api.getGuildMap().get(guild_idl);
 
             if (user_id.equals(api.getSelfUser().getId())) {
                 eventBus.post(new VoiceStateUpdateEvent(guild, channel_id, user_id, session_id, deaf, mute, self_deaf, self_mute, suppress));
-                return super.handleInternally(content);
-            } else {
-                return super.handleInternally(content);
             }
+            api.getClient().updateAudioConnection(guild_idl, guild.getVoiceChannelById(channel_id == null ? -1 : channel_id));
+            return super.handleInternally(content);
         }
     }
 }

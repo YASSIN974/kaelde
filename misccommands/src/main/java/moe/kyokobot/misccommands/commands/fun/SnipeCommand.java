@@ -1,4 +1,4 @@
-package moe.kyokobot.misccommands.commands;
+package moe.kyokobot.misccommands.commands.fun;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -6,8 +6,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.UserUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -18,7 +19,6 @@ import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static moe.kyokobot.bot.command.CommandContext.error;
 
 public class SnipeCommand extends Command {
     private Long2ObjectOpenHashMap<Snipe> snipes;
@@ -42,7 +42,11 @@ public class SnipeCommand extends Command {
     @Override
     public void onUnregister() {
         snipes = null;
-        eventBus.unregister(this);
+        try {
+            eventBus.unregister(this);
+        } catch (IllegalArgumentException ignored) {
+            // because there's no way to check the handler was already (un)registered, we will just ignore the exception.
+        }
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SnipeCommand extends Command {
                 return;
             }
         }
-        context.send(error() + context.getTranslated("snipe.nosnipes"));
+        context.send(CommandIcons.error + context.getTranslated("snipe.nosnipes"));
     }
 
     @Subscribe

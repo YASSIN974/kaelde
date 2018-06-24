@@ -3,6 +3,7 @@ package moe.kyokobot.bot.command.debug;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
+import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
 
 import java.io.BufferedReader;
@@ -33,11 +34,11 @@ public class ShellCommand extends Command {
                 data = data.substring(0, 1993);
             }
 
-            context.send("```\n" + data + "```");
+            context.sendChecked("```\n" + data + "```", null);
         } catch (Exception e) {
             e.printStackTrace();
             Sentry.capture(e);
-            context.send(context.error() + "Error while running shell command: " + e.getMessage());
+            context.send(CommandIcons.error + "Error while running shell command: " + e.getMessage());
         }
     }
 }

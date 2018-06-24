@@ -3,10 +3,9 @@ package moe.kyokobot.social;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
-import moe.kyokobot.bot.manager.DatabaseManager;
-import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
-import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
+import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.social.commands.ClaimCommand;
 import moe.kyokobot.social.commands.ProfileCommand;
@@ -35,9 +34,12 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         requester = new ImageRequester(settings, databaseManager);
+
+        commands = new ArrayList<>();
+
         commands.add(new ProfileCommand(requester));
         commands.add(new ClaimCommand(databaseManager));
-        commands.add(new SendMoneyCommand(databaseManager, eventWaiter));
+        commands.add(new SendMoneyCommand(databaseManager));
         commands.forEach(commandManager::registerCommand);
     }
 

@@ -11,14 +11,14 @@ public interface MusicPlayer {
     long getTimestamp();
     long getPosition();
     int getVolume();
+    float getNightcore();
     boolean isPaused();
     void playTrack(@Nonnull AudioTrack track);
-    void playTrack(@Nonnull AudioTrack track, long startTime, long endTime);
-    void playTrack(@Nonnull String identifier);
-    void playTrack(@Nonnull String identifier, long startTime, long endTime);
     void stopTrack();
     void setPaused(boolean isPaused);
     void destroyPlayer();
     void seek(long position);
     void setVolume(int volume);
+    void setNightcore(float speed);
+    boolean isConnected();
 }
