@@ -6,24 +6,24 @@ import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 
-public class PauseCommand extends MusicCommand {
+public class ResumeCommand extends MusicCommand {
     private final MusicManager musicManager;
 
-    public PauseCommand(MusicManager musicManager) {
+    public ResumeCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
-        name = "pause";
-        description = "music.pause.description";
+        name = "resume";
+        description = "music.resumes.description";
     }
 
     @Override
     public void execute(CommandContext context) {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         if (player.getPlayingTrack() != null) {
-            if (!player.isPaused()) {
-                player.setPaused(true);
-                context.send(MusicIcons.PAUSE + context.getTranslated("music.paused"));
+            if (player.isPaused()) {
+                player.setPaused(false);
+                context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
             } else {
-                context.send(MusicIcons.PAUSE + context.getTranslated("music.notpaused"));
+                context.send(MusicIcons.PLAY + context.getTranslated("music.notresumed"));
             }
         } else {
             context.send(CommandIcons.error + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));

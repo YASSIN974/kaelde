@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Constants;
-import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
@@ -15,6 +14,7 @@ import moe.kyokobot.music.*;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,23 +41,27 @@ public class PlayCommand extends MusicCommand {
             return;
         }
 
-        if (context.hasArgs()) {
-            VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
-            if (voiceChannel != null) {
-                locks.put(context.getGuild(), true);
-                MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
-                System.out.println(player.toString());
-                MusicQueue queue = musicManager.getQueue(context.getGuild());
-
+        VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
+        if (voiceChannel != null) {
+            locks.put(context.getGuild(), true);
+            MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            if (context.hasArgs()) {
                 queue.setAnnouncing(context.getChannel(), context);
 
                 if (loadTracks(context, queue))
                     play(player, queue, context, voiceChannel);
             } else {
-                context.send(CommandIcons.error + context.getTranslated("music.joinchannel"));
+                if (player.isPaused()) {
+                    queue.setAnnouncing(context.getChannel(), context);
+                    player.setPaused(false);
+                    context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
+                    return;
+                }
+                CommonErrors.usage(context);
             }
         } else {
-            CommonErrors.usage(context);
+            context.send(CommandIcons.error + context.getTranslated("music.joinchannel"));
         }
     }
 
@@ -88,6 +92,7 @@ public class PlayCommand extends MusicCommand {
         if (item instanceof AudioPlaylist) {
             int tracks = 0;
             for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
+
                 queue.add(track);
                 tracks++;
             }
@@ -102,7 +107,13 @@ public class PlayCommand extends MusicCommand {
     private void play(MusicPlayer player, MusicQueue queue, CommandContext context, VoiceChannel voiceChannel) {
         if (player.getPlayingTrack() == null) {
             int timeout = 0;
-            musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
+
+            try {
+                musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
+            } catch (PermissionException e) {
+                locks.invalidate(context.getGuild());
+                return;
+            }
 
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds

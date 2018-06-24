@@ -1,25 +1,25 @@
 package moe.kyokobot.music.commands;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.util.EmbedBuilder;
-import moe.kyokobot.bot.util.EmbedPaginator;
-import moe.kyokobot.bot.util.EventWaiter;
-import moe.kyokobot.bot.util.StringUtil;
+import moe.kyokobot.bot.util.*;
+import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
+import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Message;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static moe.kyokobot.music.MusicIcons.MUSIC;
-
 public class ListCommand extends MusicCommand {
-    private final MusicManager manager;
+    private final MusicManager musicManager;
     private final EventWaiter waiter;
 
-    public ListCommand(MusicManager manager, EventWaiter waiter) {
-        this.manager = manager;
+    public ListCommand(MusicManager musicManager, EventWaiter waiter) {
+        this.musicManager = musicManager;
         this.waiter = waiter;
 
         name = "list";
@@ -28,19 +28,46 @@ public class ListCommand extends MusicCommand {
 
     @Override
     public void execute(CommandContext context) {
-        MusicQueue queue = manager.getQueue(context.getGuild());
-        if (queue.getTracks().size() == 0) {
-            EmbedBuilder eb = context.getNormalEmbed();
-            eb.setTitle((Globals.inKyokoServer ? "<:iclist:435576062894931968> " : "") + context.getTranslated("music.list.title"));
-            eb.setDescription(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
-            context.send(eb.build());
-        } else {
-            List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
-            EmbedPaginator paginator = new EmbedPaginator(waiter, pages, context.getSender(), context.getNormalEmbed());
-            paginator.setTitle(MUSIC + context.getTranslated("music.list.title") + " ({page})");
-            paginator.setTop("```markdown");
-            paginator.setBottom("```");
-            paginator.create(context.getChannel());
-        }
+        MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
+        MusicQueue queue = musicManager.getQueue(context.getGuild());
+
+        List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
+        EmbedBuilder eb = context.getNormalEmbed();
+
+        Paginator paginator = new Paginator(waiter, pages, context.getSender()) {
+            private AudioTrack prev;
+
+            @Override
+            protected Message render(int page) {
+                MessageBuilder mb = new MessageBuilder();
+                StringBuilder sb = new StringBuilder();
+
+                if (player.getPlayingTrack() != null) {
+                    if (prev != player.getPlayingTrack()) {
+                        prev = player.getPlayingTrack();
+                        pageContents = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
+                    }
+                    String title = player.getPlayingTrack().getInfo().title.replace("`", "\\`");
+                    sb.append("Now playing: `").append(title.length() > 80 ? title.substring(0, 80) + "..." : title)
+                            .append("` `[").append(StringUtil.prettyPeriod(player.getPlayingTrack().getDuration())).append("]`\n\n");
+                }
+
+                if (page < 0) page = 0; else if (page >= pageContents.size()) page = pageContents.size() - 1;
+                eb.setTitle(MusicIcons.MUSIC + context.getTranslated("music.list.title") + (pageContents.isEmpty() ? "" : ("(" + (page + 1) + "/" + pageContents.size() + ")")));
+
+                if (pageContents.isEmpty())
+                    sb.append(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
+                else {
+                    sb.append("```markdown\n");
+                    sb.append(pageContents.get(page));
+                    sb.append("\n```");
+                }
+
+                eb.setDescription(sb.toString());
+                mb.setEmbed(eb.build());
+                return mb.build();
+            }
+        };
+        paginator.create(context.getChannel());
     }
 }

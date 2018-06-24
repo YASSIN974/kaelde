@@ -80,6 +80,8 @@ public class Module implements KyokoModule {
             MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
             MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
             MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
+            MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
+            MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
         }
 
         musicManager.registerSourceManager(new YoutubeAudioSourceManager());
@@ -103,6 +105,7 @@ public class Module implements KyokoModule {
         commands.add(new RepeatCommand(musicManager));
         commands.add(new NightcoreCommand(musicManager));
         commands.add(new PauseCommand(musicManager));
+        commands.add(new ResumeCommand(musicManager));
 
         commands.forEach(commandManager::registerCommand);
     }
