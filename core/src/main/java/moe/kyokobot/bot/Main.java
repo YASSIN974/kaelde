@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.services.GuildCountService;
 import moe.kyokobot.bot.services.KyokoService;
@@ -88,6 +89,7 @@ public class Main {
                 JDABuilder builder = new JDABuilder(AccountType.BOT);
                 builder.setAudioEnabled(true);
                 builder.setAutoReconnect(true);
+                builder.setAudioSendFactory(new NativeAudioSendFactory());
                 builder.setToken(settings.connection.token);
                 builder.addEventListener(eventHandler);
                 JDA jda = builder.buildBlocking();
@@ -114,6 +116,7 @@ public class Main {
                     builder.setShardsTotal(count);
                     builder.setShards(min, max);
                     builder.setAudioEnabled(true);
+                    builder.setAudioSendFactory(new NativeAudioSendFactory());
                     builder.setAutoReconnect(true);
                     builder.setToken(settings.connection.token);
                     builder.addEventListeners(eventHandler);

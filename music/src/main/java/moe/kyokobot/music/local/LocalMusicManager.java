@@ -75,8 +75,6 @@ public class LocalMusicManager implements MusicManager {
     public AudioItem resolve(Guild guild, String query) {
         AudioItem item = resultCache.getIfPresent(query);
         if (item != null) {
-            if (item instanceof AudioTrack)
-                return ((AudioTrack) item).makeClone();
             return item;
         }
 

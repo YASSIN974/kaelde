@@ -131,7 +131,7 @@ public class PlayCommand extends MusicCommand {
                 }
                 timeout++;
             }
-            player.playTrack(queue.poll());
+            player.playTrack(queue.poll().makeClone());
         } else
             player.setPaused(false);
 
