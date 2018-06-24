@@ -28,7 +28,7 @@ public class ServerInfoCommand extends Command {
         eb.setTitle(context.getTranslated("server.title"));
         eb.addField(context.getTranslated("server.title.header"), guild.getName(), true);
         eb.addField(context.getTranslated("server.members"), String.format("%s", guild.getMembers().size()), true);
-        eb.addField(context.getTranslated("server.channels"), String.format("%s text channels\n%s voice channels", guild.getTextChannels().size(), guild.getVoiceChannels().size()), true);
+        eb.addField(context.getTranslated("server.channels"), String.format( "%s\n%s", guild.getTextChannels().size() + " " + context.getTranslated("text.channels"), guild.getVoiceChannels().size() + " " + context.getTranslated("voice.channels")), true);
         eb.addField(context.getTranslated("server.verification"), String.format("%s", guild.getVerificationLevel()), true);
         eb.addField(context.getTranslated("server.region"), String.format("%s", guild.getRegion()), true);
         eb.addField(context.getTranslated("server.owner"),  String.format("%s", guild.getOwner()), true);
