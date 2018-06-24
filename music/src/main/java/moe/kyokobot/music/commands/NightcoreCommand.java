@@ -29,6 +29,11 @@ public class NightcoreCommand extends MusicCommand {
                 return;
             }
 
+            if (f < 0.5f || f > 2.0f) {
+                context.send(CommandIcons.error + "Out of range (0.5-2.0)!");
+                return;
+            }
+
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             player.setNightcore(f);
             context.send(CommandIcons.info + "nightcore set to " + f);
