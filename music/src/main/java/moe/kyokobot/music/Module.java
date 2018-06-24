@@ -24,7 +24,6 @@ import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.music.commands.*;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
 import moe.kyokobot.music.local.LocalMusicManager;
-import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +39,6 @@ public class Module implements KyokoModule {
     @Inject
     private CommandManager commandManager;
     @Inject
-    private Settings settings;
-    @Inject
     private EventBus eventBus;
     @Inject
     private EventWaiter waiter;
@@ -56,6 +53,7 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        Settings settings = Settings.instance;
         if (!settings.apiKeys.containsKey("youtube")) {
             logger.warn("No YouTube API key found, disabling the module!");
             moduleManager.stopModule("music");

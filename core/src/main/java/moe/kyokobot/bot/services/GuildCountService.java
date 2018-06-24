@@ -5,19 +5,25 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.event.GuildCountUpdateEvent;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 
 import java.util.concurrent.TimeUnit;
 
 public class GuildCountService extends AbstractScheduledService {
-    private Settings settings;
     private JDA jda;
+    private ShardManager shardManager;
 
     private int guilds = 0;
 
-    public GuildCountService(Settings settings, JDA jda) {
-        this.settings = settings;
+    public GuildCountService(ShardManager shardManager) {
+        this.shardManager = shardManager;
+
+        guilds = shardManager.getGuilds().size();
+    }
+
+    public GuildCountService(JDA jda) {
         this.jda = jda;
 
         guilds = jda.getGuilds().size();
@@ -25,9 +31,17 @@ public class GuildCountService extends AbstractScheduledService {
 
     @Override
     protected void runOneIteration() throws Exception {
+        Settings settings = Settings.instance;
+
         try {
-            if (settings.connection.mode.equalsIgnoreCase("gateway")) {
-                // TODO gateway
+            if (shardManager != null) {
+                shardManager.getShards().forEach(jda -> {
+                    jda.getPresence().setGame(Game.of(settings.bot.gameType,
+                            settings.bot.game
+                                    .replace("{prefix}", settings.bot.normalPrefix)
+                                    .replace("{shard}", String.valueOf(jda.getShardInfo().getShardId()))
+                                    .replace("{count}", String.valueOf(jda.getShardInfo().getShardTotal()))));
+                });
             } else {
                 jda.getPresence().setGame(Game.of(settings.bot.gameType,
                         settings.bot.game

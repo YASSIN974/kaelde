@@ -9,6 +9,8 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class Settings {
+    public static Settings instance = new Settings();
+
     @SerializedName("debug")
     public boolean debug = false;
 

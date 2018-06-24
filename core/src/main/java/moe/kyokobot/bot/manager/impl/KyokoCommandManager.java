@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class KyokoCommandManager implements CommandManager {
-    private final Settings settings;
     private final Logger logger;
     private final I18n i18n;
     private final ScheduledExecutorService executor;
@@ -31,11 +30,10 @@ public class KyokoCommandManager implements CommandManager {
     private Set<Command> registered;
     private Map<String, Command> commands;
 
-    public KyokoCommandManager(Settings settings, I18n i18n, ScheduledExecutorService executor) {
+    public KyokoCommandManager(I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();
-        this.settings = settings;
         this.i18n = i18n;
         this.executor = executor;
     }
@@ -117,6 +115,7 @@ public class KyokoCommandManager implements CommandManager {
     }
 
     private void handlePrefix(MessageReceivedEvent event, boolean direct) {
+        Settings settings = Settings.instance;
         String content = event.getMessage().getContentRaw();
 
         if (content.startsWith(event.getJDA().getSelfUser().getAsMention())) {
@@ -142,7 +141,7 @@ public class KyokoCommandManager implements CommandManager {
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
 
-                CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
+                CommandContext context = new CommandContext(i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
                     logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
@@ -169,7 +168,7 @@ public class KyokoCommandManager implements CommandManager {
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
 
-                CommandContext context = new CommandContext(settings, i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
+                CommandContext context = new CommandContext(i18n, c, event, prefix, parts.get(0).toLowerCase(), concatArgs, args);
 
                 executor.submit(() -> {
                     logger.info("User {}#{} ({}) on guild {} ({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);

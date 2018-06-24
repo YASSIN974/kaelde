@@ -21,9 +21,9 @@ public class ImageRequester {
     private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     private DatabaseManager databaseManager;
 
-    public ImageRequester(Settings settings, DatabaseManager databaseManager) {
+    public ImageRequester(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        apiUrl = settings.apiUrls.getOrDefault("imgen", "http://127.0.0.1:8000");
+        apiUrl = Settings.instance.apiUrls.getOrDefault("imgen", "http://127.0.0.1:8000");
     }
 
     public byte[] getProfile(User user) throws Exception {

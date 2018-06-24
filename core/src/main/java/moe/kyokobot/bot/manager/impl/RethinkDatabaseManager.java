@@ -20,16 +20,16 @@ import static com.rethinkdb.RethinkDB.r;
 
 public class RethinkDatabaseManager implements DatabaseManager {
     private Logger logger;
-    private Settings settings;
     private Connection connection;
 
-    public RethinkDatabaseManager(Settings settings) {
-        this.settings = settings;
+    public RethinkDatabaseManager() {
         logger = LoggerFactory.getLogger(getClass());
     }
 
     @Override
     public void load() {
+        Settings settings = Settings.instance;
+
         connection = r.connection()
                 .hostname(settings.connection.rethinkHost)
                 .port(settings.connection.rethinkPort)

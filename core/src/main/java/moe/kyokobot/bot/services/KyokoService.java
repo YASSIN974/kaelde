@@ -3,7 +3,6 @@ package moe.kyokobot.bot.services;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.AbstractIdleService;
 import io.sentry.Sentry;
-import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.ModuleManager;
@@ -31,26 +30,26 @@ public class KyokoService extends AbstractIdleService {
     private JDA jda;
     private ShardManager shardManager;
 
-    public KyokoService(Settings settings, JDA jda, EventBus eventBus) {
-        this(settings, eventBus);
+    public KyokoService(JDA jda, EventBus eventBus) {
+        this(eventBus);
         this.jda = jda;
     }
 
-    public KyokoService(Settings settings, ShardManager shardManager, EventBus eventBus) {
-        this(settings, eventBus);
+    public KyokoService(ShardManager shardManager, EventBus eventBus) {
+        this(eventBus);
         sharded = true;
         this.shardManager = shardManager;
     }
 
-    private KyokoService(Settings settings, EventBus eventBus) {
+    private KyokoService(EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
         eventWaiter = new EventWaiter();
 
-        databaseManager = new RethinkDatabaseManager(settings);
+        databaseManager = new RethinkDatabaseManager();
         i18n = new I18n(databaseManager);
-        commandManager = new KyokoCommandManager(settings, i18n, executor);
-        moduleManager = new ExternalModuleManager(settings, databaseManager, i18n, commandManager, eventWaiter);
+        commandManager = new KyokoCommandManager(i18n, executor);
+        moduleManager = new ExternalModuleManager(databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);

@@ -67,6 +67,7 @@ public class Main {
 
         if (debug) settings.debug = true;
         Constants.DEBUG = settings.debug;
+        Settings.instance = settings;
 
         if (settings.connection.token.isEmpty()) {
             logger.error("No token specified!");
@@ -98,8 +99,8 @@ public class Main {
 
                 Globals.clientId = jda.getSelfUser().getIdLong();
 
-                services.add(new KyokoService(settings, jda, eventBus));
-                services.add(new GuildCountService(settings, jda));
+                services.add(new KyokoService(jda, eventBus));
+                services.add(new GuildCountService(jda));
             } else if (settings.connection.mode.equalsIgnoreCase("sharded")) {
                 String[] shards = settings.connection.shardString.split(":");
                 if (shards.length != 3) {
@@ -130,7 +131,8 @@ public class Main {
                     Globals.sharded = true;
                     if (shardManager.getGuildById("375752406727786498") != null) Globals.inKyokoServer = true;
 
-                    services.add(new KyokoService(settings, shardManager, eventBus));
+                    services.add(new KyokoService(shardManager, eventBus));
+                    services.add(new GuildCountService(shardManager));
                 }
             } else {
                 logger.error("Unknown connection mode, valid values are: single, sharded");

@@ -7,7 +7,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
 import io.sentry.Sentry;
-import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
@@ -18,7 +17,6 @@ import moe.kyokobot.bot.module.KyokoModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
-import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +34,6 @@ import java.util.Map;
 public class ExternalModuleManager implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
-    private final Settings settings;
     private final DatabaseManager databaseManager;
     private final I18n i18n;
     private final CommandManager commandManager;
@@ -48,9 +45,8 @@ public class ExternalModuleManager implements ModuleManager {
     private Injector injector;
     private EventBus moduleEventBus;
 
-    public ExternalModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+    public ExternalModuleManager(DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
         logger = LoggerFactory.getLogger(getClass());
-        this.settings = settings;
         this.databaseManager = databaseManager;
         this.i18n = i18n;
         this.commandManager = commandManager;
@@ -68,7 +64,7 @@ public class ExternalModuleManager implements ModuleManager {
         try {
             new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
-            e.printStackTrace();
+            logger.error("This should not happen!", e);
         }
 
         if (classLoaders.size() != 0) {
@@ -92,9 +88,8 @@ public class ExternalModuleManager implements ModuleManager {
                     try {
                         load(path.toAbsolutePath().toString());
                     } catch (Exception e) {
-                        logger.error("Error loading module \"" + path + "\"!");
+                        logger.error("Error loading module \"" + path + "\"!", e);
                         Sentry.capture(e);
-                        e.printStackTrace();
                     }
                 });
 
@@ -106,7 +101,6 @@ public class ExternalModuleManager implements ModuleManager {
                             multibinder.addBinding().to(mod.getClass());
                         }
 
-                        bind(Settings.class).toInstance(settings);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ExternalModuleManager.this);
@@ -119,16 +113,15 @@ public class ExternalModuleManager implements ModuleManager {
                     startModule(s);
                 }
             } catch (IOException e) {
-                logger.error("Error while (re)loading modules!");
+                logger.error("Error while (re)loading modules!", e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
         }
     }
 
     @Override public void startModule(String name) {
         if (!started.contains(name)) {
-            logger.info("Starting module: " + name);
+            logger.info("Starting module: {}", name);
             try {
                 KyokoModule mod = injector.getInstance(modules.get(name).getClass());
                 mod.startUp();
@@ -136,22 +129,20 @@ public class ExternalModuleManager implements ModuleManager {
                 started.add(name);
                 System.gc();
             } catch (Exception e) {
-                logger.error("Error starting module: " + name);
+                logger.error("Error starting module: " + name, e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
         }
     }
 
     @Override public void stopModule(String name) {
         if (started.contains(name)) {
-            logger.info("Stopping module: " + name);
+            logger.info("Stopping module: {}", name);
             try {
                 modules.get(name).shutDown();
             } catch (Exception e) {
-                logger.error("Error stopping module: " + name);
+                logger.error("Error stopping module: " + name, e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
 
             Iterator<String> i = started.iterator();

@@ -24,8 +24,6 @@ public class Module implements KyokoModule {
     private Logger logger;
     @Inject
     private CommandManager commandManager;
-    @Inject
-    private Settings settings;
     private ArrayList<Command> commands;
     private HashMap<Guild, Long> cooldowns;
 
@@ -39,6 +37,7 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        Settings settings = Settings.instance;
         if (settings.apiKeys.containsKey("weebsh")) {
             weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
             commands = new ArrayList<>();
