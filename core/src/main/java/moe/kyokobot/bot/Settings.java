@@ -6,7 +6,9 @@ import moe.kyokobot.bot.util.ColorTypeAdapter;
 import net.dv8tion.jda.core.entities.Game;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Settings {
     public static Settings instance = new Settings();
@@ -74,8 +76,8 @@ public class Settings {
         @SerializedName("debug-prefix")
         public String debugPrefix = "kd!";
 
-        @SerializedName("game")
-        public String game = "{prefix}help | {guilds} guilds";
+        @SerializedName("games")
+        public List<String> games = Arrays.asList("{prefix}help | {guilds} guilds", "{prefix}help | kyokobot.moe");
 
         @SerializedName("gametype")
         public Game.GameType gameType = Game.GameType.DEFAULT;

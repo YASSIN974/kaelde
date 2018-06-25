@@ -8,6 +8,7 @@ import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.social.commands.ClaimCommand;
 import moe.kyokobot.social.commands.ProfileCommand;
+import moe.kyokobot.social.commands.RichestCommand;
 import moe.kyokobot.social.commands.SendMoneyCommand;
 import moe.kyokobot.social.requester.ImageRequester;
 
@@ -34,6 +35,8 @@ public class Module implements KyokoModule {
         commands.add(new ProfileCommand(requester));
         commands.add(new ClaimCommand(databaseManager));
         commands.add(new SendMoneyCommand(databaseManager));
+        commands.add(new RichestCommand(databaseManager));
+
         commands.forEach(commandManager::registerCommand);
     }
 

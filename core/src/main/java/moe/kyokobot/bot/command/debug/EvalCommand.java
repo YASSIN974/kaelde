@@ -7,18 +7,21 @@ import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 public class EvalCommand extends Command {
+    private final ShardManager shardManager;
     private final ModuleManager moduleManager;
     private final CommandManager commandManager;
     private final DatabaseManager databaseManager;
 
     private ScriptEngine engine;
 
-    public EvalCommand(ModuleManager moduleManager, CommandManager commandManager, DatabaseManager databaseManager) {
+    public EvalCommand(ShardManager shardManager, ModuleManager moduleManager, CommandManager commandManager, DatabaseManager databaseManager) {
+        this.shardManager = shardManager;
         this.moduleManager = moduleManager;
         this.commandManager = commandManager;
         this.databaseManager = databaseManager;

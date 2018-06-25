@@ -8,14 +8,18 @@ import moe.kyokobot.bot.event.GuildCountUpdateEvent;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 public class GuildCountService extends AbstractScheduledService {
+    private final Logger logger = LoggerFactory.getLogger(GuildCountService.class);
     private JDA jda;
     private ShardManager shardManager;
 
-    private int guilds = 0;
+    private int guilds;
+    private int last = 0;
 
     public GuildCountService(ShardManager shardManager) {
         this.shardManager = shardManager;
@@ -32,31 +36,36 @@ public class GuildCountService extends AbstractScheduledService {
     @Override
     protected void runOneIteration() throws Exception {
         Settings settings = Settings.instance;
+        if (settings.bot.games.isEmpty()) return;
+        if (last >= settings.bot.games.size()) last = 0;
 
         try {
             if (shardManager != null) {
                 shardManager.getShards().forEach(jda -> {
                     jda.getPresence().setGame(Game.of(settings.bot.gameType,
-                            settings.bot.game
+                            settings.bot.games.get(last)
                                     .replace("{prefix}", settings.bot.normalPrefix)
                                     .replace("{shard}", String.valueOf(jda.getShardInfo().getShardId()))
+                                    .replace("{guilds}", String.valueOf(jda.getGuilds().size()))
                                     .replace("{count}", String.valueOf(jda.getShardInfo().getShardTotal()))));
                 });
+                last++;
             } else {
                 jda.getPresence().setGame(Game.of(settings.bot.gameType,
-                        settings.bot.game
+                        settings.bot.games.get(last)
                                 .replace("{prefix}", settings.bot.normalPrefix)
                                 .replace("{guilds}", String.valueOf(guilds))));
+                last++;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Caught error while updating guild stats!", e);
             Sentry.capture(e);
         }
     }
 
     @Override
     protected Scheduler scheduler() {
-        return Scheduler.newFixedRateSchedule(0, 1, TimeUnit.MINUTES);
+        return Scheduler.newFixedRateSchedule(0, 2, TimeUnit.MINUTES);
     }
 
     @Subscribe

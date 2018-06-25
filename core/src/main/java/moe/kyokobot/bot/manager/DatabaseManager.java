@@ -17,7 +17,7 @@ public interface DatabaseManager {
 
     GuildConfig getGuild(Guild guild) throws Exception;
 
-    HashMap<User, Integer> getTopBalances();
+    HashMap<String, Integer> getTopBalances();
 
     String getValue(User user, String key, String def);
 

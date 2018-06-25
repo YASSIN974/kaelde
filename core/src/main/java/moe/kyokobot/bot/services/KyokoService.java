@@ -33,12 +33,18 @@ public class KyokoService extends AbstractIdleService {
     public KyokoService(JDA jda, EventBus eventBus) {
         this(eventBus);
         this.jda = jda;
+
+        moduleManager = new ExternalModuleManager(null, databaseManager, i18n, commandManager, eventWaiter);
+        eventBus.register(moduleManager);
     }
 
     public KyokoService(ShardManager shardManager, EventBus eventBus) {
         this(eventBus);
         sharded = true;
         this.shardManager = shardManager;
+
+        moduleManager = new ExternalModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
+        eventBus.register(moduleManager);
     }
 
     private KyokoService(EventBus eventBus) {
@@ -49,11 +55,9 @@ public class KyokoService extends AbstractIdleService {
         databaseManager = new RethinkDatabaseManager();
         i18n = new I18n(databaseManager);
         commandManager = new KyokoCommandManager(i18n, executor);
-        moduleManager = new ExternalModuleManager(databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);
-        eventBus.register(moduleManager);
     }
 
     @Override

@@ -5,8 +5,11 @@ import moe.kyokobot.bot.command.debug.*;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 
 public class CoreModule implements KyokoModule {
+    @Inject
+    private ShardManager shardManager;
     @Inject
     private CommandManager commandManager;
     @Inject
@@ -17,7 +20,7 @@ public class CoreModule implements KyokoModule {
     @Override
     public void startUp() {
         commandManager.registerCommand(new UpdateAvatarCommand());
-        commandManager.registerCommand(new EvalCommand(moduleManager, commandManager, databaseManager));
+        commandManager.registerCommand(new EvalCommand(shardManager, moduleManager, commandManager, databaseManager));
         commandManager.registerCommand(new NameCommand());
         commandManager.registerCommand(new ShellCommand());
         commandManager.registerCommand(new ModulesCommand(moduleManager));

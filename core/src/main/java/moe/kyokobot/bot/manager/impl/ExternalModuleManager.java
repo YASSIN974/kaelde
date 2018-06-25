@@ -17,6 +17,7 @@ import moe.kyokobot.bot.module.KyokoModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 public class ExternalModuleManager implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
+    private final ShardManager shardManager;
     private final DatabaseManager databaseManager;
     private final I18n i18n;
     private final CommandManager commandManager;
@@ -45,8 +47,9 @@ public class ExternalModuleManager implements ModuleManager {
     private Injector injector;
     private EventBus moduleEventBus;
 
-    public ExternalModuleManager(DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+    public ExternalModuleManager(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
         logger = LoggerFactory.getLogger(getClass());
+        this.shardManager = shardManager;
         this.databaseManager = databaseManager;
         this.i18n = i18n;
         this.commandManager = commandManager;
@@ -62,7 +65,7 @@ public class ExternalModuleManager implements ModuleManager {
 
         moduleEventBus = new EventBus();
         try {
-            new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
+            new URL("file:///").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
             logger.error("This should not happen!", e);
         }
@@ -78,7 +81,6 @@ public class ExternalModuleManager implements ModuleManager {
                 in.remove();
             }
         }
-        System.gc();
 
         if (MODULES_DIR.exists()) {
             try {
@@ -100,7 +102,8 @@ public class ExternalModuleManager implements ModuleManager {
                         for(KyokoModule mod : modules.values()) {
                             multibinder.addBinding().to(mod.getClass());
                         }
-
+                        if (shardManager != null)
+                            bind(ShardManager.class).toInstance(shardManager);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ExternalModuleManager.this);
@@ -127,7 +130,6 @@ public class ExternalModuleManager implements ModuleManager {
                 mod.startUp();
                 modules.replace(name, mod);
                 started.add(name);
-                System.gc();
             } catch (Exception e) {
                 logger.error("Error starting module: " + name, e);
                 Sentry.capture(e);
@@ -157,14 +159,13 @@ public class ExternalModuleManager implements ModuleManager {
         try {
             classLoaders.get(name).close();
         } catch (IOException e) {
+            logger.error("Caught error while unloading module!", e);
             Sentry.capture(e);
-            e.printStackTrace();
         }
         if (remove) {
             modules.entrySet().removeIf(e -> e.getKey().equals(name));
             classLoaders.entrySet().removeIf(e -> e.getKey().equals(name));
         }
-        System.gc();
     }
 
     @Override public void load(String path) throws Exception {

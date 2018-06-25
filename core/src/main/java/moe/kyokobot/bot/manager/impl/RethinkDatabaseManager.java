@@ -1,5 +1,6 @@
 package moe.kyokobot.bot.manager.impl;
 
+import com.google.gson.JsonArray;
 import com.rethinkdb.net.Connection;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.DatabaseEntity;
@@ -56,9 +57,18 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public HashMap<User, Integer> getTopBalances() {
-        r.table("users").orderBy("money").limit(10).run(connection);
-        return new HashMap<>(); // TODO
+    public HashMap<String, Integer> getTopBalances() {
+        JsonArray a = GsonUtil.fromJSON(r.table("users").orderBy(r.desc("money")).limit(10).run(connection).toString(), JsonArray.class);
+        HashMap<String, Integer> map = new HashMap<>();
+
+        a.forEach(element -> {
+            String id = element.getAsJsonObject().get("id").getAsString();
+            int amount = element.getAsJsonObject().get("money").getAsInt();
+            if (id == null || amount == 0) return;
+            map.put(id, amount);
+        });
+
+        return map;
     }
 
     @Override
