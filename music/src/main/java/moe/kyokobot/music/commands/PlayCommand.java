@@ -118,7 +118,7 @@ public class PlayCommand extends MusicCommand {
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds
                     context.send(CommandIcons.error + String.format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
-                    musicManager.clean((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
                     locks.invalidate(context.getGuild());
                     return;
                 }

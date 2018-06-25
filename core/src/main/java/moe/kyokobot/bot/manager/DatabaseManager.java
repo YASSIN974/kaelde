@@ -7,12 +7,25 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public interface DatabaseManager {
     void load();
 
     UserConfig getUser(User user) throws Exception;
 
     GuildConfig getGuild(Guild guild) throws Exception;
+
+    HashMap<User, Integer> getTopBalances();
+
+    String getValue(User user, String key, String def);
+
+    String getValue(User user, String key);
+
+    ArrayList<String> getList(User user, String key, ArrayList<String> def);
+
+    ArrayList<String> getList(User user, String key);
 
     void save(@NotNull DatabaseEntity entity);
 }

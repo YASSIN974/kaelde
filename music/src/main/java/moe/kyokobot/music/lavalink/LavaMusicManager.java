@@ -149,7 +149,7 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Override
-    public void clean(JDAImpl jda, Guild guild) {
+    public void dispose(JDAImpl jda, Guild guild) {
         closeConnection(jda, guild);
         LavaPlayer lp = lavaClient.getPlayerMap().get(guild.getIdLong());
         if (lp != null && lp.getState() == State.CONNECTED) lp.destroyPlayer();
@@ -165,7 +165,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
-        clean((JDAImpl) event.getJDA(), event.getGuild());
+        dispose((JDAImpl) event.getJDA(), event.getGuild());
     }
 
     @Subscribe
@@ -188,10 +188,10 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Subscribe
-    public void onVoiceChannelLeft(GuildVoiceLeaveEvent event) {
+    public void onVoiceChannelLeave(GuildVoiceLeaveEvent event) {
         LavaPlayer lp = lavaClient.getPlayerMap().get(event.getGuild().getIdLong());
         if (lp != null && (lp.getChannelId() == event.getChannelLeft().getIdLong() && isChannelEmpty(event.getGuild(), event.getChannelLeft())))
-            clean((JDAImpl) event.getJDA(), event.getGuild());
+            dispose((JDAImpl) event.getJDA(), event.getGuild());
     }
 
     @Subscribe
@@ -204,12 +204,12 @@ public class LavaMusicManager implements MusicManager {
                 Guild g = queue.getJDA().getGuildById(event.getPlayer().getGuildId());
 
                 if (queue.getTracks().isEmpty() && queue.getLastTrack() == null) {
-                    clean(queue.getJDA(), g);
+                    dispose(queue.getJDA(), g);
                 } else if (event.getReason().mayStartNext) {
                     AudioTrack track = queue.poll();
 
                     if (track == null) {
-                        clean(queue.getJDA(), g);
+                        dispose(queue.getJDA(), g);
                         return;
                     }
 

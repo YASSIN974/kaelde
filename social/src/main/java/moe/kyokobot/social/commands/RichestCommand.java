@@ -4,6 +4,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.manager.DatabaseManager;
+import moe.kyokobot.bot.util.EmbedBuilder;
 
 public class RichestCommand extends Command {
     private final DatabaseManager databaseManager;
@@ -18,6 +19,8 @@ public class RichestCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        //context.send(r.table("users").orderBy("money").limit(10).toJsonString().run());
+        EmbedBuilder eb = context.getNormalEmbed();
+        eb.setTitle("top 10 balances");
+
     }
 }

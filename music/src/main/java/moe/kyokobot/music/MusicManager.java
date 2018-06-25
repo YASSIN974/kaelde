@@ -13,7 +13,7 @@ public interface MusicManager {
     MusicPlayer getMusicPlayer(Guild guild);
     void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel);
     void closeConnection(JDAImpl jda, Guild guild);
-    void clean(JDAImpl jda, Guild guild);
+    void dispose(JDAImpl jda, Guild guild);
     String getDebug();
     void shutdown();
     String getDebugString(Guild guild, MusicPlayer player);

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.rethinkdb.RethinkDB.r;
 
@@ -55,13 +56,43 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
+    public HashMap<User, Integer> getTopBalances() {
+        r.table("users").orderBy("money").limit(10).run(connection);
+        return new HashMap<>(); // TODO
+    }
+
+    @Override
+    public String getValue(User user, String key, String def) {
+        UserConfig u = getUser(user);
+        String keyR = u.getKvStore().get(key);
+        return keyR == null ? def : keyR;
+    }
+
+    @Override
+    public String getValue(User user, String key) {
+        return getValue(user, key, null);
+    }
+
+    @Override
+    public ArrayList<String> getList(User user, String key, ArrayList<String> def) {
+        UserConfig u = getUser(user);
+        ArrayList<String> keyR = u.getListStore().get(key);
+        return keyR == null ? def : keyR;
+    }
+
+    @Override
+    public ArrayList<String> getList(User user, String key) {
+        return getList(user, key, null);
+    }
+
+    @Override
     public void save(@NotNull DatabaseEntity entity) {
         logger.debug("Saved entity on {} -> {} -> {}", entity.getTableName(), entity.getClass().getName(), entity.toString());
         r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
     }
 
     private UserConfig newUser(String id) {
-        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new ArrayList<>());
+        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new HashMap<>(), new HashMap<>());
     }
 
     private GuildConfig newGuild(String id) {
