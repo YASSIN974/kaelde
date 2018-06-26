@@ -1,7 +1,5 @@
 package moe.kyokobot.music.local;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
@@ -12,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
 
@@ -43,7 +41,6 @@ public class LocalMusicManager implements MusicManager {
     private final List<AudioSourceManager> sourceManagers;
     private final Long2ObjectMap<MusicPlayer> players;
     private final Long2ObjectMap<MusicQueue> queues;
-    private final Cache<String, AudioItem> resultCache;
     private final AudioPlayerManager playerManager;
     private final EventBus eventBus;
 
@@ -52,13 +49,12 @@ public class LocalMusicManager implements MusicManager {
         sourceManagers = new ArrayList<>();
         players = new Long2ObjectOpenHashMap<>();
         queues = new Long2ObjectOpenHashMap<>();
-        resultCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setFrameBufferDuration(2000);
+        playerManager.setFrameBufferDuration(500);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-
-        playerManager.getConfiguration().setOpusEncodingQuality(10);
+        playerManager.getConfiguration().setOpusEncodingQuality(9);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
 
         LocalPlayerWrapper.configuration = playerManager.getConfiguration();
         this.eventBus = eventBus;
@@ -73,16 +69,10 @@ public class LocalMusicManager implements MusicManager {
 
     @Override
     public AudioItem resolve(Guild guild, String query) {
-        AudioItem item = resultCache.getIfPresent(query);
-        if (item != null) {
-            return item;
-        }
-
-
+        AudioItem item;
         for (AudioSourceManager manager : sourceManagers) {
             item = manager.loadItem(null, new AudioReference(query, null));
             if (item != null) {
-                resultCache.put(query, item);
                 return item;
             }
         }

@@ -26,7 +26,7 @@ public class ResumeCommand extends MusicCommand {
                 context.send(MusicIcons.PLAY + context.getTranslated("music.notresumed"));
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
+            context.send(CommandIcons.ERROR + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
         }
     }
 }

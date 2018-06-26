@@ -33,8 +33,10 @@ public class EvalCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        context.send(CommandIcons.working + "Evaluating...", message -> {
+        context.send(CommandIcons.WORKING + "Evaluating...", message -> {
             try {
+                if (shardManager != null)
+                    engine.put("shardManager", shardManager);
                 engine.put("jda", context.getEvent().getJDA());
                 engine.put("context", context);
                 engine.put("moduleManager", moduleManager);
@@ -46,13 +48,13 @@ public class EvalCommand extends Command {
 
                 if (e.length() > 1990) e = e.substring(1990);
                 if (context.checkSensitive(e)) {
-                    message.editMessage(CommandIcons.error + context.getTranslated("generic.sensitive")).queue();
+                    message.editMessage(CommandIcons.ERROR + context.getTranslated("generic.sensitive")).queue();
                 } else {
                     message.editMessage("```\n" + e + "\n```").queue();
                 }
             } catch (Exception e) {
                 logger.error("Caught exception in eval", e);
-                message.editMessage(CommandIcons.error + e.getMessage()).queue();
+                message.editMessage(CommandIcons.ERROR + e.getMessage()).queue();
             }
         });
     }

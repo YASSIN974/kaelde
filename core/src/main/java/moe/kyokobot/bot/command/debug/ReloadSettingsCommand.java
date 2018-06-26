@@ -28,19 +28,19 @@ public class ReloadSettingsCommand extends Command {
         Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
         if (!cfg.exists()) {
-            context.send(CommandIcons.error + "Cannot find configuration file!");
+            context.send(CommandIcons.ERROR + "Cannot find configuration file!");
         }
 
         try {
             settings = gson.fromJson(new FileReader(cfg), Settings.class);
         } catch (Exception e) {
-            context.send(CommandIcons.error + "Cannot read configuration file!");
+            context.send(CommandIcons.ERROR + "Cannot read configuration file!");
             CommonErrors.exception(context, e);
         }
 
         if (settings != null) {
             Settings.instance = settings;
-            context.send(CommandIcons.success + "Settings reloaded!");
+            context.send(CommandIcons.SUCCESS + "Settings reloaded!");
         }
     }
 }

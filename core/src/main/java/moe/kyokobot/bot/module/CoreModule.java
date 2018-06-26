@@ -23,6 +23,7 @@ public class CoreModule implements KyokoModule {
         commandManager.registerCommand(new EvalCommand(shardManager, moduleManager, commandManager, databaseManager));
         commandManager.registerCommand(new NameCommand());
         commandManager.registerCommand(new ShellCommand());
+        commandManager.registerCommand(new CleanSelfCommand());
         commandManager.registerCommand(new ModulesCommand(moduleManager));
         commandManager.registerCommand(new ReloadSettingsCommand());
     }

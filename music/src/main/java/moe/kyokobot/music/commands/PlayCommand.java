@@ -2,10 +2,12 @@ package moe.kyokobot.music.commands;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Constants;
+import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
@@ -37,7 +39,7 @@ public class PlayCommand extends MusicCommand {
     @Override
     public void execute(CommandContext context) {
         if (locks.getIfPresent(context.getGuild()) != null) {
-            context.send(CommandIcons.error + context.getTranslated("music.locked"));
+            context.send(CommandIcons.ERROR + context.getTranslated("music.locked"));
             return;
         }
 
@@ -61,7 +63,7 @@ public class PlayCommand extends MusicCommand {
                 CommonErrors.usage(context);
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("music.joinchannel"));
+            context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
         }
     }
 
@@ -76,30 +78,46 @@ public class PlayCommand extends MusicCommand {
     }
 
     private boolean loadTracks(CommandContext context, MusicQueue queue) {
-        AudioItem item = musicManager.resolve(context.getGuild(), context.getConcatArgs().trim());
-
-        if (item == null) {
-            SearchManager.SearchResult result = searchManager.searchYouTube(context.getConcatArgs());
-            if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
-                item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
-            } else {
-                context.send(CommandIcons.error + String.format(context.getTranslated("music.nothingfound"), context.getConcatArgs()));
-                locks.invalidate(context.getGuild());
-                return false;
-            }
+        String query = context.getConcatArgs().trim();
+        if (query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + "play")
+                || query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + "p")
+                || query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + ">")) {
+            context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
+            return false; // the user is retarded, do not waste resources to query the track
         }
 
-        if (item instanceof AudioPlaylist) {
-            int tracks = 0;
-            for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
+        try {
+            AudioItem item = musicManager.resolve(context.getGuild(), query);
 
-                queue.add(track);
-                tracks++;
+            if (item == null) {
+                SearchManager.SearchResult result = searchManager.searchYouTube(query);
+                if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
+                    item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
+                } else {
+                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
+                    locks.invalidate(context.getGuild());
+                    return false;
+                }
             }
-            context.send(PLAY + String.format(context.getTranslated("music.addedplaylist"), tracks, ((AudioPlaylist) item).getName().replace("`", "\\`")));
-        } else if (item instanceof AudioTrack) {
-            queue.add((AudioTrack) item);
-            context.send(PLAY + String.format(context.getTranslated("music.added"), ((AudioTrack) item).getInfo().title.replace("`", "\\`")));
+
+            if (item instanceof AudioPlaylist) {
+                int tracks = 0;
+                for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
+                    queue.add(track);
+                    tracks++;
+                }
+                context.send(PLAY + String.format(context.getTranslated("music.addedplaylist"), tracks, ((AudioPlaylist) item).getName().replace("`", "\\`")));
+            } else if (item instanceof AudioTrack) {
+                queue.add((AudioTrack) item);
+                context.send(PLAY + String.format(context.getTranslated("music.added"), ((AudioTrack) item).getInfo().title.replace("`", "\\`")));
+            }
+        } catch (FriendlyException e) {
+            if (e.getMessage().equals("The playlist is private.")) {
+                context.send(CommandIcons.ERROR + context.getTranslated("music.privateplaylist"));
+            } else {
+                context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.error"), e.getMessage()));
+            }
+            return false;
         }
         return true;
     }
@@ -117,7 +135,7 @@ public class PlayCommand extends MusicCommand {
 
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds
-                    context.send(CommandIcons.error + String.format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
+                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
                     musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
                     locks.invalidate(context.getGuild());
                     return;

@@ -26,7 +26,7 @@ public class PauseCommand extends MusicCommand {
                 context.send(MusicIcons.PAUSE + context.getTranslated("music.notpaused"));
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
+            context.send(CommandIcons.ERROR + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
         }
     }
 }

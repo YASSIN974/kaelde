@@ -16,7 +16,7 @@ public class NsfwCommand extends Command {
         if (context.getChannel().isNSFW()) {
             super.preExecute(context);
         } else {
-            context.send(CommandIcons.error + context.getTranslated("generic.nsfw"));
+            context.send(CommandIcons.ERROR + context.getTranslated("generic.nsfw"));
         }
     }
 }

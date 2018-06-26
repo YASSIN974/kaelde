@@ -1,7 +1,5 @@
 package moe.kyokobot.music.lavalink;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
@@ -35,7 +33,6 @@ import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
@@ -47,7 +44,6 @@ public class LavaMusicManager implements MusicManager {
     private final List<AudioSourceManager> sourceManagers;
     private final Long2ObjectMap<MusicQueue> queues;
     private final HashMap<AudioNodeEntry, String> nodeNames;
-    private Cache<String, AudioItem> resultCache;
 
     public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -57,7 +53,6 @@ public class LavaMusicManager implements MusicManager {
         lavaClient = new LavaClientBuilder(true)
                 .setShardCount(Globals.shardCount)
                 .setUserId(Globals.clientId).build();
-        resultCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
         nodeNames = new HashMap<>();
         settings.nodes.forEach(node -> {
             AudioNodeEntryBuilder builder = new AudioNodeEntryBuilder(lavaClient);
@@ -80,12 +75,6 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public AudioItem resolve(Guild guild, String query) {
-        AudioItem item = resultCache.getIfPresent(query);
-        if (item != null) {
-            logger.info("Using cached resolve result for: {}", query);
-            return item;
-        }
-
         LavaPlayer lavaPlayer = ((LavaPlayerWrapper) getMusicPlayer(guild)).getPlayer();
         return lavaPlayer.getState() != State.CONNECTED ? resolveLocal(query) : resolveRemote(query, lavaPlayer);
     }
@@ -95,7 +84,6 @@ public class LavaMusicManager implements MusicManager {
         for (AudioSourceManager manager : sourceManagers) {
             AudioItem item = manager.loadItem(null, new AudioReference(query, null));
             if (item != null) {
-                resultCache.put(query, item);
                 return item;
             }
         }

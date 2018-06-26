@@ -20,12 +20,12 @@ public class WhyCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        context.send(CommandIcons.working + context.getTranslated("generic.loading"), message -> {
+        context.send(CommandIcons.WORKING + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://nekos.life/api/v2/why"));
                 NekosResponse response = GsonUtil.fromJSON(data, NekosResponse.class);
                 if (response.why == null || response.why.isEmpty()) {
-                    message.editMessage(CommandIcons.error + context.getTranslated("api.nekoslife.error")).queue();
+                    message.editMessage(CommandIcons.ERROR + context.getTranslated("api.nekoslife.error")).queue();
                 } else {
                     message.editMessage(response.why).override(true).queue();
                 }

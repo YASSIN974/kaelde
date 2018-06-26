@@ -49,6 +49,7 @@ public class Module implements KyokoModule {
         commands.add(new UserInfoCommand());
         commands.add(new ServerInfoCommand());
 
+        commands.add(new BananaCommand());
         commands.add(new WhyCommand());
         commands.add(new OwOifyCommand());
         commands.add(new InspireCommand());
@@ -56,6 +57,7 @@ public class Module implements KyokoModule {
         commands.add(new SimpleTextCommand("shrug", "¯\\_(ツ)_/¯"));
         commands.add(new RandomTextCommand("tableflip", new String[] {" (╯°□°）╯︵ ┻━┻", "(┛◉Д◉)┛彡┻━┻", "(ﾉ≧∇≦)ﾉ ﾐ ┸━┸", "(ノಠ益ಠ)ノ彡┻━┻", "(╯ರ ~ ರ）╯︵ ┻━┻", "(┛ಸ_ಸ)┛彡┻━┻", "(ﾉ´･ω･)ﾉ ﾐ ┸━┸", "(ノಥ,_｣ಥ)ノ彡┻━┻", "(┛✧Д✧))┛彡┻━┻"}));
         commands.add(new SnipeCommand(eventBus));
+
         if (getClass().getResource("/commit_messages.txt") != null)
             commands.add(new WhatTheCommitCommand());
 

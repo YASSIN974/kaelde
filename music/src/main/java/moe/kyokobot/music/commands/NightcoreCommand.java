@@ -25,18 +25,18 @@ public class NightcoreCommand extends MusicCommand {
             try {
                 f = Float.parseFloat(context.getConcatArgs());
             } catch (NumberFormatException e) {
-                context.send(CommandIcons.error + "not a float number");
+                context.send(CommandIcons.ERROR + "not a float number");
                 return;
             }
 
             if (f < 0.5f || f > 2.0f) {
-                context.send(CommandIcons.error + "Out of range (0.5-2.0)!");
+                context.send(CommandIcons.ERROR + "Out of range (0.5-2.0)!");
                 return;
             }
 
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             player.setNightcore(f);
-            context.send(CommandIcons.info + "nightcore set to " + f);
+            context.send(CommandIcons.INFO + "nightcore set to " + f);
         }
     }
 }

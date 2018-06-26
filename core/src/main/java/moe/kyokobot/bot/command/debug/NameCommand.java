@@ -16,11 +16,11 @@ public class NameCommand extends Command {
     public void execute(CommandContext context) {
         if (context.hasArgs()) {
             context.getMessage().getJDA().getSelfUser().getManager().setName(context.getConcatArgs()).queue(
-                    success -> context.send(CommandIcons.success + "Name updated!"),
+                    success -> context.send(CommandIcons.SUCCESS + "Name updated!"),
                     error -> {
                         error.printStackTrace();
                         Sentry.capture(error);
-                        context.send(CommandIcons.error + "Error while updating name! `" + error.getMessage() + "`");
+                        context.send(CommandIcons.ERROR + "Error while updating name! `" + error.getMessage() + "`");
                     });
         } else {
             context.send("usage: `" + context.getPrefix() + name + " [link or attachment]`");

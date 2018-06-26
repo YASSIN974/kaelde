@@ -32,11 +32,11 @@ public class UpdateAvatarCommand extends Command {
         try {
             byte[] data = NetworkUtil.download(url);
             context.getMessage().getJDA().getSelfUser().getManager().setAvatar(Icon.from(data)).queue(
-                    success -> context.send(CommandIcons.success + "Avatar updated!"),
+                    success -> context.send(CommandIcons.SUCCESS + "Avatar updated!"),
                     error -> {
                         error.printStackTrace();
                         Sentry.capture(error);
-                        context.send(CommandIcons.error + "Error while updating avatar! `" + error.getMessage() + "`");
+                        context.send(CommandIcons.ERROR + "Error while updating avatar! `" + error.getMessage() + "`");
                     });
         } catch (IOException e) {
             e.printStackTrace();

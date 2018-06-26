@@ -64,7 +64,7 @@ public class SnipeCommand extends Command {
                 return;
             }
         }
-        context.send(CommandIcons.error + context.getTranslated("snipe.nosnipes"));
+        context.send(CommandIcons.ERROR + context.getTranslated("snipe.nosnipes"));
     }
 
     @Subscribe

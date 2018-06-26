@@ -33,12 +33,12 @@ public class ClaimCommand extends Command {
             UserConfig uc = databaseManager.getUser(context.getSender());
 
             if (uc.getClaim() > currentTime) {
-                context.send(CommandIcons.error + String.format(context.getTranslated("claim.wait"), StringUtil.prettyPeriod(uc.getClaim() - currentTime)));
+                context.send(CommandIcons.ERROR + String.format(context.getTranslated("claim.wait"), StringUtil.prettyPeriod(uc.getClaim() - currentTime)));
             } else {
                 if (context.hasArgs()) {
                     Member member = UserUtil.getMember(context.getGuild(), context.getConcatArgs());
                     if (member == null) {
-                        context.send(CommandIcons.error + String.format(context.getTranslated("generic.usernotfound"), context.getConcatArgs()));
+                        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.usernotfound"), context.getConcatArgs()));
                     } else {
                         UserConfig desireduc = databaseManager.getUser(member.getUser());
                         int money = 200 + (int) Math.floor(Math.random() * 50);

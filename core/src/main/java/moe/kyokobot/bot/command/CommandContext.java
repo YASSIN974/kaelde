@@ -114,7 +114,7 @@ public class CommandContext {
     // use this method only for debug commands to prevent theoretical token guessing
     public void sendChecked(CharSequence message, Consumer<Message> callback) {
         if (checkSensitive(message.toString())) {
-            event.getChannel().sendMessage(CommandIcons.error + getTranslated("generic.sensitive")).queue(callback);
+            event.getChannel().sendMessage(CommandIcons.ERROR + getTranslated("generic.sensitive")).queue(callback);
         } else {
             event.getChannel().sendMessage(message).queue(callback);
         }
@@ -131,7 +131,6 @@ public class CommandContext {
     public EmbedBuilder getNormalEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(getNormalColor());
-        //eb.setFooter(  "kyokobot v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 

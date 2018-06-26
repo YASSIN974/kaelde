@@ -28,13 +28,13 @@ public class ModulesCommand extends Command {
         else {
             if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
-                    context.send(CommandIcons.error + "Module  `" + modname + "` is already started!");
+                    context.send(CommandIcons.ERROR + "Module  `" + modname + "` is already started!");
                 } else {
                     moduleManager.startModule(modname);
-                    context.send(CommandIcons.success + "Module `" + modname + "` started!");
+                    context.send(CommandIcons.SUCCESS + "Module `" + modname + "` started!");
                 }
             } else {
-                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -45,16 +45,16 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(CommandIcons.error + "Cannot stop `core` module!");
+                context.send(CommandIcons.ERROR + "Cannot stop `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
-                    context.send(CommandIcons.success + "Module `" + modname + "` stopped!");
+                    context.send(CommandIcons.SUCCESS + "Module `" + modname + "` stopped!");
                 } else {
-                    context.send(CommandIcons.error + "Module  `" + modname + "` is already stopped!");
+                    context.send(CommandIcons.ERROR + "Module  `" + modname + "` is already stopped!");
                 }
             } else {
-                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -65,15 +65,15 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(CommandIcons.error + "Cannot unload `core` module!");
+                context.send(CommandIcons.ERROR + "Cannot unload `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
                 }
                 moduleManager.unload(modname, true);
-                context.send(CommandIcons.success + "Module `" + modname + "` unloaded!");
+                context.send(CommandIcons.SUCCESS + "Module `" + modname + "` unloaded!");
             } else {
-                context.send(CommandIcons.error + "Cannot find module `" + modname + "`");
+                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
             }
         }
     }
@@ -81,7 +81,7 @@ public class ModulesCommand extends Command {
     @SubCommand
     public void load(CommandContext context) {
         String modname = Joiner.on(" ").join(Arrays.stream(context.getArgs()).skip(1).toArray()).toLowerCase();
-        if (modname.isEmpty()) context.send(CommandIcons.error + "Please specify module path!");
+        if (modname.isEmpty()) context.send(CommandIcons.ERROR + "Please specify module path!");
         else {
             File f = new File(modname);
             if (f.exists()) {
@@ -93,29 +93,29 @@ public class ModulesCommand extends Command {
                         ZipEntry entry = entries.nextElement();
                         if (entry.getName().equals("plugin.json")) {
                             moduleManager.load(f.getAbsolutePath());
-                            context.send(CommandIcons.success + "Module loaded!");
+                            context.send(CommandIcons.SUCCESS + "Module loaded!");
                             return;
                         }
                     }
-                    context.send(CommandIcons.error + "Not a valid module!");
+                    context.send(CommandIcons.ERROR + "Not a valid module!");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    context.send(CommandIcons.error + "Error while loading module `" + modname + "`: " + e.getMessage());
+                    context.send(CommandIcons.ERROR + "Error while loading module `" + modname + "`: " + e.getMessage());
                 }
             } else {
-                context.send(CommandIcons.error + "Cannot find file `" + modname + "`");
+                context.send(CommandIcons.ERROR + "Cannot find file `" + modname + "`");
             }
         }
     }
 
     @SubCommand
     public void reloadall(CommandContext context) {
-        context.send(CommandIcons.working + "Reloading all modules...", msg -> {
+        context.send(CommandIcons.WORKING + "Reloading all modules...", msg -> {
             try {
                 moduleManager.loadModules();
-                msg.editMessage(CommandIcons.success + "Modules reloaded!").queue();
+                msg.editMessage(CommandIcons.SUCCESS + "Modules reloaded!").queue();
             } catch (Exception e) {
-                msg.editMessage(CommandIcons.error + "Error reloading modules: " + e.getMessage()).queue();
+                msg.editMessage(CommandIcons.ERROR + "Error reloading modules: " + e.getMessage()).queue();
                 e.printStackTrace();
             }
         });
