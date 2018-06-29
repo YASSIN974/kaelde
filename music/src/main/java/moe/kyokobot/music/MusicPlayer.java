@@ -12,6 +12,7 @@ public interface MusicPlayer {
     long getPosition();
     int getVolume();
     float getNightcore();
+    boolean isKaraoke();
     boolean isPaused();
     void playTrack(@Nonnull AudioTrack track);
     void stopTrack();
@@ -20,5 +21,10 @@ public interface MusicPlayer {
     void seek(long position);
     void setVolume(int volume);
     void setNightcore(float speed);
+    void setKaraoke(boolean enabled);
+    void setKaraokeWidth(float width);
+    void setKaraokeBand(float band);
+    void setKaraokeLevel(float level);
+    boolean hasFiltersEnabled();
     boolean isConnected();
 }

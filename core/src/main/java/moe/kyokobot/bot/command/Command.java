@@ -22,7 +22,7 @@ public abstract class Command {
     @Getter
     protected CommandType type = CommandType.NORMAL;
     @Getter
-    protected boolean allowedInDMs = false;
+    protected boolean experimental = false;
     @Getter
     protected HashMap<String, Method> subCommands = new HashMap<>();
 

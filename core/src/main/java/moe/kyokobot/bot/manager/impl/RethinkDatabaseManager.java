@@ -1,11 +1,13 @@
 package moe.kyokobot.bot.manager.impl;
 
+import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonArray;
 import com.rethinkdb.net.Connection;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.DatabaseEntity;
 import moe.kyokobot.bot.entity.GuildConfig;
 import moe.kyokobot.bot.entity.UserConfig;
+import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.GsonUtil;
@@ -21,10 +23,12 @@ import java.util.HashMap;
 import static com.rethinkdb.RethinkDB.r;
 
 public class RethinkDatabaseManager implements DatabaseManager {
-    private Logger logger;
+    private final EventBus eventBus;
+    private final Logger logger;
     private Connection connection;
 
-    public RethinkDatabaseManager() {
+    public RethinkDatabaseManager(EventBus eventBus) {
+        this.eventBus = eventBus;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -99,6 +103,7 @@ public class RethinkDatabaseManager implements DatabaseManager {
     public void save(@NotNull DatabaseEntity entity) {
         logger.debug("Saved entity on {} -> {} -> {}", entity.getTableName(), entity.getClass().getName(), entity.toString());
         r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
+        eventBus.post(new DatabaseUpdateEvent(entity));
     }
 
     private UserConfig newUser(String id) {

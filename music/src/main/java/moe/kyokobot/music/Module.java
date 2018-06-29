@@ -98,6 +98,7 @@ public class Module implements KyokoModule {
         commands = new ArrayList<>();
 
         commands.add(new PlayCommand(musicManager, searchManager));
+        commands.add(new KaraokeCommand(musicManager));
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));
         commands.add(new RepeatCommand(musicManager));

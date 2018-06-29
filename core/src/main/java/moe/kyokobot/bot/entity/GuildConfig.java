@@ -29,6 +29,7 @@ public class GuildConfig implements DatabaseEntity {
     private ArrayList<String> prefixes = new ArrayList<>();
     @SerializedName("music-config")
     private MusicConfig musicConfig = new MusicConfig();
+    private boolean experimental = false;
     @SerializedName("auto-role")
     private String autoRole = "";
     @SerializedName("self-assignable")

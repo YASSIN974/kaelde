@@ -52,9 +52,9 @@ public class KyokoService extends AbstractIdleService {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
         eventWaiter = new EventWaiter();
 
-        databaseManager = new RethinkDatabaseManager();
+        databaseManager = new RethinkDatabaseManager(eventBus);
         i18n = new I18n(databaseManager);
-        commandManager = new KyokoCommandManager(i18n, executor);
+        commandManager = new KyokoCommandManager(databaseManager, i18n, executor);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);

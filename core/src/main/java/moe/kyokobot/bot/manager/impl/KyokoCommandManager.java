@@ -1,5 +1,7 @@
 package moe.kyokobot.bot.manager.impl;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -10,10 +12,13 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.command.SubCommand;
+import moe.kyokobot.bot.entity.GuildConfig;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,21 +26,25 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class KyokoCommandManager implements CommandManager {
     private final Logger logger;
     private final I18n i18n;
     private final ScheduledExecutorService executor;
+    private final DatabaseManager databaseManager;
+    private final Cache<Guild, Boolean> experimentalCache = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES).maximumSize(100).build();
 
     private Set<Command> registered;
     private Map<String, Command> commands;
 
-    public KyokoCommandManager(I18n i18n, ScheduledExecutorService executor) {
+    public KyokoCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();
         this.i18n = i18n;
         this.executor = executor;
+        this.databaseManager = databaseManager;
     }
 
     public Set<Command> getRegistered() {
@@ -98,45 +107,31 @@ public class KyokoCommandManager implements CommandManager {
     }
 
     @Subscribe
-    public void handleMessageEvent(MessageReceivedEvent event) {
-        if (event.getChannelType() == ChannelType.TEXT) {
-            handleGuild(event);
-        } else if (event.getChannelType() == ChannelType.PRIVATE) {
-            handlePrivate(event);
-        }
-    }
+    public void handleMessage(MessageReceivedEvent event) {
+        if (event.getChannelType() != ChannelType.TEXT) return;
 
-    private void handlePrivate(MessageReceivedEvent event) {
-        handlePrefix(event, true);
-    }
-
-    private void handleGuild(MessageReceivedEvent event) {
-        handlePrefix(event, false);
-    }
-
-    private void handlePrefix(MessageReceivedEvent event, boolean direct) {
         Settings settings = Settings.instance;
         String content = event.getMessage().getContentRaw();
 
         if (content.startsWith(event.getJDA().getSelfUser().getAsMention())) {
             content = content.trim().substring(event.getJDA().getSelfUser().getAsMention().length()).trim();
-            handleNormal(event, event.getJDA().getSelfUser().getAsMention(), content, direct);
+            handleNormal(event, event.getJDA().getSelfUser().getAsMention(), content);
         } else if (content.startsWith(settings.bot.normalPrefix)) {
             content = content.trim().substring(settings.bot.normalPrefix.length()).trim();
-            handleNormal(event, settings.bot.normalPrefix, content, direct);
+            handleNormal(event, settings.bot.normalPrefix, content);
         } else if (content.startsWith(settings.bot.debugPrefix) && settings.bot.owner.equals(event.getAuthor().getId())) {
             content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
-            handleDebug(event, settings.bot.debugPrefix, content, direct);
+            handleDebug(event, settings.bot.debugPrefix, content);
         }
     }
 
-    private void handleNormal(MessageReceivedEvent event, String prefix, String content, boolean direct) {
+    private void handleNormal(MessageReceivedEvent event, String prefix, String content) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
         if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
-                if (!c.isAllowedInDMs() && direct) return;
+                if (c.isExperimental() && !isExperimental(event.getGuild())) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
@@ -157,14 +152,12 @@ public class KyokoCommandManager implements CommandManager {
         }
     }
 
-    private void handleDebug(MessageReceivedEvent event, String prefix, String content, boolean direct) {
+    private void handleDebug(MessageReceivedEvent event, String prefix, String content) {
         List<String> parts = Splitter.on(CharMatcher.breakingWhitespace()).splitToList(content);
 
         if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.DEBUG) {
-                if (!c.isAllowedInDMs() && direct) return;
-
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
 
@@ -182,5 +175,18 @@ public class KyokoCommandManager implements CommandManager {
                 });
             }
         }
+    }
+
+    private boolean isExperimental(Guild guild) {
+        Boolean b = experimentalCache.getIfPresent(guild);
+        if (b == null) {
+            try {
+                GuildConfig config = databaseManager.getGuild(guild);
+                experimentalCache.put(guild, config.isExperimental());
+                return config.isExperimental();
+            } catch (Exception e) {
+                return false;
+            }
+        } else return b;
     }
 }

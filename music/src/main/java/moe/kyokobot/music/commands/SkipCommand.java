@@ -36,8 +36,8 @@ public class SkipCommand extends MusicCommand {
 
             if (context.hasArgs()) {
                 try {
-                    int i = Integer.parseUnsignedInt(context.getConcatArgs());
-                    if (i == 0) i = 1;
+                    int i = Integer.parseUnsignedInt(context.getConcatArgs()) - 1;
+                    if (i < 0) i = 0;
 
                     while (i != 0 && !queue.isEmpty()) {
                         queue.poll();
