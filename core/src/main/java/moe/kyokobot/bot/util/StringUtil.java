@@ -8,6 +8,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collector;
 
 public class StringUtil {
+    public static String zeroHexFill(String s) {
+        if (s.length() < 4) {
+
+            StringBuilder sb = new StringBuilder(s);
+            while (sb.length() < 4)
+                sb.insert(0, "0");
+
+            return sb.toString();
+        }
+        return s;
+    }
+
     public static String musicPrettyPeriod(long time) {
         if (time == Long.MAX_VALUE) return "streaming";
         return prettyPeriod(time);

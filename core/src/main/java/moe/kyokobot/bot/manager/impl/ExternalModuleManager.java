@@ -18,12 +18,11 @@ import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -43,6 +42,7 @@ public class ExternalModuleManager implements ModuleManager {
     private final Logger logger;
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
+    private HashMap<String, File> tempFiles;
     private ArrayList<String> started;
     private Injector injector;
     private EventBus moduleEventBus;
@@ -57,6 +57,7 @@ public class ExternalModuleManager implements ModuleManager {
 
         modules = new HashMap<>();
         classLoaders = new HashMap<>();
+        tempFiles = new HashMap<>();
         started = new ArrayList<>();
     }
 
@@ -79,6 +80,7 @@ public class ExternalModuleManager implements ModuleManager {
                 unload(name, false);
                 modules.remove(name);
                 in.remove();
+                tempFiles.remove(name);
             }
         }
 
@@ -158,6 +160,8 @@ public class ExternalModuleManager implements ModuleManager {
 
         try {
             classLoaders.get(name).close();
+            if (tempFiles.get(name) != null)
+                Files.delete(tempFiles.get(name).toPath());
         } catch (IOException e) {
             logger.error("Caught error while unloading module!", e);
             Sentry.capture(e);
@@ -165,12 +169,24 @@ public class ExternalModuleManager implements ModuleManager {
         if (remove) {
             modules.entrySet().removeIf(e -> e.getKey().equals(name));
             classLoaders.entrySet().removeIf(e -> e.getKey().equals(name));
+            tempFiles.entrySet().removeIf(e -> e.getKey().equals(name));
         }
     }
 
     @Override public void load(String path) throws Exception {
         File jar = new File(path);
-        URL jarUrl = jar.toURI().toURL();
+        File jar2 = File.createTempFile("cached-", ".kymod");
+        jar2.deleteOnExit();
+
+        try (InputStream fis = new FileInputStream(jar)) {
+            try (OutputStream fos = new FileOutputStream(jar2)) {
+                IOUtils.copy(fis, fos);
+            }
+        }
+
+        logger.debug("Caching module: {} -> {}", path, jar2.getAbsolutePath());
+
+        URL jarUrl = jar2.toURI().toURL();
         URL[] classPath = new URL[]{jarUrl};
         URLClassLoader cl = new URLClassLoader(classPath, getClass().getClassLoader());
 
@@ -193,6 +209,7 @@ public class ExternalModuleManager implements ModuleManager {
         KyokoModule mod = (KyokoModule) jarClass.newInstance();
         modules.put(description.moduleName, mod);
         classLoaders.put(description.moduleName, cl);
+        tempFiles.put(description.moduleName, jar2);
     }
 
     @Override public boolean isLoaded(String name) {

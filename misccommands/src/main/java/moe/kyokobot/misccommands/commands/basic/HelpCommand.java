@@ -41,7 +41,7 @@ public class HelpCommand extends Command {
             commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
             categories.forEach((category, commands) -> {
-                if (commands.size() != 0) {
+                if (!commands.isEmpty()) {
                     commands.sort(Ordering.usingToString());
                     eb.addField(context.getTranslated("help.category." + category.name().toLowerCase()) + " - (" + commands.size() + ")", "`" + Joiner.on("`, `").join(commands) + "`", false);
                 }
