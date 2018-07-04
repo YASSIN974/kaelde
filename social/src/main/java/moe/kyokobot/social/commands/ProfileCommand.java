@@ -45,7 +45,7 @@ public class ProfileCommand extends Command {
                 } else {
                     image = imageRequester.getProfile(context.getSender());
                 }
-                context.getChannel().sendFile(image, "profile.webp").queue(success -> message.delete().queue(), error -> {
+                context.getChannel().sendFile(image, "profile.png").queue(success -> message.delete().queue(), error -> {
                     error.printStackTrace();
                     Sentry.capture(error);
                     CommonErrors.editException(context, error, message);

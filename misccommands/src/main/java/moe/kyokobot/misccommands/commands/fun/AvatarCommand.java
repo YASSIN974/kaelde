@@ -33,7 +33,7 @@ public class AvatarCommand extends Command {
     private void printAvatar(CommandContext context, User user) {
         EmbedBuilder eb = context.getNormalEmbed();
         eb.addField(String.format(context.getTranslated("avatar.user"), user.getName() + "#" + user.getDiscriminator()), String.format("[%s](%s)", context.getTranslated("avatar.direct"), user.getEffectiveAvatarUrl()), false);
-        eb.setImage(user.getEffectiveAvatarUrl());
+        eb.setImage(user.getEffectiveAvatarUrl() + "?size=1024");
         context.send(eb.build());
     }
 }

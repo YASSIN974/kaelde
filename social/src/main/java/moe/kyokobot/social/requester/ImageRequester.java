@@ -11,6 +11,8 @@ import okhttp3.*;
 
 import java.util.concurrent.TimeUnit;
 
+import static moe.kyokobot.social.LevelHandler.LEVEL_THRESHOLD;
+
 public class ImageRequester {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private String apiUrl;
@@ -23,7 +25,7 @@ public class ImageRequester {
 
     public ImageRequester(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        apiUrl = Settings.instance.apiUrls.getOrDefault("imgen", "http://127.0.0.1:8000");
+        apiUrl = Settings.instance.apiUrls.getOrDefault("imgen", "http://localhost:3000/api/imgen");
     }
 
     public byte[] getProfile(User user) throws Exception {
@@ -37,9 +39,11 @@ public class ImageRequester {
         preq.type = 0;
         preq.money = Long.toString(uc.getMoney());
         preq.reputation = uc.getReputation() > 0 ? "+" + uc.getReputation() : Long.toString(uc.getReputation());
-        preq.level = 1;
+        preq.level = uc.getLevel();
         preq.exp = uc.getXp();
-        preq.maxExp = 1000;
+        preq.maxExp = LEVEL_THRESHOLD * uc.getLevel();
+        if (uc.getTheme() == 0) uc.setTheme(1); // fix
+        preq.theme = uc.getTheme();
 
         String json = gson.toJson(preq);
         Request request = new Request.Builder()
@@ -47,8 +51,11 @@ public class ImageRequester {
                 .post(RequestBody.create(JSON, json))
                 .build();
         Response response = client.newCall(request).execute();
+
+        if (response.code() != 200) throw new IllegalStateException("Received non-successful status code, please try again later (" + response.code() + ")!");
+
         byte[] bytes = response.body().bytes();
-        if (bytes[0] != 'R' && bytes[1] != 'I') throw new IllegalStateException(response.body().string());
+        if (bytes[0] != (byte) 0x89 && bytes[1] != 0x50) throw new IllegalStateException(response.body().string());
 
         return bytes;
     }
@@ -66,5 +73,6 @@ public class ImageRequester {
         @SerializedName("max_exp")
         public long maxExp;
         public int type;
+        public int theme;
     }
 }

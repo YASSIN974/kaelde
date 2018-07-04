@@ -1,5 +1,6 @@
 package moe.kyokobot.social;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.manager.CommandManager;
@@ -18,9 +19,11 @@ public class Module implements KyokoModule {
     @Inject private CommandManager commandManager;
     @Inject private DatabaseManager databaseManager;
     @Inject private EventWaiter eventWaiter;
+    @Inject private EventBus eventBus;
 
     private ArrayList<Command> commands;
     private ImageRequester requester;
+    private LevelHandler levelHandler;
 
     public Module() {
         commands = new ArrayList<>();
@@ -29,6 +32,7 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         requester = new ImageRequester(databaseManager);
+        levelHandler = new LevelHandler(databaseManager);
 
         commands = new ArrayList<>();
 
@@ -38,10 +42,17 @@ public class Module implements KyokoModule {
         commands.add(new RichestCommand(databaseManager));
 
         commands.forEach(commandManager::registerCommand);
+        eventBus.register(levelHandler);
     }
 
     @Override
     public void shutDown() {
         commands.forEach(commandManager::unregisterCommand);
+
+        try {
+            eventBus.unregister(levelHandler);
+        } catch (Exception ignored) {
+            // ignore cuz eventbus is gay
+        }
     }
 }
