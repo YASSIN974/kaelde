@@ -22,7 +22,7 @@ public class LevelHandler {
 
     @Subscribe
     public void onMessage(MessageReceivedEvent event) {
-        if (event.getMessageIdLong() % 2 == 0) {
+        if (event.getMessageIdLong() % 10 == 0) {
             try {
                 UserConfig data = databaseManager.getUser(event.getAuthor());
                 long oldlevel = data.getLevel();
