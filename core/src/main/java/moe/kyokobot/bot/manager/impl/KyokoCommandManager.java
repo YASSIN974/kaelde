@@ -7,6 +7,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
+import lombok.Getter;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
@@ -37,6 +38,7 @@ public class KyokoCommandManager implements CommandManager {
 
     private Set<Command> registered;
     private Map<String, Command> commands;
+    @Getter private long runs = 0;
 
     public KyokoCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
@@ -140,6 +142,7 @@ public class KyokoCommandManager implements CommandManager {
 
                 executor.submit(() -> {
                     logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
+                    runs++;
                     try {
                         c.preExecute(context);
                     } catch (Exception e) {

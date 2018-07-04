@@ -8,10 +8,7 @@ import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.misccommands.commands.RandomTextCommand;
 import moe.kyokobot.misccommands.commands.SimpleTextCommand;
-import moe.kyokobot.misccommands.commands.basic.HelpCommand;
-import moe.kyokobot.misccommands.commands.basic.PingCommand;
-import moe.kyokobot.misccommands.commands.basic.ServerInfoCommand;
-import moe.kyokobot.misccommands.commands.basic.UserInfoCommand;
+import moe.kyokobot.misccommands.commands.basic.*;
 import moe.kyokobot.misccommands.commands.fun.*;
 import moe.kyokobot.misccommands.commands.images.CoffeeCommand;
 import moe.kyokobot.misccommands.handler.AutoRoleHandler;
@@ -40,12 +37,8 @@ public class Module implements KyokoModule {
         autoRoleHandler = new AutoRoleHandler(databaseManager);
 
         commands.add(new HelpCommand(commandManager));
-
-        commands.add(new CoffeeCommand());
-
+        commands.add(new StatsCommand(commandManager));
         commands.add(new PingCommand());
-        commands.add(new SayCommand());
-        commands.add(new AvatarCommand());
         commands.add(new UserInfoCommand());
         commands.add(new ServerInfoCommand());
 
@@ -59,6 +52,11 @@ public class Module implements KyokoModule {
         commands.add(new SimpleTextCommand("shrug", "¯\\_(ツ)_/¯"));
         commands.add(new RandomTextCommand("tableflip", new String[] {" (╯°□°）╯︵ ┻━┻", "(┛◉Д◉)┛彡┻━┻", "(ﾉ≧∇≦)ﾉ ﾐ ┸━┸", "(ノಠ益ಠ)ノ彡┻━┻", "(╯ರ ~ ರ）╯︵ ┻━┻", "(┛ಸ_ಸ)┛彡┻━┻", "(ﾉ´･ω･)ﾉ ﾐ ┸━┸", "(ノಥ,_｣ಥ)ノ彡┻━┻", "(┛✧Д✧))┛彡┻━┻"}));
         commands.add(new SnipeCommand(eventBus));
+        commands.add(new SayCommand());
+        commands.add(new AvatarCommand());
+
+        commands.add(new CoffeeCommand());
+
 
         if (getClass().getResource("/commit_messages.txt") != null)
             commands.add(new WhatTheCommitCommand());

@@ -1,21 +1,19 @@
 package moe.kyokobot.bot.services;
 
-import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import io.sentry.Sentry;
-import jdk.nashorn.internal.objects.Global;
-import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
-import moe.kyokobot.bot.event.GuildCountUpdateEvent;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.discordbots.api.client.DiscordBotListAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.ImagingOpException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -89,7 +87,7 @@ public class GuildCountService extends AbstractScheduledService {
                         .post(body)
                         .build();
                 try {
-                    client.newCall(request).execute();
+                    client.newCall(request).execute().close();
                 } catch (IOException e) {
                     logger.error("Error while sending stats to ListCord!", e);
                     Sentry.capture(e);
@@ -109,7 +107,7 @@ public class GuildCountService extends AbstractScheduledService {
                         .post(body)
                         .build();
                 try {
-                    client.newCall(request).execute();
+                    client.newCall(request).execute().close();
                 } catch (IOException e) {
                     logger.error("Error while sending stats to Discord Bots!", e);
                     Sentry.capture(e);

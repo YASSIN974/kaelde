@@ -15,4 +15,6 @@ public interface CommandManager {
     void unregisterCommand(Command command);
 
     void unregisterAll();
+
+    long getRuns();
 }

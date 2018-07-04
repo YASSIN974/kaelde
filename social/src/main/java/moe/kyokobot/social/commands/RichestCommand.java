@@ -19,6 +19,7 @@ public class RichestCommand extends Command {
         this.databaseManager = databaseManager;
 
         name = "richest";
+        usage = "";
         aliases = new String[] {"topmoney", "topcash"};
         category = CommandCategory.SOCIAL;
     }
@@ -29,7 +30,7 @@ public class RichestCommand extends Command {
         int i = 0;
         AsciiTable at = new AsciiTable();
         at.addRule();
-        at.addRow("Top 10 richest users");
+        at.addRow(context.getTranslated("richest.title"));
         at.addRule();
         for (Map.Entry<String, Integer> e : tops.entrySet()) {
             i++;
