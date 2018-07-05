@@ -1,4 +1,5 @@
-# Kyoko
+<img src="https://raw.githubusercontent.com/KyokoBot/Kyoko/kyoko-v2/assets/kyokobot-banner2.png" alt="Kyoko"/>
+
 <a href="https://discordbots.org/bot/375750637540868107"><img src="https://discordbots.org/api/widget/upvotes/375750637540868107.svg" alt="Discord Music Bot" /></a> <img src="https://img.shields.io/github/license/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/github/contributors/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/badge/jda-3-blue.svg"> [![invite](https://img.shields.io/discord/375752406727786498.svg?logo=discord&colorB=7289DA)](https://discord.gg/ZvDRQf7)
 
 [![Kyoko Discord Bot Support](https://discordapp.com/api/guilds/375752406727786498/embed.png?style=banner3)](https://discord.gg/ZvDRQf7)
