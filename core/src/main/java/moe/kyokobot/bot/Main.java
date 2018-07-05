@@ -99,6 +99,12 @@ public class Main {
 
                 Globals.clientId = jda.getSelfUser().getIdLong();
 
+                if (Globals.clientId == 375750637540868107L)
+                    Globals.production = Globals.inKyokoServer = Globals.inDiscordBotsServer = true;
+
+                if (Globals.clientId == 452465112238915594L)
+                    Globals.production = Globals.inKyokoServer = Globals.inDiscordBotsServer = Globals.patreon = true;
+
                 services.add(new KyokoService(jda, eventBus));
                 services.add(new GuildCountService(jda));
             } else if (settings.connection.mode.equalsIgnoreCase("sharded")) {
