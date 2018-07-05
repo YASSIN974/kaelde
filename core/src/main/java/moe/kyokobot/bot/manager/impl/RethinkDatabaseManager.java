@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import static com.rethinkdb.RethinkDB.r;
 
@@ -61,9 +60,9 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public HashMap<String, Integer> getTopBalances() {
+    public Map<String, Integer> getTopBalances() {
         JsonArray a = GsonUtil.fromJSON(r.table("users").orderBy(r.desc("money")).limit(10).run(connection).toString(), JsonArray.class);
-        HashMap<String, Integer> map = new HashMap<>();
+        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
 
         a.forEach(element -> {
             String id = element.getAsJsonObject().get("id").getAsString();
@@ -88,14 +87,14 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public ArrayList<String> getList(User user, String key, ArrayList<String> def) {
+    public List<String> getList(User user, String key, List<String> def) {
         UserConfig u = getUser(user);
         ArrayList<String> keyR = u.getListStore().get(key);
         return keyR == null ? def : keyR;
     }
 
     @Override
-    public ArrayList<String> getList(User user, String key) {
+    public List<String> getList(User user, String key) {
         return getList(user, key, null);
     }
 

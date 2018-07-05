@@ -55,11 +55,11 @@ public class EmojiCommand extends Command {
 
         Emote emote = context.getEvent().getJDA().getEmoteById(id);
         if (emote == null) {
-            eb.setTitle(context.getTranslated("emote.title"));
-            eb.setDescription(String.format(context.getTranslated("emote.custom"), "???", date, id, "???", url));
+            eb.setTitle(context.getTranslated("emoji.title"));
+            eb.setDescription(String.format(context.getTranslated("emoji.custom"), "???", date, id, "???", url));
         } else {
-            eb.setTitle(context.getTranslated("emote.title"));
-            eb.setDescription(String.format(context.getTranslated("emote.custom"), emote.getName(), date, id, emote.getGuild(), url));
+            eb.setTitle(context.getTranslated("emoji.title"));
+            eb.setDescription(String.format(context.getTranslated("emoji.custom"), emote.getName(), date, id, emote.getGuild(), url));
         }
         context.send(eb.build());
     }
@@ -75,11 +75,11 @@ public class EmojiCommand extends Command {
 
         Emote emote = context.getEvent().getJDA().getEmoteById(id);
         if (emote == null) {
-            eb.setTitle(context.getTranslated("emote.title"));
-            eb.setDescription(String.format(context.getTranslated("emote.custom"), "???", date, id, "???", url));
+            eb.setTitle(context.getTranslated("emoji.title"));
+            eb.setDescription(String.format(context.getTranslated("emoji.custom"), "???", date, id, "???", url));
         } else {
-            eb.setTitle(context.getTranslated("emote.title"));
-            eb.setDescription(String.format(context.getTranslated("emote.custom"), emote.getName(), date, id, emote.getGuild(), url));
+            eb.setTitle(context.getTranslated("emoji.title"));
+            eb.setDescription(String.format(context.getTranslated("emoji.custom"), emote.getName(), date, id, emote.getGuild(), url));
         }
         context.send(eb.build());
     }
@@ -87,7 +87,7 @@ public class EmojiCommand extends Command {
     private void unicode(CommandContext context) {
         EmbedBuilder eb = context.getNormalEmbed();
         if (context.getConcatArgs().codePoints().count() > 10) {
-            context.send(CommandIcons.ERROR + context.getTranslated("emote.invalid"));
+            context.send(CommandIcons.ERROR + context.getTranslated("emoji.invalid"));
         } else {
             StringBuilder utf8 = new StringBuilder();
             StringBuilder unicode = new StringBuilder();
@@ -105,7 +105,7 @@ public class EmojiCommand extends Command {
                     utf8.append("\\u").append(hex0).append("\\u").append(hex1);
                 }
             });
-            eb.addField(context.getTranslated("emote.title"), String.format(context.getTranslated("emote.codepoint"), Character.getName(context.getConcatArgs().codePointAt(0)), unicode.toString(), utf8.toString()), false);
+            eb.addField(context.getTranslated("emoji.title"), String.format(context.getTranslated("emoji.codepoint"), Character.getName(context.getConcatArgs().codePointAt(0)), unicode.toString(), utf8.toString()), false);
             context.send(eb.build());
         }
     }

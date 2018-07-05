@@ -6,8 +6,8 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
 
-public class NameCommand extends Command {
-    public NameCommand() {
+public class SetNameCommand extends Command {
+    public SetNameCommand() {
         name = "setname";
         type = CommandType.DEBUG;
     }

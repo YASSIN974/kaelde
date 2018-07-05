@@ -9,7 +9,6 @@ import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.User;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class RichestCommand extends Command {
@@ -26,7 +25,7 @@ public class RichestCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        HashMap<String, Integer> tops = databaseManager.getTopBalances();
+        Map<String, Integer> tops = databaseManager.getTopBalances();
         int i = 0;
         AsciiTable at = new AsciiTable();
         at.addRule();
@@ -35,6 +34,7 @@ public class RichestCommand extends Command {
         for (Map.Entry<String, Integer> e : tops.entrySet()) {
             i++;
 
+            // TODO name cache?
             User u = context.getEvent().getJDA().getUserById(e.getKey());
             if (u == null)
                 at.addRow(i + ". [" + "unknown user" + "] - " + e.getValue() + "$");

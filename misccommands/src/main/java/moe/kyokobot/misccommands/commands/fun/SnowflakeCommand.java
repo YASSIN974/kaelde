@@ -34,7 +34,7 @@ public class SnowflakeCommand extends Command {
 
             EmbedBuilder eb = context.getNormalEmbed();
             eb.setTitle(context.getTranslated("snowflake.title"));
-            eb.setDescription(String.format(context.getTranslated("snowflake.description"), timestamp, unix, workerID, processID, increment));
+            eb.setDescription(String.format(context.getTranslated("snowflake.out"), timestamp, unix, workerID, processID, increment));
             context.send(eb.build());
         } catch (NumberFormatException e) {
             context.send(CommandIcons.ERROR + context.getTranslated("snowflake.invalid"));
