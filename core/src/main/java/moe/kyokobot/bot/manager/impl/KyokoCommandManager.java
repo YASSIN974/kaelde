@@ -118,10 +118,10 @@ public class KyokoCommandManager implements CommandManager {
         if (content.startsWith(event.getJDA().getSelfUser().getAsMention())) {
             content = content.trim().substring(event.getJDA().getSelfUser().getAsMention().length()).trim();
             handleNormal(event, event.getJDA().getSelfUser().getAsMention(), content);
-        } else if (content.startsWith(settings.bot.normalPrefix)) {
+        } else if (content.toLowerCase().startsWith(settings.bot.normalPrefix.toLowerCase())) {
             content = content.trim().substring(settings.bot.normalPrefix.length()).trim();
             handleNormal(event, settings.bot.normalPrefix, content);
-        } else if (content.startsWith(settings.bot.debugPrefix) && settings.bot.owner.equals(event.getAuthor().getId())) {
+        } else if (content.toLowerCase().startsWith(settings.bot.debugPrefix.toLowerCase()) && settings.bot.owner.equals(event.getAuthor().getId())) {
             content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
             handleDebug(event, settings.bot.debugPrefix, content);
         }
