@@ -32,7 +32,7 @@ public class NightcoreCommand extends MusicCommand {
             }
 
             if (f < 0.5f || f > 2.0f) {
-                context.send(CommandIcons.ERROR + "Out of range (0.5-2.0)!");
+                context.send(CommandIcons.ERROR + context.getTranslated("music.nightcore.outrange"));
                 return;
             }
 

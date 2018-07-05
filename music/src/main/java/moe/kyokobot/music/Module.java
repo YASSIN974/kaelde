@@ -105,6 +105,7 @@ public class Module implements KyokoModule {
         commands.add(new NightcoreCommand(musicManager));
         commands.add(new PauseCommand(musicManager));
         commands.add(new ResumeCommand(musicManager));
+        commands.add(new StopCommand(musicManager));
 
         commands.forEach(commandManager::registerCommand);
     }
