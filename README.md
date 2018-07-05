@@ -2,8 +2,6 @@
 
 <a href="https://discordbots.org/bot/375750637540868107"><img src="https://discordbots.org/api/widget/upvotes/375750637540868107.svg" alt="Discord Music Bot" /></a> <img src="https://img.shields.io/github/license/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/github/contributors/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/badge/jda-3-blue.svg"> [![invite](https://img.shields.io/discord/375752406727786498.svg?logo=discord&colorB=7289DA)](https://discord.gg/ZvDRQf7)
 
-[![Kyoko Discord Bot Support](https://discordapp.com/api/guilds/375752406727786498/embed.png?style=banner3)](https://discord.gg/ZvDRQf7)
-
 Kyoko is an open-source music bot with many other features. It's developed everyday and new features are constantly added, but if you want - talk to us, suggest something, our Discord server invite is available below.
 
 [Click here to invite bot to server](https://discordapp.com/oauth2/authorize?&client_id=375750637540868107&scope=bot&permissions=2117598326)
@@ -28,6 +26,8 @@ If you want to contribute to Kyoko [join our server first](https://discord.gg/Zv
 If you want to run Kyoko from IDE - remember to execute Gradle `assemble` task on every build, set working directory to `<project root>/deploy` and run it from `Kyoko.jar`. [Look here for example](http://i.imgur.com/EMWG6Ve.png)
 
 ### Links
+
+[![Kyoko Discord Bot Support](https://discordapp.com/api/guilds/375752406727786498/embed.png?style=banner3)](https://discord.gg/ZvDRQf7)
 
 [Our community server](https://discord.gg/ZvDRQf7)
 
