@@ -90,13 +90,17 @@ public class PlayCommand extends MusicCommand {
             AudioItem item = musicManager.resolve(context.getGuild(), query);
 
             if (item == null) {
-                SearchManager.SearchResult result = searchManager.searchYouTube(query);
-                if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
-                    item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
-                } else {
-                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
-                    locks.invalidate(context.getGuild());
-                    return false;
+                item = musicManager.resolve(context.getGuild(), "ytsearch:" + query);
+
+                if (item == null) {
+                    SearchManager.SearchResult result = searchManager.searchYouTube(query);
+                    if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
+                        item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
+                    } else {
+                        context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
+                        locks.invalidate(context.getGuild());
+                        return false;
+                    }
                 }
             }
 

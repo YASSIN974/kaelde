@@ -28,12 +28,6 @@ public class CommonErrors {
         message.editMessage(CommandIcons.ERROR + String.format(context.getTranslated("generic.usernotfound"), user)).override(true).queue();
     }
 
-    public static void devOnly(CommandContext context) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), context.getTranslated("generic.execlimit"), false);
-        context.send(err.build());
-    }
-
     public static void editException(CommandContext context, Throwable e, Message message) {
         message.editMessage(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
     }
@@ -43,15 +37,7 @@ public class CommonErrors {
     }
 
     public static void notANumber(CommandContext context, String arg) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.notanumber"), arg), false);
-        context.send(err.build());
-    }
-
-    public static void noBanFound(CommandContext context, String arg) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), String.format(context.getTranslated("generic.bannotfound"), arg), false);
-        context.send(err.build());
+        context.send(CommandIcons.ERROR + context.getTranslated("generic.notanumber"));
     }
 
     public static void cooldown(CommandContext context) {
