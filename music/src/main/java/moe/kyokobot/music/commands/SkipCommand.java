@@ -58,13 +58,19 @@ public class SkipCommand extends MusicCommand {
                     musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
                 }
             } else {
+                boolean wasRepeating = queue.isRepeating();
+
                 // TODO: enable/disable announcing
                 queue.setAnnouncing(context.getChannel(), context);
 
                 AudioTrack track = queue.poll();
-                queue.setRepeating(false);
+                if (wasRepeating)
+                    queue.setRepeating(false);
+
                 player.playTrack(track);
-                queue.setRepeating(true);
+
+                if (wasRepeating)
+                    queue.setRepeating(true);
                 queue.announce(track);
             }
         } else {
