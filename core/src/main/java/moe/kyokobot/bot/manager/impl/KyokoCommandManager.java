@@ -14,6 +14,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.entity.GuildConfig;
+import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
@@ -192,4 +193,17 @@ public class KyokoCommandManager implements CommandManager {
             }
         } else return b;
     }
+
+    @Subscribe
+    public void onDatabaseUpdate(DatabaseUpdateEvent event) {
+        if (event.getEntity() instanceof GuildConfig) {
+            for (Guild guild : experimentalCache.asMap().keySet()) {
+                if (((GuildConfig) event.getEntity()).getGuildId().equals(guild.getId())) {
+                    experimentalCache.invalidate(guild);
+                    return;
+                }
+            }
+        }
+    }
+
 }

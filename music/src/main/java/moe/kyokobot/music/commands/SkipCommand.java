@@ -62,7 +62,9 @@ public class SkipCommand extends MusicCommand {
                 queue.setAnnouncing(context.getChannel(), context);
 
                 AudioTrack track = queue.poll();
+                queue.setRepeating(false);
                 player.playTrack(track);
+                queue.setRepeating(true);
                 queue.announce(track);
             }
         } else {
