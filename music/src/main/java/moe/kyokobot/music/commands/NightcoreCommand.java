@@ -15,7 +15,7 @@ public class NightcoreCommand extends MusicCommand {
         this.musicManager = musicManager;
 
         name = "nightcore";
-        experimental = true;
+        //experimental = true;
     }
 
     @Override

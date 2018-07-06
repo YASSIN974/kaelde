@@ -12,7 +12,6 @@ public class ResumeCommand extends MusicCommand {
     public ResumeCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
         name = "resume";
-        description = "music.resumes.description";
     }
 
     @Override
