@@ -27,7 +27,6 @@ public abstract class MusicCommand extends Command {
     @Override
     public void preExecute(CommandContext context) {
         if (checkChannel) {
-
             GuildVoiceState botState = context.getGuild().getSelfMember().getVoiceState();
             GuildVoiceState userState = context.getMember().getVoiceState();
             if (botState.getChannel() != null && !userState.getChannel().equals(botState.getChannel())) {

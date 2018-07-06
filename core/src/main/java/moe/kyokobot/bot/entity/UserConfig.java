@@ -17,7 +17,7 @@ public class UserConfig implements DatabaseEntity {
 
     }
 
-    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, Map<String, String> kvStore, Map<String, ArrayList<String>> listStore) {
+    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, Map<String, String> kvStore, Map<String, ArrayList<String>> listStore, int theme, boolean noDMs) {
         this.id = id;
         this.language = language;
         this.level = level;
@@ -28,6 +28,8 @@ public class UserConfig implements DatabaseEntity {
         this.image = image;
         this.kvStore = kvStore;
         this.listStore = listStore;
+        this.theme = theme;
+        this.noDMs = noDMs;
     }
 
     private String id = "";
@@ -38,6 +40,7 @@ public class UserConfig implements DatabaseEntity {
     private long claim = 0L;
     private long reputation = 0L;
     private int theme = 1;
+    private boolean noDMs = false;
     private String image = "default";
     private Map<String, String> kvStore = new HashMap<>();
     private Map<String, ArrayList<String>> listStore = new HashMap<>();

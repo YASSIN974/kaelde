@@ -106,7 +106,7 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     private UserConfig newUser(String id) {
-        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new HashMap<>(), new HashMap<>());
+        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new HashMap<>(), new HashMap<>(), 1, false);
     }
 
     private GuildConfig newGuild(String id) {
