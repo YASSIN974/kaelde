@@ -55,4 +55,8 @@ public class CommonErrors {
         err.addField(context.getTranslated("generic.usage"), "`" + context.getPrefix() + context.getCommand().getName() + (context.getCommand().getUsage() != null ? (" " + context.getTranslated(context.getCommand().getUsage())) : "") + "`", false);
         context.send(err.build());
     }
+
+    public static void tooLong(CommandContext context) {
+        context.send(CommandIcons.ERROR + context.getTranslated("generic.toolong"));
+    }
 }
