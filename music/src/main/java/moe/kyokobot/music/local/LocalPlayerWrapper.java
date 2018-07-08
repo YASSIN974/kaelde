@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.sedmelluq.discord.lavaplayer.filter.ResamplingPcmAudioFilter;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.util.KaraokeFilter;
@@ -80,6 +82,7 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public void playTrack(@Nonnull AudioTrack track) {
         player.startTrack(track, false);
+        updateFilters();
     }
 
     @Override
@@ -151,6 +154,8 @@ public class LocalPlayerWrapper implements MusicPlayer {
     }
 
     private void updateFilters() {
+        if (!canBeNightcored(getPlayingTrack())) nightcore = 1.0f;
+
         if (nightcore == 1.0f && !karaoke) { // no filters
             player.setFilterFactory(null);
         } else if (nightcore != 1.0f && !karaoke) { // nightcore filter
@@ -179,5 +184,11 @@ public class LocalPlayerWrapper implements MusicPlayer {
                     )
             ));
         }
+    }
+
+    private boolean canBeNightcored(AudioTrack track) {
+        if (track == null) return false;
+        return (!(track.getSourceManager() instanceof YoutubeAudioSourceManager) || track.getDuration() != Long.MAX_VALUE)
+                && (!(track.getSourceManager() instanceof TwitchStreamAudioSourceManager));
     }
 }
