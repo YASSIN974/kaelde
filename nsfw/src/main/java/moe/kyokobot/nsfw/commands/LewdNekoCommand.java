@@ -13,7 +13,7 @@ import static moe.kyokobot.bot.util.NetworkUtil.download;
 public class LewdNekoCommand extends NsfwCommand {
     public LewdNekoCommand() {
         name = "lewdneko";
-        description = "lewdneko.description";
+        usage = "";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class LewdNekoCommand extends NsfwCommand {
                     message.editMessage(eb.build()).override(true).queue();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error while querying nekos.life!", e);
                 Sentry.capture(e);
                 CommonErrors.editException(context, e, message);
             }

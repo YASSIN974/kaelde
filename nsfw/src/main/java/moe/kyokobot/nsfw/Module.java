@@ -6,6 +6,7 @@ import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.nsfw.commands.BoobsCommand;
 import moe.kyokobot.nsfw.commands.LewdNekoCommand;
+import moe.kyokobot.nsfw.commands.TrapCommand;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Module implements KyokoModule {
 
         commands.add(new LewdNekoCommand());
         commands.add(new BoobsCommand());
+        commands.add(new TrapCommand());
+
         commands.forEach(commandManager::registerCommand);
     }
 

@@ -2,6 +2,7 @@ package moe.kyokobot.music;
 
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
@@ -16,6 +17,7 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
+import moe.kyokobot.bot.event.ConnectedEvent;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.KyokoModule;
@@ -53,6 +55,8 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        eventBus.register(this);
+
         Settings settings = Settings.instance;
         if (!settings.apiKeys.containsKey("youtube")) {
             logger.warn("No YouTube API key found, disabling the module!");
@@ -118,6 +122,12 @@ public class Module implements KyokoModule {
         }
 
         commands.forEach(commandManager::unregisterCommand);
+
+        try {
+            eventBus.unregister(this);
+        } catch (Exception ignored) {
+            // ignored
+        }
     }
 
     private void loadConfig() {
@@ -142,6 +152,18 @@ public class Module implements KyokoModule {
             logger.error("Cannot read configuration file!");
             e.printStackTrace();
             Sentry.capture(e);
+        }
+    }
+
+    @Subscribe
+    public void onConnect(ConnectedEvent event) {
+        if (Globals.inKyokoServer) { // Kyoko Discord Bot Support
+            MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
+            MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
+            MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
+            MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
+            MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
+            MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
         }
     }
 }

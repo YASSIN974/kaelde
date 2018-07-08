@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 import io.sentry.Sentry;
 import moe.kyokobot.bot.Settings;
 import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -21,7 +20,6 @@ public class GuildCountService extends AbstractScheduledService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final Logger logger = LoggerFactory.getLogger(GuildCountService.class);
-    private JDA jda;
     private ShardManager shardManager;
 
     private OkHttpClient client = new OkHttpClient();
@@ -32,12 +30,8 @@ public class GuildCountService extends AbstractScheduledService {
         this.shardManager = shardManager;
     }
 
-    public GuildCountService(JDA jda) {
-        this.jda = jda;
-    }
-
     @Override
-    protected void runOneIteration() throws Exception {
+    protected void runOneIteration() {
         Settings settings = Settings.instance;
 
         if (dblAPI == null && settings.apiKeys.containsKey("dbl")) {
@@ -52,23 +46,14 @@ public class GuildCountService extends AbstractScheduledService {
         if (settings.bot.games.isEmpty()) return;
         if (last >= settings.bot.games.size()) last = 0;
 
-        if (shardManager != null) {
-            shardManager.getShards().forEach(jda -> {
-                jda.getPresence().setGame(Game.of(settings.bot.gameType,
-                        settings.bot.games.get(last)
-                                .replace("{prefix}", settings.bot.normalPrefix)
-                                .replace("{shard}", String.valueOf(jda.getShardInfo().getShardId()))
-                                .replace("{guilds}", String.valueOf(jda.getGuilds().size()))
-                                .replace("{count}", String.valueOf(jda.getShardInfo().getShardTotal()))));
-            });
-            last++;
-        } else {
+        shardManager.getShards().forEach(jda ->
             jda.getPresence().setGame(Game.of(settings.bot.gameType,
                     settings.bot.games.get(last)
                             .replace("{prefix}", settings.bot.normalPrefix)
-                            .replace("{guilds}", String.valueOf(jda.getGuilds().size()))));
-            last++;
-        }
+                            .replace("{shard}", String.valueOf(jda.getShardInfo().getShardId()))
+                            .replace("{guilds}", String.valueOf(jda.getGuilds().size()))
+                            .replace("{count}", String.valueOf(jda.getShardInfo().getShardTotal())))));
+        last++;
     }
 
     private void sendStats(Settings settings) {

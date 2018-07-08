@@ -11,7 +11,6 @@ import moe.kyokobot.bot.manager.impl.KyokoCommandManager;
 import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import moe.kyokobot.bot.util.EventWaiter;
 import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,37 +26,23 @@ public class KyokoService extends AbstractIdleService {
     private I18n i18n;
 
     private boolean sharded;
-    private JDA jda;
     private ShardManager shardManager;
 
-    public KyokoService(JDA jda, EventBus eventBus) {
-        this(eventBus);
-        this.jda = jda;
-
-        moduleManager = new ExternalModuleManager(null, databaseManager, i18n, commandManager, eventWaiter);
-        eventBus.register(moduleManager);
-    }
-
     public KyokoService(ShardManager shardManager, EventBus eventBus) {
-        this(eventBus);
-        sharded = true;
-        this.shardManager = shardManager;
-
-        moduleManager = new ExternalModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
-        eventBus.register(moduleManager);
-    }
-
-    private KyokoService(EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
         eventWaiter = new EventWaiter();
 
+        this.shardManager = shardManager;
         databaseManager = new RethinkDatabaseManager(eventBus);
         i18n = new I18n(databaseManager);
         commandManager = new KyokoCommandManager(databaseManager, i18n, executor);
+        moduleManager = new ExternalModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(commandManager);
         eventBus.register(databaseManager);
+        eventBus.register(moduleManager);
+        eventBus.register(i18n);
     }
 
     @Override
@@ -67,11 +52,7 @@ public class KyokoService extends AbstractIdleService {
             databaseManager.load();
             moduleManager.loadModules();
 
-            if (sharded) {
-                shardManager.addEventListener(eventWaiter);
-            } else {
-                jda.addEventListener(eventWaiter);
-            }
+            shardManager.addEventListener(eventWaiter);
         } catch (Exception e) {
             logger.error("Oops, something went really wrong while starting Kyoko!", e);
             Sentry.capture(e);
@@ -82,7 +63,6 @@ public class KyokoService extends AbstractIdleService {
 
     @Override
     public void shutDown() throws Exception {
-        if (jda != null) jda.shutdown();
         if (shardManager != null) shardManager.shutdown();
     }
 }

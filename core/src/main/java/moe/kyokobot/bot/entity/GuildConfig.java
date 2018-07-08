@@ -13,10 +13,12 @@ import java.util.List;
 @Getter
 @Setter
 public class GuildConfig implements DatabaseEntity {
+    @SuppressWarnings("unused")
     public GuildConfig() {
 
     }
 
+    @SuppressWarnings("squid:S00107")
     public GuildConfig(String guildId, Language language, ArrayList<String> prefixes) {
         this.guildId = guildId;
         this.language = language;
@@ -27,13 +29,11 @@ public class GuildConfig implements DatabaseEntity {
     private String guildId = "";
     private Language language = Language.ENGLISH;
     private ArrayList<String> prefixes = new ArrayList<>();
+    @SerializedName("moderation-config")
+    private ModerationConfig moderationConfig = new ModerationConfig();
     @SerializedName("music-config")
     private MusicConfig musicConfig = new MusicConfig();
     private boolean experimental = false;
-    @SerializedName("auto-role")
-    private String autoRole = "";
-    @SerializedName("self-assignable")
-    private List<String> selfAssignable = new ArrayList<>();
 
     @Transient
     @Override
@@ -46,8 +46,30 @@ public class GuildConfig implements DatabaseEntity {
         return GsonUtil.toJSON(this);
     }
 
+    @Getter
+    @Setter
     public class MusicConfig {
+        @SuppressWarnings({"unused", "WeakerAccess"})
+        public MusicConfig() {
+            // default
+        }
+
         @SerializedName("dj-role")
-        public String djRole = "";
+        private String djRole = "";
+    }
+
+    @Getter
+    @Setter
+    public class ModerationConfig {
+        @SuppressWarnings({"unused", "WeakerAccess"})
+        public ModerationConfig() {
+            // default
+        }
+
+        @SerializedName("auto-role")
+        private String autoRole = "";
+
+        @SerializedName("self-assignable")
+        private List<String> selfAssignable = new ArrayList<>();
     }
 }

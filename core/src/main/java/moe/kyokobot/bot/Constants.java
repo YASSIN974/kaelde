@@ -26,6 +26,8 @@ public class Constants {
     public static final String POWERED_BY_NEKOSLIFE = "powered by nekos.life";
     public static final String POWERED_BY_ALEX = "powered by AlexFlipnote's API";
     public static final String POWERED_BY_LOLISLIFE = "powered by lolis.life";
+    public static final String POWERED_BY_CF = "powered by api.computerfreaker.cf";
+
     public static final List<String> BOTLIST_GUILDS = Collections.unmodifiableList(Lists.newArrayList(
             "110373943822540800", // Discord Bots
             "264445053596991498", // Discord Bot List

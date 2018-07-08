@@ -47,8 +47,11 @@ public class HelpCommand extends Command {
                         ? context.getTranslated("help.header.title")
                         : String.format(context.getTranslated("help.header.title.cust"), context.getSettings().bot.botName)).append(" >");
 
-        TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
-        commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
+        TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values())
+                .collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
+        commandManager.getRegistered().stream().filter(command -> command.getCategory() != null
+                && (!command.isExperimental() || commandManager.isExperimental(context.getGuild())))
+                .forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
         categories.forEach((category, commands) -> {
             if (!commands.isEmpty()) {
@@ -70,13 +73,17 @@ public class HelpCommand extends Command {
                                 : String.format(context.getTranslated("help.header.title.cust"), context.getSettings().bot.botName)));
         eb.setDescription(String.format(context.getTranslated("help.header.subtitle"), Constants.COMMANDS_URL));
 
-        TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
-        commandManager.getRegistered().stream().filter(command -> command.getCategory() != null).forEach(command -> categories.get(command.getCategory()).add(command.getName()));
+        TreeMap<CommandCategory, List<String>> categories = Arrays.stream(CommandCategory.values())
+                .collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));
+        commandManager.getRegistered().stream().filter(command -> command.getCategory() != null
+                && (!command.isExperimental() || commandManager.isExperimental(context.getGuild())))
+                .forEach(command -> categories.get(command.getCategory()).add(command.getName()));
 
         categories.forEach((category, commands) -> {
             if (!commands.isEmpty()) {
                 commands.sort(Ordering.usingToString());
-                eb.addField(context.getTranslated("help.category." + category.name().toLowerCase()) + " - (" + commands.size() + ")", "`" + Joiner.on("`, `").join(commands) + "`", false);
+                eb.addField(context.getTranslated("help.category." + category.name().toLowerCase())
+                        + " - (" + commands.size() + ")", "`" + Joiner.on("`, `").join(commands) + "`", false);
             }
         });
 

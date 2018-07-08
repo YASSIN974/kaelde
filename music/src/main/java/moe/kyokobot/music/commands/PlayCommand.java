@@ -53,11 +53,14 @@ public class PlayCommand extends MusicCommand {
 
                 if (loadTracks(context, queue))
                     play(player, queue, context, voiceChannel);
+
+                locks.invalidate(context.getGuild());
             } else {
                 if (player.isPaused()) {
                     queue.setAnnouncing(context.getChannel(), context);
                     player.setPaused(false);
                     context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
+                    locks.invalidate(context.getGuild());
                     return;
                 }
                 CommonErrors.usage(context);

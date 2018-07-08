@@ -1,9 +1,11 @@
 package moe.kyokobot.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.util.*;
+import moe.kyokobot.bot.util.EmbedBuilder;
+import moe.kyokobot.bot.util.EventWaiter;
+import moe.kyokobot.bot.util.Paginator;
+import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
@@ -53,7 +55,7 @@ public class ListCommand extends MusicCommand {
                 }
 
                 if (page < 0) page = 0; else if (page >= pageContents.size()) page = pageContents.size() - 1;
-                eb.setTitle(MusicIcons.MUSIC + context.getTranslated("music.list.title") + (pageContents.isEmpty() ? "" : ("(" + (page + 1) + "/" + pageContents.size() + ")")));
+                eb.setTitle(MusicIcons.MUSIC + context.getTranslated("music.list.title") + (pageContents.isEmpty() ? "" : (" (" + (page + 1) + "/" + pageContents.size() + ")")));
 
                 if (pageContents.isEmpty())
                     sb.append(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));

@@ -47,11 +47,8 @@ public class Settings {
         @SerializedName("rethink-dbname")
         public String rethinkDbName = "kyoko";
 
-        @SerializedName("mode")
-        public String mode = "single"; // single, sharded
-
         @SerializedName("shard-string")
-        public String shardString = "0:3:4"; // min:max:count
+        public String shardString = "0:0:1"; // min:max:count
     }
 
     public class BotSettings {
@@ -64,14 +61,8 @@ public class Settings {
         @SerializedName("owner")
         public String owner = "219067402174988290";
 
-        @SerializedName("devs")
-        public String devs = "219067402174988290";
-
         @SerializedName("normal-prefix")
         public String normalPrefix = "ky!";
-
-        @SerializedName("moderation-prefix")
-        public String moderationPrefix = "ky@";
 
         @SerializedName("debug-prefix")
         public String debugPrefix = "kd!";
@@ -84,11 +75,7 @@ public class Settings {
 
         @SerializedName("normal-color")
         @JsonAdapter(ColorTypeAdapter.class)
-        public Color normalColor = new Color(201, 145, 84);
-
-        @SerializedName("success-color")
-        @JsonAdapter(ColorTypeAdapter.class)
-        public Color successColor = new Color(46, 204, 113);
+        public Color normalColor = new Color(255, 71, 87);
 
         @SerializedName("error-color")
         @JsonAdapter(ColorTypeAdapter.class)

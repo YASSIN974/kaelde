@@ -2,15 +2,31 @@
 
 <a href="https://discordbots.org/bot/375750637540868107"><img src="https://discordbots.org/api/widget/upvotes/375750637540868107.svg" alt="Discord Music Bot" /></a> <img src="https://img.shields.io/github/license/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/github/contributors/KyokoBot/Kyoko.svg"> <img src="https://img.shields.io/badge/jda-3-blue.svg"> [![invite](https://img.shields.io/discord/375752406727786498.svg?logo=discord&colorB=7289DA)](https://discord.gg/ZvDRQf7)
 
-Kyoko is an open-source music bot with many other features. It's developed everyday and new features are constantly added, but if you want - talk to us, suggest something, our Discord server invite is available below.
+Kyoko is an open-source multipurpose Discord bot, mainly for music, fun and moderation. It's developed everyday and new features are constantly added, but if you want - talk to us, suggest something, our Discord server invite is available below.
 
 [Click here to invite bot to server](https://discordapp.com/oauth2/authorize?&client_id=375750637540868107&scope=bot&permissions=2117598326)
 
 ### Self-hosting
 
-**We do not recommend self-hosting Kyoko, as it's hard to setup, requires a lot of API keys and services (image generator server, Lavalink with custom plugins and more) to be fully functional and it's not well documented. We may do release selfhost-friendly edition in future.**
+**Requirements:**
 
-**You have been warned, you are doing everything at your own risk and we will not help you if something went wrong.**
+- Java 8+
+- RethinkDB 2.3+
+
+**Optional (for full functionality):**
+
+- Lavalink
+- API Keys (weeb.sh, YouTube Data API, Sentry DSN, Discord Bot List, Discord Bots, ListCord)
+
+**Installation**
+
+(Pre-built binaries will be available soon)
+
+1. Look below and compile Kyoko from source code.
+2. Navigate to `deploy` folder in build root - this folder contains all build artifacts - if you want move it outside.
+3. Launch `Kyoko.jar`, it should create configuration files and exit.
+4. Edit `config.json` and set your Discord API token (`connection.token`), prefix (`bot.normal-prefix` and `bot.debug-prefix`) and set your ID in `bot.owner` to have access to admin commands.
+5. After completed setup start bot by launching `Kyoko.jar` again, and if you want allocate more memory add `-Xmx2G` (=2 GB, set more if you want) to JVM parameters.
 
 ### Building/contributing
 
@@ -23,7 +39,7 @@ If you want to contribute to Kyoko [join our server first](https://discord.gg/Zv
 3. Run `gradlew assemble` or `./gradlew assemble` on Unix
 4. After successful build, the runtime jar and modules will be placed in `deploy` directory.
 
-If you want to run Kyoko from IDE - remember to execute Gradle `assemble` task on every build, set working directory to `<project root>/deploy` and run it from `Kyoko.jar`. [Look here for example](http://i.imgur.com/EMWG6Ve.png)
+If you want to run Kyoko from IDE - remember to execute Gradle `assemble` task on every build, set working directory to `<project root>/deploy` (otherwise bot will not respond to any commands because no modules will be loaded) and run it from `Kyoko.jar`. [Look here for example](http://i.imgur.com/EMWG6Ve.png)
 
 ### Links
 

@@ -11,11 +11,13 @@ import moe.kyokobot.bot.util.RandomUtil;
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
 public class BoobsCommand extends NsfwCommand {
+
     private final String[] BOOBIES = new String[] {"( . Y . )", "( .)(. )", "( • ) ( • )ԅ(‾⌣‾ԅ)", "( • )( • )ԅ(≖⌣≖ԅ)", "（(◎)＿(◎)）"};
+
     public BoobsCommand() {
         name = "boobs";
         aliases = new String[] {"boobies", "tits"};
-        description = "boobs.description";
+        usage = "";
     }
 
     @Override

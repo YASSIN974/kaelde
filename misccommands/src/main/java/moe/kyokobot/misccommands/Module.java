@@ -37,6 +37,7 @@ public class Module implements KyokoModule {
         autoRoleHandler = new AutoRoleHandler(databaseManager);
 
         commands.add(new HelpCommand(commandManager));
+        commands.add(new LanguageCommand(databaseManager));
         commands.add(new StatsCommand(commandManager));
         commands.add(new PingCommand());
         commands.add(new UserInfoCommand());

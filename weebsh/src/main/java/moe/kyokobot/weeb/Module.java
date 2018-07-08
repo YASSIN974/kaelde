@@ -4,6 +4,7 @@ import com.github.natanbc.weeb4j.TokenType;
 import com.github.natanbc.weeb4j.Weeb4J;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Constants;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.AliasCommand;
 import moe.kyokobot.bot.command.Command;
@@ -39,7 +40,7 @@ public class Module implements KyokoModule {
     public void startUp() {
         Settings settings = Settings.instance;
         if (settings.apiKeys.containsKey("weebsh")) {
-            weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
+            weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION, Globals.production ? "production" : "development").setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
             commands = new ArrayList<>();
 
             commands.add(new WeebCommand(weeb4J));
@@ -62,7 +63,7 @@ public class Module implements KyokoModule {
         commands.forEach(commandManager::unregisterCommand);
     }
 
-    public List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
+    private List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
         List<Command> cmds = new ArrayList<>();
         for (String name : commands) {
             String srcname = name;
@@ -76,6 +77,8 @@ public class Module implements KyokoModule {
                     break;
                 case "initiald":
                     srcname = "initial_d";
+                    break;
+                default:
                     break;
             }
 

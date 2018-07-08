@@ -181,7 +181,8 @@ public class KyokoCommandManager implements CommandManager {
         }
     }
 
-    private boolean isExperimental(Guild guild) {
+    @Override
+    public boolean isExperimental(Guild guild) {
         Boolean b = experimentalCache.getIfPresent(guild);
         if (b == null) {
             try {
