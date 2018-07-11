@@ -25,6 +25,7 @@ public class ListCommand extends MusicCommand {
         this.waiter = waiter;
 
         name = "list";
+        aliases = new String[] {"queue", "q"};
         description = "music.list.description";
     }
 

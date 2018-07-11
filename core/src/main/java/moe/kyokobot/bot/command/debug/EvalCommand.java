@@ -11,6 +11,8 @@ import net.dv8tion.jda.bot.sharding.ShardManager;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class EvalCommand extends Command {
     private final ShardManager shardManager;
@@ -19,6 +21,7 @@ public class EvalCommand extends Command {
     private final DatabaseManager databaseManager;
 
     private ScriptEngine engine;
+    private boolean babelEnabled;
 
     public EvalCommand(ShardManager shardManager, ModuleManager moduleManager, CommandManager commandManager, DatabaseManager databaseManager) {
         this.shardManager = shardManager;
@@ -29,6 +32,17 @@ public class EvalCommand extends Command {
         name = "eval";
         type = CommandType.DEBUG;
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
+
+        if (getClass().getResource("/babel.min.js") != null) {
+            logger.info("Loading Babel...");
+
+            try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {
+                engine.eval(r);
+                babelEnabled = true;
+            } catch (Exception e) {
+                logger.error("Error loading Babel!", e);
+            }
+        }
     }
 
     @Override
@@ -43,8 +57,17 @@ public class EvalCommand extends Command {
                 engine.put("commandManager", commandManager);
                 engine.put("databaseManager", databaseManager);
 
-                Object o = engine.eval(context.getConcatArgs());
+                Object o;
+                if (babelEnabled) {
+                    engine.put("input", context.getConcatArgs());
+                    String s = engine.eval("Babel.transform(input, { presets: ['es2015'] }).code").toString();
+                    o = engine.eval(s);
+                } else {
+                    o = engine.eval(context.getConcatArgs());
+                }
+
                 String e = o == null ? "null" : o.toString();
+                if (babelEnabled && e.equals("use strict")) e = "null";
 
                 if (e.length() > 1990) e = e.substring(1990);
                 if (context.checkSensitive(e)) {

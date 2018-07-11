@@ -27,7 +27,7 @@ public class LewdNekoCommand extends NsfwCommand {
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
                     eb.setTitle(context.getTranslated("lewdneko.title"));
-                    eb.setDescription(Constants.POWERED_BY_NEKOSLIFE);
+                    eb.setFooter(Constants.POWERED_BY_NEKOSLIFE, null);
                     eb.setImage(response.url);
                     message.editMessage(eb.build()).override(true).queue();
                 }

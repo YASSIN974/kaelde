@@ -15,13 +15,16 @@ public class NightcoreCommand extends MusicCommand {
         this.musicManager = musicManager;
 
         name = "nightcore";
-        //experimental = true;
     }
 
     @Override
     public void execute(CommandContext context) {
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
+            if (!context.hasArgs()) {
+                CommonErrors.usage(context);
+                return;
+            }
             float f;
 
             try {
@@ -31,7 +34,7 @@ public class NightcoreCommand extends MusicCommand {
                 return;
             }
 
-            if (f < 0.5f || f > 2.0f) {
+            if (f < 0.1f || f > 3.0f) {
                 context.send(CommandIcons.ERROR + context.getTranslated("music.nightcore.outrange"));
                 return;
             }

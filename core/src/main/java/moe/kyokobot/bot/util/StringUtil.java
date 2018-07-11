@@ -5,9 +5,26 @@ import moe.kyokobot.bot.command.CommandContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 public class StringUtil {
+    private StringUtil() {
+        //
+    }
+
+    public static List<String> splitString(String msg, int lineSize) {
+        List<String> res = new ArrayList<String>();
+        Pattern p = Pattern.compile("\\b.{1," + (lineSize-1) + "}\\b\\W?");
+        Matcher m = p.matcher(msg);
+
+        while(m.find()) {
+            res.add(m.group());
+        }
+        return res;
+    }
+
     public static String zeroHexFill(String s) {
         if (s.length() < 4) {
 

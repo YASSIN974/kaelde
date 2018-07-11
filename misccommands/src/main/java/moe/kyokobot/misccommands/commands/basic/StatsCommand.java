@@ -32,8 +32,8 @@ public class StatsCommand extends Command {
         at.addRule();
         at.addRow("Bot version", "v" + Constants.VERSION);
         at.addRow("Library", "JDA " + JDAInfo.VERSION);
-        at.addRow("Shard", context.getEvent().getJDA().getShardInfo());
-        at.addRow("Guilds (current shard)", context.getEvent().getJDA().getGuilds().size());
+        at.addRow("Author", "gabixdev#0001");
+        at.addRow("Shard", context.getEvent().getJDA().getShardInfo() + " (" + context.getEvent().getJDA().getGuilds().size() + " guilds)");
         at.addRow("Uptime", StringUtil.prettyPeriod(rb.getUptime()));
         at.addRow("Commands executed", commandManager.getRuns());
         at.addRow("Audio connections", context.getEvent().getJDA().getAudioManagers().stream().filter(AudioManager::isConnected).count());

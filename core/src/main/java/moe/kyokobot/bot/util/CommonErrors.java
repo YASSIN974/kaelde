@@ -4,20 +4,17 @@ import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.concurrent.TimeUnit;
 
 public class CommonErrors {
     public static void noPermissionUser(CommandContext context) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), context.getTranslated("generic.usernoperm"), false);
-        context.send(err.build());
+        context.send(CommandIcons.ERROR + context.getTranslated("generic.usernoperm"));
     }
 
-    public static void noPermissionBot(CommandContext context) {
-        EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.error"), context.getTranslated("generic.botnoperm"), false);
-        context.send(err.build());
+    public static void noPermissionBot(CommandContext context, PermissionException pex) {
+        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.botnoperm"), pex.getPermission().getName()));
     }
 
     public static void noUserFound(CommandContext context, String user) {

@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Settings;
@@ -113,6 +114,14 @@ public class PlayCommand extends MusicCommand {
             } else if (item instanceof AudioTrack) {
                 queue.add((AudioTrack) item);
                 context.send(PLAY + String.format(context.getTranslated("music.added"), ((AudioTrack) item).getInfo().title.replace("`", "\\`")));
+            } else if (item instanceof AudioReference) {
+                if (((AudioReference) item).identifier == null) {
+                    context.send(CommandIcons.ERROR + context.getTranslated("music.agerestricted"));
+                    return false;
+                }
+            } else {
+                logger.debug("Unknown item type: " + item.getClass().getName());
+                return false;
             }
         } catch (FriendlyException e) {
             if (e.getMessage().equals("The playlist is private.")) {
@@ -153,8 +162,7 @@ public class PlayCommand extends MusicCommand {
                 timeout++;
             }
 
-            if (!queue.isEmpty())
-                player.playTrack(queue.poll().makeClone());
+            player.playTrack(queue.poll().makeClone()); // it shouldn't be null!
         } else
             player.setPaused(false);
 

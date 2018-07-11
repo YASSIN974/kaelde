@@ -39,6 +39,7 @@ public class KyokoService extends AbstractIdleService {
         commandManager = new KyokoCommandManager(databaseManager, i18n, executor);
         moduleManager = new ExternalModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
 
+        eventBus.register(eventWaiter);
         eventBus.register(commandManager);
         eventBus.register(databaseManager);
         eventBus.register(moduleManager);
@@ -51,8 +52,6 @@ public class KyokoService extends AbstractIdleService {
             logger.debug("Starting Kyoko service...");
             databaseManager.load();
             moduleManager.loadModules();
-
-            shardManager.addEventListener(eventWaiter);
         } catch (Exception e) {
             logger.error("Oops, something went really wrong while starting Kyoko!", e);
             Sentry.capture(e);

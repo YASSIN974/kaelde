@@ -141,8 +141,10 @@ public class Paginator {
         } else {
             switch (event.getReactionEmote().getName()) {
                 case LEFT_EMOJI:
+                    if (page > 0) page--;
                     break;
                 case RIGHT_EMOJI:
+                    if (page < (pageContents.size() - 1)) page++;
                     break;
             }
         }
@@ -153,6 +155,6 @@ public class Paginator {
             // ignored
         }
 
-        message.editMessage(render(page)).override(true).queue(message -> waitForReaction());
+        message.editMessage(render(page)).override(true).queue(msg -> waitForReaction());
     }
 }

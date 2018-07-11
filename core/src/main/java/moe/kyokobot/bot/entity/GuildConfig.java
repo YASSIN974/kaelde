@@ -66,6 +66,9 @@ public class GuildConfig implements DatabaseEntity {
             // default
         }
 
+        @SerializedName("levelup-messages")
+        private boolean levelupMessages = false;
+
         @SerializedName("auto-role")
         private String autoRole = "";
 

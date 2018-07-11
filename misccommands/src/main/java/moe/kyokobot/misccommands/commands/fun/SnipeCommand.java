@@ -9,6 +9,10 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.UserUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.audit.ActionType;
+import net.dv8tion.jda.core.audit.AuditLogEntry;
+import net.dv8tion.jda.core.audit.AuditLogOption;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -96,8 +100,23 @@ public class SnipeCommand extends Command {
         }
 
         Message m = snipe.lastMessages.remove(event.getMessageIdLong());
-        if (m != null)
-            snipe.snipedMessages.put(event.getChannel().getIdLong(), m);
+        if (m != null) {
+            if (event.getGuild().getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+                final Snipe s = snipe;
+                event.getGuild().getAuditLogs().type(ActionType.MESSAGE_DELETE).queue(auditLogs -> {
+                    for (AuditLogEntry entry : auditLogs) {
+                        if ((((entry.getIdLong() >>> 22) + 1420070400000L) / 1000) > ((System.currentTimeMillis() / 1000) - 10)
+                                && event.getChannel().getId().equals(entry.getOption(AuditLogOption.CHANNEL))
+                                && m.getAuthor().getIdLong() == entry.getTargetIdLong()) {
+                            return;
+                        }
+                    }
+                    s.snipedMessages.put(event.getChannel().getIdLong(), m);
+                });
+            } else {
+                snipe.snipedMessages.put(event.getChannel().getIdLong(), m);
+            }
+        }
     }
 
     @Subscribe

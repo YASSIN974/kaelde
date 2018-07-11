@@ -27,7 +27,7 @@ public class TrapCommand extends NsfwCommand {
                 } else {
                     EmbedBuilder eb = context.getNormalEmbed();
                     eb.setTitle(context.getTranslated("weebsh.description.trap"));
-                    eb.setDescription(Constants.POWERED_BY_CF);
+                    eb.setFooter(Constants.POWERED_BY_CF, null);
                     eb.setImage(response.url);
                     message.editMessage(eb.build()).override(true).queue();
                 }

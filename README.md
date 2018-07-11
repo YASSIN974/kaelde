@@ -22,11 +22,12 @@ Kyoko is an open-source multipurpose Discord bot, mainly for music, fun and mode
 
 (Pre-built binaries will be available soon)
 
-1. Look below and compile Kyoko from source code.
-2. Navigate to `deploy` folder in build root - this folder contains all build artifacts - if you want move it outside.
-3. Launch `Kyoko.jar`, it should create configuration files and exit.
-4. Edit `config.json` and set your Discord API token (`connection.token`), prefix (`bot.normal-prefix` and `bot.debug-prefix`) and set your ID in `bot.owner` to have access to admin commands.
-5. After completed setup start bot by launching `Kyoko.jar` again, and if you want allocate more memory add `-Xmx2G` (=2 GB, set more if you want) to JVM parameters.
+1. Install Java and RethinkDB.
+2. Look below and compile Kyoko from source code.
+3. Navigate to `deploy` folder in build root - this folder contains all build artifacts - if you want move it outside.
+4. Launch `Kyoko.jar`, it should create configuration files and exit.
+5. Edit `config.json` and set your Discord API token (`connection.token`), prefix (`bot.normal-prefix` and `bot.debug-prefix`) and set your ID in `bot.owner` to have access to admin commands.
+6. After completed setup start bot by launching `Kyoko.jar` again, and if you want allocate more memory add `-Xmx2G` (=2 GB, set more if you want) to JVM parameters.
 
 ### Building/contributing
 

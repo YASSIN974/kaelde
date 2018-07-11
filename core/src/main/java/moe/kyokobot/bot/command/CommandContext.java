@@ -121,7 +121,7 @@ public class CommandContext {
     }
 
     public void send(MessageEmbed message, Consumer<Message> callback) {
-        event.getChannel().sendMessage(message).queue();
+        event.getChannel().sendMessage(message).queue(callback);
     }
 
     public String getTranslated(String key) {
