@@ -18,7 +18,8 @@ public class SettingsCommand extends Command {
     public SettingsCommand(EventWaiter eventWaiter, DatabaseManager databaseManager) {
         name = "settings";
         category = CommandCategory.MODERATION;
-
+        usage = "";
+        
         this.eventWaiter = eventWaiter;
         this.databaseManager = databaseManager;
     }
