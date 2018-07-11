@@ -8,6 +8,8 @@ import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import net.dv8tion.jda.bot.sharding.ShardManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -15,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 public class EvalCommand extends Command {
+    private final Logger logger = LoggerFactory.getLogger(EvalCommand.class);
     private final ShardManager shardManager;
     private final ModuleManager moduleManager;
     private final CommandManager commandManager;
@@ -37,6 +40,7 @@ public class EvalCommand extends Command {
             logger.info("Loading Babel...");
 
             try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {
+                engine.put("logger", logger);
                 engine.eval(r);
                 babelEnabled = true;
             } catch (Exception e) {
@@ -51,6 +55,7 @@ public class EvalCommand extends Command {
             try {
                 if (shardManager != null)
                     engine.put("shardManager", shardManager);
+                engine.put("logger", logger);
                 engine.put("jda", context.getEvent().getJDA());
                 engine.put("context", context);
                 engine.put("moduleManager", moduleManager);
