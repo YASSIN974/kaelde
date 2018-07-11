@@ -18,7 +18,7 @@ import java.util.Map;
 public class JDAEventHandler implements EventListener {
     private EventBus eventBus;
 
-    public JDAEventHandler(EventBus eventBus) {
+    JDAEventHandler(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
@@ -37,7 +37,7 @@ public class JDAEventHandler implements EventListener {
     }
 
     private class VoiceServerUpdateInterceptor extends SocketHandler {
-        public VoiceServerUpdateInterceptor(JDAImpl jda) {
+        VoiceServerUpdateInterceptor(JDAImpl jda) {
             super(jda);
         }
 
@@ -54,30 +54,30 @@ public class JDAEventHandler implements EventListener {
     }
 
     private class VoiceStateUpdateInterceptor extends VoiceStateUpdateHandler {
-        public VoiceStateUpdateInterceptor(JDAImpl jda) {
+        VoiceStateUpdateInterceptor(JDAImpl jda) {
             super(jda);
         }
 
         @Override
         protected Long handleInternally(JSONObject content) {
-            Long channel_id = null;
+            Long channelId = null;
             if (!content.isNull("channel_id"))
-                channel_id = Long.valueOf(content.getString("channel_id"));
-            String user_id = content.getString("user_id");
-            String session_id = content.getString("session_id");
+                channelId = Long.valueOf(content.getString("channel_id"));
+            String userId = content.getString("user_id");
+            String sessionId = content.getString("session_id");
             boolean deaf = content.getBoolean("deaf");
             boolean mute = content.getBoolean("mute");
-            boolean self_deaf = content.getBoolean("self_deaf");
-            boolean self_mute = content.getBoolean("self_mute");
+            boolean selfDeaf = content.getBoolean("self_deaf");
+            boolean selfMute = content.getBoolean("self_mute");
             boolean suppress = content.getBoolean("suppress");
-            String guild_id = content.getString("guild_id");
-            long guild_idl = Long.valueOf(guild_id);
-            Guild guild = api.getGuildMap().get(guild_idl);
+            String guildId = content.getString("guild_id");
+            long guildIdLong = Long.valueOf(guildId);
+            Guild guild = api.getGuildMap().get(guildIdLong);
 
-            if (user_id.equals(api.getSelfUser().getId())) {
-                eventBus.post(new VoiceStateUpdateEvent(guild, channel_id, user_id, session_id, deaf, mute, self_deaf, self_mute, suppress));
+            if (userId.equals(api.getSelfUser().getId())) {
+                eventBus.post(new VoiceStateUpdateEvent(guild, channelId, userId, sessionId, deaf, mute, selfDeaf, selfMute, suppress));
             }
-            api.getClient().updateAudioConnection(guild_idl, guild.getVoiceChannelById(channel_id == null ? -1 : channel_id));
+            api.getClient().updateAudioConnection(guildIdLong, guild.getVoiceChannelById(channelId == null ? -1 : channelId));
             return super.handleInternally(content);
         }
     }

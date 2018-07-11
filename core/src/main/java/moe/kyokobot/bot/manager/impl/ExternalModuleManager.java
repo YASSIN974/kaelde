@@ -26,10 +26,12 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ExternalModuleManager implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
@@ -88,7 +90,9 @@ public class ExternalModuleManager implements ModuleManager {
             try {
                 modules.put("core", new CoreModule());
                 classLoaders.put("core", null);
-                Files.list(MODULES_DIR.toPath()).filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {
+                Stream<Path> pathStream = Files.list(MODULES_DIR.toPath());
+
+                pathStream.filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {
                     try {
                         load(path.toAbsolutePath().toString());
                     } catch (Exception e) {
@@ -96,16 +100,18 @@ public class ExternalModuleManager implements ModuleManager {
                         Sentry.capture(e);
                     }
                 });
+                pathStream.close();
 
                 injector = Guice.createInjector(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        Multibinder<KyokoModule> multibinder = Multibinder.newSetBinder(binder(), KyokoModule.class);
+                        Multibinder<KyokoModule> binder = Multibinder.newSetBinder(binder(), KyokoModule.class);
                         for(KyokoModule mod : modules.values()) {
-                            multibinder.addBinding().to(mod.getClass());
+                            binder.addBinding().to(mod.getClass());
                         }
                         if (shardManager != null)
                             bind(ShardManager.class).toInstance(shardManager);
+                        bind(I18n.class).toInstance(i18n);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ExternalModuleManager.this);

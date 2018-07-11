@@ -3,6 +3,7 @@ package moe.kyokobot.social;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.command.Command;
+import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
@@ -20,6 +21,7 @@ public class Module implements KyokoModule {
     @Inject private DatabaseManager databaseManager;
     @Inject private EventWaiter eventWaiter;
     @Inject private EventBus eventBus;
+    @Inject private I18n i18n;
 
     private ArrayList<Command> commands;
     private ImageRequester requester;
@@ -32,7 +34,7 @@ public class Module implements KyokoModule {
     @Override
     public void startUp() {
         requester = new ImageRequester(databaseManager);
-        levelHandler = new LevelHandler(databaseManager);
+        levelHandler = new LevelHandler(databaseManager, i18n);
 
         commands = new ArrayList<>();
 
