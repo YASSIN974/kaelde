@@ -49,7 +49,8 @@ public class CommonErrors {
 
     public static void usage(CommandContext context) {
         EmbedBuilder err = context.getErrorEmbed();
-        err.addField(context.getTranslated("generic.usage"), "`" + context.getPrefix() + context.getCommand().getName() + (context.getCommand().getUsage() != null ? (" " + context.getTranslated(context.getCommand().getUsage())) : "") + "`", false);
+        err.setTitle(context.getTranslated("generic.usage"));
+        err.setDescription(context.getTranslated(context.getCommand().getDescription()) + "\n\n`" + context.getPrefix() + context.getCommand().getName() + (context.getCommand().getUsage() != null ? (" " + context.getTranslated(context.getCommand().getUsage())) : "") + "`");
         context.send(err.build());
     }
 
