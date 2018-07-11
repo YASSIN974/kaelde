@@ -19,7 +19,7 @@ public class SettingsCommand extends Command {
         name = "settings";
         category = CommandCategory.MODERATION;
         usage = "";
-        
+
         this.eventWaiter = eventWaiter;
         this.databaseManager = databaseManager;
     }

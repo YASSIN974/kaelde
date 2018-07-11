@@ -40,18 +40,18 @@ public class I18n {
         for (Language l : Language.values()) {
             if (l != Language.DEFAULT) try {
                 Properties p = new Properties();
-                File f = new File("./messages/messages_" + l.getShortName() + ".properties");
+                File f = new File("./" + l.getShortName() + "/messages.properties");
                 URL url;
                 if (f.exists()) {
                     url = f.toURI().toURL();
                     logger.debug("Loaded language {} from filesystem: {}", l.getShortName(), url.toString());
                 } else {
-                    url = getClass().getResource("/messages_" + l.getShortName() + ".properties");
+                    url = getClass().getResource("/" + l.getShortName() + "/messages.properties");
                     if (url == null) {
                         logger.warn("Messages file for language {} does not exists.", l.name());
                         continue;
                     }
-                    logger.debug("Loaded language {} from jar: {}", l.getShortName(), url.toString());
+                    logger.debug("Loaded language {} from jar: {}", l.getLocalized(), url.toString());
                 }
 
                 p.load(new InputStreamReader(url.openStream(), Charsets.UTF_8));
