@@ -13,6 +13,7 @@ public class RepeatCommand extends MusicCommand {
     public RepeatCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
         name = "repeat";
+        usage = "";
         description = "music.repeat.description";
     }
 

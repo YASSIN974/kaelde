@@ -13,6 +13,7 @@ public class ServerInfoCommand extends Command {
 
     public ServerInfoCommand() {
         name = "serverinfo";
+        usage = "";
         category = CommandCategory.BASIC;
     }
 

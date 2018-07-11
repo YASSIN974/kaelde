@@ -13,6 +13,7 @@ public class AvatarCommand extends Command {
 
     public AvatarCommand() {
         name = "avatar";
+        usage = "generic.useronlyusage";
         category = CommandCategory.FUN;
     }
 

@@ -3,7 +3,6 @@ package moe.kyokobot.misccommands.commands.basic;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.manager.CommandManager;
 
 import java.time.temporal.ChronoUnit;
 
@@ -11,6 +10,7 @@ public class PingCommand extends Command {
 
     public PingCommand() {
     	name = "ping";
+        usage = "";
     	category = CommandCategory.BASIC;
     }
     

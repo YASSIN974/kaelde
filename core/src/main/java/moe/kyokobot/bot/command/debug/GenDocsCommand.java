@@ -41,17 +41,17 @@ public class GenDocsCommand extends Command {
                     "\t\t<table class=\"table table-dark\">\n" +
                     "\t\t\t<thead>\n" +
                     "\t\t\t\t<tr>\n" +
-                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">Command</th>\n" +
-                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">Aliases</th>\n" +
-                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">Description</th>\n" +
-                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">Usage</th>\n" +
+                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.command")).append("</th>\n" +
+                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.aliases")).append("</th>\n" +
+                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.description")).append("</th>\n" +
+                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.usage")).append("</th>\n" +
                     "\t\t\t\t</tr>\n" +
                     "\t\t\t</thead>\n" +
                     "\t\t\t<tbody>\n");
             commands.forEach(cmd -> {
                 sb.append("\t\t\t\t<tr>\n\t\t\t\t\t<td>")
                         .append(cmd.getName()).append("</td>\n\t\t\t\t\t<td>")
-                        .append(cmd.getAliases() == null || cmd.getAliases().length == 0 ? "(none)" :
+                        .append(cmd.getAliases() == null || cmd.getAliases().length == 0 ? "(" + context.getTranslated("generic.none") + ")" :
                                 Joiner.on(", ").join(cmd.getAliases())).append("</td>\n\t\t\t\t\t<td>")
                         .append(context.getTranslated(cmd.getDescription()).replaceAll("(\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", "<a href=\"$1\">$1</a>")).append("</td>\n\t\t\t\t\t<td><code>")
                         .append("ky!").append(cmd.getName()).append(" ").append(context.getTranslated(cmd.getUsage())).append("</code></td>\n\t\t\t\t</tr>\n");

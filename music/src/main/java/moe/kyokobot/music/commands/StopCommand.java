@@ -12,6 +12,7 @@ public class StopCommand extends MusicCommand {
 
     public StopCommand(MusicManager musicManager) {
         name = "stop";
+        usage = "";
 
         this.musicManager = musicManager;
     }

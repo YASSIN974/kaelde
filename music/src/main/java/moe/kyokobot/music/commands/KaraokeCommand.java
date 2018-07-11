@@ -15,7 +15,7 @@ public class KaraokeCommand extends MusicCommand {
         this.musicManager = musicManager;
 
         name = "karaoke";
-        experimental = true;
+        usage = "";
     }
 
     @Override

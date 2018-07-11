@@ -45,7 +45,6 @@ public class GuildCountService extends AbstractScheduledService {
     private void setPresence(Settings settings) {
         if (settings.bot.games.isEmpty()) return;
         if (last >= settings.bot.games.size()) last = 0;
-
         shardManager.getShards().forEach(jda ->
             jda.getPresence().setGame(Game.of(settings.bot.gameType,
                     settings.bot.games.get(last)

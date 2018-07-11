@@ -82,7 +82,7 @@ public class Module implements KyokoModule {
                     break;
             }
 
-            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{srcname}));
+            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, "", CommandCategory.IMAGES, "weeb", new String[]{srcname}));
         }
         return cmds;
     }

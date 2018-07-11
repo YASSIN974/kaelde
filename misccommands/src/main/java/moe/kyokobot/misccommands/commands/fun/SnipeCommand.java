@@ -34,6 +34,7 @@ public class SnipeCommand extends Command {
         this.eventBus = eventBus;
 
         name = "snipe";
+        usage = "";
         description = "snipe.description";
         category = CommandCategory.FUN;
     }

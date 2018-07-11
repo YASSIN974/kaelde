@@ -12,6 +12,7 @@ public class PauseCommand extends MusicCommand {
     public PauseCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
         name = "pause";
+        usage = "";
         description = "music.pause.description";
     }
 
