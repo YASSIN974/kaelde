@@ -26,6 +26,7 @@ public class CoreModule implements KyokoModule {
         commandManager.registerCommand(new CleanSelfCommand());
         commandManager.registerCommand(new ModulesCommand(moduleManager));
         commandManager.registerCommand(new ReloadSettingsCommand());
+        commandManager.registerCommand(new ReloadMessagesCommand());
         commandManager.registerCommand(new GenDocsCommand(commandManager));
     }
 
