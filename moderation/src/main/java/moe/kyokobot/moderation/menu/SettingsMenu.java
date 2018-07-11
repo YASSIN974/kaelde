@@ -295,6 +295,6 @@ public class SettingsMenu {
     private void onTimeout(Message message) {
         if (langListMessage != null) langListMessage.delete().queue();
         if (message != null) message.delete().queue();
-        context.send(CommandIcons.ERROR + "Operation cancelled due to no response!");
+        context.send(CommandIcons.ERROR + context.getTranslated("settings.timeout"));
     }
 }
