@@ -27,4 +27,5 @@ public interface MusicPlayer {
     void setKaraokeLevel(float level);
     boolean hasFiltersEnabled();
     boolean isConnected();
+    void updateFilters();
 }

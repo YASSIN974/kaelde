@@ -162,7 +162,8 @@ public class PlayCommand extends MusicCommand {
                 timeout++;
             }
 
-            player.playTrack(queue.poll().makeClone()); // it shouldn't be null!
+            locks.invalidate(context.getGuild());
+            player.playTrack(queue.poll()); // it shouldn't be null!
         } else
             player.setPaused(false);
 

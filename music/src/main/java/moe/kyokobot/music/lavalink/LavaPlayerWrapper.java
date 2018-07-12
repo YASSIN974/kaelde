@@ -127,4 +127,9 @@ public class LavaPlayerWrapper implements MusicPlayer {
     public boolean isConnected() {
         return player.getState() == State.CONNECTED;
     }
+
+    @Override
+    public void updateFilters() {
+        //
+    }
 }

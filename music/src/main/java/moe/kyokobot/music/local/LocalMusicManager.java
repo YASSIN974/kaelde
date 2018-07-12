@@ -191,10 +191,25 @@ public class LocalMusicManager implements MusicManager {
                         return;
                     }
 
-                    event.getPlayer().playTrack(track);
-                    queue.announce(track);
+                    playAndAnnounce(event, queue, track);
                 }
             }
         }
+    }
+
+    private void playAndAnnounce(TrackEndEvent event, MusicQueue queue, AudioTrack track) {
+        event.getPlayer().playTrack(track);
+        queue.announce(track);
+        int w = 0;
+        while (event.getPlayer().getPlayingTrack() == null) {
+            try {
+                if (w > 20) return;
+                Thread.sleep(100);
+                w++;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        event.getPlayer().updateFilters();
     }
 }

@@ -82,7 +82,6 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public void playTrack(@Nonnull AudioTrack track) {
         player.startTrack(track, false);
-        updateFilters();
     }
 
     @Override
@@ -153,7 +152,8 @@ public class LocalPlayerWrapper implements MusicPlayer {
         return guild.getAudioManager().isConnected();
     }
 
-    private void updateFilters() {
+    @Override
+    public void updateFilters() {
         if (!canBeNightcored(getPlayingTrack())) nightcore = 1.0f;
 
         if (nightcore == 1.0f && !karaoke) { // no filters
