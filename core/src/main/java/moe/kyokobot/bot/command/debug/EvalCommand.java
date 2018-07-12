@@ -11,6 +11,8 @@ import net.dv8tion.jda.bot.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.InputStreamReader;
@@ -41,7 +43,8 @@ public class EvalCommand extends Command {
 
             try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {
                 engine.put("logger", logger);
-                engine.eval(r);
+                CompiledScript compiled = ((Compilable) engine).compile(r);
+                compiled.eval();
                 babelEnabled = true;
             } catch (Exception e) {
                 logger.error("Error loading Babel!", e);
