@@ -35,7 +35,8 @@ public class KyokoCommandManager implements CommandManager {
     private final I18n i18n;
     private final ScheduledExecutorService executor;
     private final DatabaseManager databaseManager;
-    private final Cache<Guild, Boolean> experimentalCache = Caffeine.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES).maximumSize(100).build();
+    private final Cache<Guild, Boolean> experimentalCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
+    private final Cache<Guild, List<String>> prefixCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
 
     private Set<Command> registered;
     private Map<String, Command> commands;
@@ -116,6 +117,8 @@ public class KyokoCommandManager implements CommandManager {
         Settings settings = Settings.instance;
         String content = event.getMessage().getContentRaw();
 
+        List<String> prefixes = getPrefixes(event.getGuild());
+
         if (content.startsWith(event.getJDA().getSelfUser().getAsMention())) {
             content = content.trim().substring(event.getJDA().getSelfUser().getAsMention().length()).trim();
             handleNormal(event, event.getJDA().getSelfUser().getAsMention(), content);
@@ -125,6 +128,14 @@ public class KyokoCommandManager implements CommandManager {
         } else if (content.toLowerCase().startsWith(settings.bot.debugPrefix.toLowerCase()) && settings.bot.owner.equals(event.getAuthor().getId())) {
             content = content.trim().substring(settings.bot.debugPrefix.length()).trim();
             handleDebug(event, settings.bot.debugPrefix, content);
+        } else {
+            for (String prefix : prefixes) {
+                if (content.toLowerCase().startsWith(prefix.toLowerCase())) {
+                    content = content.trim().substring(prefix.length()).trim();
+                    handleNormal(event, prefix, content);
+                    return;
+                }
+            }
         }
     }
 
@@ -195,12 +206,37 @@ public class KyokoCommandManager implements CommandManager {
         } else return b;
     }
 
+    private List<String> getPrefixes(Guild guild) {
+        List<String> p = prefixCache.getIfPresent(guild);
+        if (p == null) {
+            try {
+                GuildConfig config = databaseManager.getGuild(guild);
+
+                if (config.getPrefixes() == null) {
+                    prefixCache.put(guild, Collections.emptyList());
+                    return Collections.emptyList();
+                } else {
+                    prefixCache.put(guild, config.getPrefixes());
+                    return config.getPrefixes();
+                }
+            } catch (Exception e) {
+                return Collections.emptyList();
+            }
+        } else return p;
+    }
+
     @Subscribe
     public void onDatabaseUpdate(DatabaseUpdateEvent event) {
         if (event.getEntity() instanceof GuildConfig) {
             for (Guild guild : experimentalCache.asMap().keySet()) {
                 if (((GuildConfig) event.getEntity()).getGuildId().equals(guild.getId())) {
                     experimentalCache.invalidate(guild);
+                    return;
+                }
+            }
+            for (Guild guild : prefixCache.asMap().keySet()) {
+                if (((GuildConfig) event.getEntity()).getGuildId().equals(guild.getId())) {
+                    prefixCache.invalidate(guild);
                     return;
                 }
             }
