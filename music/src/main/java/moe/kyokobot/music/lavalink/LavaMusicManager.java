@@ -50,7 +50,7 @@ public class LavaMusicManager implements MusicManager {
         sourceManagers = new ArrayList<>();
         queues = new Long2ObjectOpenHashMap<>();
         handler = new LavaEventHandler(eventBus);
-        lavaClient = new LavaClientBuilder(true)
+        lavaClient = new LavaClientBuilder()
                 .setShardCount(Globals.shardCount)
                 .setUserId(Globals.clientId).build();
         nodeNames = new HashMap<>();
