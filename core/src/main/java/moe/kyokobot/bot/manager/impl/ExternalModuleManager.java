@@ -7,7 +7,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.multibindings.Multibinder;
 import io.sentry.Sentry;
-import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
@@ -18,25 +17,26 @@ import moe.kyokobot.bot.module.KyokoModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.bot.sharding.ShardManager;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ExternalModuleManager implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
-    private final Settings settings;
+    private final ShardManager shardManager;
     private final DatabaseManager databaseManager;
     private final I18n i18n;
     private final CommandManager commandManager;
@@ -44,13 +44,14 @@ public class ExternalModuleManager implements ModuleManager {
     private final Logger logger;
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
+    private HashMap<String, File> tempFiles;
     private ArrayList<String> started;
     private Injector injector;
     private EventBus moduleEventBus;
 
-    public ExternalModuleManager(Settings settings, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+    public ExternalModuleManager(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
         logger = LoggerFactory.getLogger(getClass());
-        this.settings = settings;
+        this.shardManager = shardManager;
         this.databaseManager = databaseManager;
         this.i18n = i18n;
         this.commandManager = commandManager;
@@ -58,6 +59,7 @@ public class ExternalModuleManager implements ModuleManager {
 
         modules = new HashMap<>();
         classLoaders = new HashMap<>();
+        tempFiles = new HashMap<>();
         started = new ArrayList<>();
     }
 
@@ -66,9 +68,9 @@ public class ExternalModuleManager implements ModuleManager {
 
         moduleEventBus = new EventBus();
         try {
-            new URL("http://localhost/").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
+            new URL("file:///").openConnection().setDefaultUseCaches(false); // disable URL caching - hotswap fix
         } catch (Exception e) { // should not happen
-            e.printStackTrace();
+            logger.error("This should not happen!", e);
         }
 
         if (classLoaders.size() != 0) {
@@ -80,33 +82,36 @@ public class ExternalModuleManager implements ModuleManager {
                 unload(name, false);
                 modules.remove(name);
                 in.remove();
+                tempFiles.remove(name);
             }
         }
-        System.gc();
 
         if (MODULES_DIR.exists()) {
             try {
                 modules.put("core", new CoreModule());
                 classLoaders.put("core", null);
-                Files.list(MODULES_DIR.toPath()).filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {
+                Stream<Path> pathStream = Files.list(MODULES_DIR.toPath());
+
+                pathStream.filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {
                     try {
                         load(path.toAbsolutePath().toString());
                     } catch (Exception e) {
-                        logger.error("Error loading module \"" + path + "\"!");
+                        logger.error("Error loading module \"" + path + "\"!", e);
                         Sentry.capture(e);
-                        e.printStackTrace();
                     }
                 });
+                pathStream.close();
 
                 injector = Guice.createInjector(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        Multibinder<KyokoModule> multibinder = Multibinder.newSetBinder(binder(), KyokoModule.class);
+                        Multibinder<KyokoModule> binder = Multibinder.newSetBinder(binder(), KyokoModule.class);
                         for(KyokoModule mod : modules.values()) {
-                            multibinder.addBinding().to(mod.getClass());
+                            binder.addBinding().to(mod.getClass());
                         }
-
-                        bind(Settings.class).toInstance(settings);
+                        if (shardManager != null)
+                            bind(ShardManager.class).toInstance(shardManager);
+                        bind(I18n.class).toInstance(i18n);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
                         bind(ModuleManager.class).toInstance(ExternalModuleManager.this);
@@ -119,39 +124,35 @@ public class ExternalModuleManager implements ModuleManager {
                     startModule(s);
                 }
             } catch (IOException e) {
-                logger.error("Error while (re)loading modules!");
+                logger.error("Error while (re)loading modules!", e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
         }
     }
 
     @Override public void startModule(String name) {
         if (!started.contains(name)) {
-            logger.info("Starting module: " + name);
+            logger.info("Starting module: {}", name);
             try {
                 KyokoModule mod = injector.getInstance(modules.get(name).getClass());
                 mod.startUp();
                 modules.replace(name, mod);
                 started.add(name);
-                System.gc();
             } catch (Exception e) {
-                logger.error("Error starting module: " + name);
+                logger.error("Error starting module: " + name, e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
         }
     }
 
     @Override public void stopModule(String name) {
         if (started.contains(name)) {
-            logger.info("Stopping module: " + name);
+            logger.info("Stopping module: {}", name);
             try {
                 modules.get(name).shutDown();
             } catch (Exception e) {
-                logger.error("Error stopping module: " + name);
+                logger.error("Error stopping module: " + name, e);
                 Sentry.capture(e);
-                e.printStackTrace();
             }
 
             Iterator<String> i = started.iterator();
@@ -165,20 +166,33 @@ public class ExternalModuleManager implements ModuleManager {
 
         try {
             classLoaders.get(name).close();
+            if (tempFiles.get(name) != null)
+                Files.delete(tempFiles.get(name).toPath());
         } catch (IOException e) {
+            logger.error("Caught error while unloading module!", e);
             Sentry.capture(e);
-            e.printStackTrace();
         }
         if (remove) {
             modules.entrySet().removeIf(e -> e.getKey().equals(name));
             classLoaders.entrySet().removeIf(e -> e.getKey().equals(name));
+            tempFiles.entrySet().removeIf(e -> e.getKey().equals(name));
         }
-        System.gc();
     }
 
     @Override public void load(String path) throws Exception {
         File jar = new File(path);
-        URL jarUrl = jar.toURI().toURL();
+        File jar2 = File.createTempFile("cached-", ".kymod");
+        jar2.deleteOnExit();
+
+        try (InputStream fis = new FileInputStream(jar)) {
+            try (OutputStream fos = new FileOutputStream(jar2)) {
+                IOUtils.copy(fis, fos);
+            }
+        }
+
+        logger.debug("Caching module: {} -> {}", path, jar2.getAbsolutePath());
+
+        URL jarUrl = jar2.toURI().toURL();
         URL[] classPath = new URL[]{jarUrl};
         URLClassLoader cl = new URLClassLoader(classPath, getClass().getClassLoader());
 
@@ -201,6 +215,7 @@ public class ExternalModuleManager implements ModuleManager {
         KyokoModule mod = (KyokoModule) jarClass.newInstance();
         modules.put(description.moduleName, mod);
         classLoaders.put(description.moduleName, cl);
+        tempFiles.put(description.moduleName, jar2);
     }
 
     @Override public boolean isLoaded(String name) {

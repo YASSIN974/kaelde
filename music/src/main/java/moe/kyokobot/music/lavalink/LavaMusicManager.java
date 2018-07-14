@@ -1,7 +1,5 @@
 package moe.kyokobot.music.lavalink;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
@@ -14,7 +12,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.music.*;
+import moe.kyokobot.music.MusicManager;
+import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -32,7 +33,6 @@ import samophis.lavalink.client.entities.internal.LavaPlayerImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
@@ -44,7 +44,6 @@ public class LavaMusicManager implements MusicManager {
     private final List<AudioSourceManager> sourceManagers;
     private final Long2ObjectMap<MusicQueue> queues;
     private final HashMap<AudioNodeEntry, String> nodeNames;
-    private Cache<String, AudioItem> resultCache;
 
     public LavaMusicManager(MusicSettings settings, EventBus eventBus) {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -54,7 +53,6 @@ public class LavaMusicManager implements MusicManager {
         lavaClient = new LavaClientBuilder(true)
                 .setShardCount(Globals.shardCount)
                 .setUserId(Globals.clientId).build();
-        resultCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
         nodeNames = new HashMap<>();
         settings.nodes.forEach(node -> {
             AudioNodeEntryBuilder builder = new AudioNodeEntryBuilder(lavaClient);
@@ -77,12 +75,6 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public AudioItem resolve(Guild guild, String query) {
-        AudioItem item = resultCache.getIfPresent(query);
-        if (item != null) {
-            logger.info("Using cached resolve result for: {}", query);
-            return item;
-        }
-
         LavaPlayer lavaPlayer = ((LavaPlayerWrapper) getMusicPlayer(guild)).getPlayer();
         return lavaPlayer.getState() != State.CONNECTED ? resolveLocal(query) : resolveRemote(query, lavaPlayer);
     }
@@ -92,7 +84,6 @@ public class LavaMusicManager implements MusicManager {
         for (AudioSourceManager manager : sourceManagers) {
             AudioItem item = manager.loadItem(null, new AudioReference(query, null));
             if (item != null) {
-                resultCache.put(query, item);
                 return item;
             }
         }
@@ -146,7 +137,7 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Override
-    public void clean(JDAImpl jda, Guild guild) {
+    public void dispose(JDAImpl jda, Guild guild) {
         closeConnection(jda, guild);
         LavaPlayer lp = lavaClient.getPlayerMap().get(guild.getIdLong());
         if (lp != null && lp.getState() == State.CONNECTED) lp.destroyPlayer();
@@ -156,13 +147,13 @@ public class LavaMusicManager implements MusicManager {
     @Override
     public String getDebugString(Guild guild, MusicPlayer player) {
         String s = guild.getJDA().getShardInfo() == null ? "nil" : String.valueOf(guild.getJDA().getShardInfo().getShardId());
-        String n = nodeNames.get(((LavaPlayer) player).getConnectedNode().getEntry());
+        String n = nodeNames.get((((LavaPlayerWrapper) player).getPlayer()).getConnectedNode().getEntry());
         return s + ":" + (n == null ? "nil" : n) + ":" + guild.getId();
     }
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
-        clean((JDAImpl) event.getJDA(), event.getGuild());
+        dispose((JDAImpl) event.getJDA(), event.getGuild());
     }
 
     @Subscribe
@@ -185,10 +176,10 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Subscribe
-    public void onVoiceChannelLeft(GuildVoiceLeaveEvent event) {
+    public void onVoiceChannelLeave(GuildVoiceLeaveEvent event) {
         LavaPlayer lp = lavaClient.getPlayerMap().get(event.getGuild().getIdLong());
         if (lp != null && (lp.getChannelId() == event.getChannelLeft().getIdLong() && isChannelEmpty(event.getGuild(), event.getChannelLeft())))
-            clean((JDAImpl) event.getJDA(), event.getGuild());
+            dispose((JDAImpl) event.getJDA(), event.getGuild());
     }
 
     @Subscribe
@@ -201,12 +192,12 @@ public class LavaMusicManager implements MusicManager {
                 Guild g = queue.getJDA().getGuildById(event.getPlayer().getGuildId());
 
                 if (queue.getTracks().isEmpty() && queue.getLastTrack() == null) {
-                    clean(queue.getJDA(), g);
+                    dispose(queue.getJDA(), g);
                 } else if (event.getReason().mayStartNext) {
                     AudioTrack track = queue.poll();
 
                     if (track == null) {
-                        clean(queue.getJDA(), g);
+                        dispose(queue.getJDA(), g);
                         return;
                     }
 

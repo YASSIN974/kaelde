@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CommandContext {
-    private Settings settings;
     private I18n i18n;
     private final Command command;
     private final Language language;
@@ -24,8 +23,7 @@ public class CommandContext {
     private final String concatArgs;
     private final String[] args;
 
-    public CommandContext(Settings settings, I18n i18n, Command command, MessageReceivedEvent event, String prefix, String label, String concatArgs, String[] args) {
-        this.settings = settings;
+    public CommandContext(I18n i18n, Command command, MessageReceivedEvent event, String prefix, String label, String concatArgs, String[] args) {
         this.i18n = i18n;
         this.command = command;
         this.prefix = prefix;
@@ -90,7 +88,7 @@ public class CommandContext {
     }
 
     public Settings getSettings() {
-        return settings;
+        return Settings.instance;
     }
 
     public I18n getI18n() {
@@ -116,14 +114,14 @@ public class CommandContext {
     // use this method only for debug commands to prevent theoretical token guessing
     public void sendChecked(CharSequence message, Consumer<Message> callback) {
         if (checkSensitive(message.toString())) {
-            event.getChannel().sendMessage(CommandIcons.error + getTranslated("generic.sensitive")).queue(callback);
+            event.getChannel().sendMessage(CommandIcons.ERROR + getTranslated("generic.sensitive")).queue(callback);
         } else {
             event.getChannel().sendMessage(message).queue(callback);
         }
     }
 
     public void send(MessageEmbed message, Consumer<Message> callback) {
-        event.getChannel().sendMessage(message).queue();
+        event.getChannel().sendMessage(message).queue(callback);
     }
 
     public String getTranslated(String key) {
@@ -133,12 +131,11 @@ public class CommandContext {
     public EmbedBuilder getNormalEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(getNormalColor());
-        //eb.setFooter(  "kyokobot v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 
     public Color getNormalColor() {
-        Color c = settings.bot.normalColor;
+        Color c = Settings.instance.bot.normalColor;
 
         if (event.getMember() != null) {
             if (event.getMember().getColor() != null) {
@@ -151,13 +148,13 @@ public class CommandContext {
 
     public EmbedBuilder getErrorEmbed() {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(settings.bot.errorColor);
-        eb.setFooter(settings.bot.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
+        eb.setColor(Settings.instance.bot.errorColor);
+        eb.setFooter(Settings.instance.bot.botName + " v" + Constants.VERSION + " | created by gabixdev & contributors", null);
         return eb;
     }
 
     public boolean checkSensitive(String input) {
-        if (input.contains(settings.connection.token)) return true;
-        return settings.apiKeys.values().stream().anyMatch(input::contains);
+        if (input.contains(Settings.instance.connection.token)) return true;
+        return Settings.instance.apiKeys.values().stream().anyMatch(input::contains);
     }
 }

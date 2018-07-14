@@ -2,6 +2,7 @@ package moe.kyokobot.music.commands;
 
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
+import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -12,26 +13,41 @@ public class NightcoreCommand extends MusicCommand {
 
     public NightcoreCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
+
         name = "nightcore";
+        usage = "";
     }
 
     @Override
     public void execute(CommandContext context) {
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
-            // TODO check that user is in same channel as Kyoko.
-
+            if (!context.hasArgs()) {
+                CommonErrors.usage(context);
+                return;
+            }
             float f;
+
             try {
                 f = Float.parseFloat(context.getConcatArgs());
             } catch (NumberFormatException e) {
-                context.send(CommandIcons.error + "not a float number");
+                CommonErrors.notANumber(context, context.getConcatArgs());
+                return;
+            }
+
+            if (f < 0.1f || f > 3.0f) {
+                context.send(CommandIcons.ERROR + context.getTranslated("music.nightcore.outrange"));
                 return;
             }
 
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             player.setNightcore(f);
-            context.send(CommandIcons.info + "nightcore set to " + f);
+
+            if (f == 1.0f) {
+                context.send(CommandIcons.INFO + context.getTranslated("music.nightcore.disabled"));
+            } else {
+                context.send(CommandIcons.INFO + String.format(context.getTranslated("music.nightcore.enabled"), f));
+            }
         }
     }
 }

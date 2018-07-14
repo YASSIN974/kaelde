@@ -2,7 +2,6 @@ package moe.kyokobot.music.lavalink;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.music.MusicPlayer;
-import net.dv8tion.jda.core.entities.Guild;
 import samophis.lavalink.client.entities.LavaPlayer;
 import samophis.lavalink.client.entities.State;
 
@@ -55,6 +54,11 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public boolean isKaraoke() {
+        return false;
+    }
+
+    @Override
     public boolean isPaused() {
         return player.isPaused();
     }
@@ -95,7 +99,37 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public void setKaraoke(boolean enabled) {
+
+    }
+
+    @Override
+    public void setKaraokeWidth(float width) {
+
+    }
+
+    @Override
+    public void setKaraokeBand(float band) {
+
+    }
+
+    @Override
+    public void setKaraokeLevel(float level) {
+
+    }
+
+    @Override
+    public boolean hasFiltersEnabled() {
+        return false;
+    }
+
+    @Override
     public boolean isConnected() {
         return player.getState() == State.CONNECTED;
+    }
+
+    @Override
+    public void updateFilters() {
+        //
     }
 }

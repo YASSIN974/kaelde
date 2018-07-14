@@ -1,6 +1,12 @@
 package moe.kyokobot.bot.i18n;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.Subscribe;
+import moe.kyokobot.bot.entity.GuildConfig;
+import moe.kyokobot.bot.entity.UserConfig;
+import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -13,86 +19,97 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class I18n {
     private RethinkDatabaseManager databaseManager;
     private Logger logger;
-    private HashMap<Language, Properties> langs;
-    private HashMap<Long, Language> languageCache;
+    private HashMap<Language, Properties> languages;
+    private Cache<String, Language> languageCache;
 
     public I18n(RethinkDatabaseManager databaseManager) {
         logger = LoggerFactory.getLogger(getClass());
         this.databaseManager = databaseManager;
-        languageCache = new HashMap<>();
+        languageCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(1000).build();
     }
 
     public void loadMessages() {
         logger.debug("Loading messages...");
-        langs = new HashMap<>();
+        languages = new HashMap<>();
 
         for (Language l : Language.values()) {
-            if (l == Language.DEFAULT) continue;
-
-            try {
+            if (l != Language.DEFAULT) try {
                 Properties p = new Properties();
-                File f = new File("./messages/messages_" + l.getShortName() + ".properties");
+                File f = new File("./" + l.getShortName() + "/messages.properties");
                 URL url;
                 if (f.exists()) {
                     url = f.toURI().toURL();
-                    logger.debug("Loaded language " + l.getShortName() + " from filesystem: " + url.toString());
+                    logger.debug("Loaded language {} from filesystem: {}", l.getShortName(), url.toString());
                 } else {
-                    url = getClass().getResource("/messages_" + l.getShortName() + ".properties");
+                    url = getClass().getResource("/" + l.getShortName() + "/messages.properties");
                     if (url == null) {
-                        logger.warn("Messages file for language " + l.name() + " does not exists.");
+                        logger.warn("Messages file for language {} does not exists.", l.name());
                         continue;
                     }
-                    logger.debug("Loaded language " + l.getShortName() + " from jar: " + url.toString());
+                    logger.debug("Loaded language {} from jar: {}", l.getLocalized(), url.toString());
                 }
 
                 p.load(new InputStreamReader(url.openStream(), Charsets.UTF_8));
-                langs.put(l, p);
+                languages.put(l, p);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error while loading language!", e);
             }
         }
     }
 
     public String get(Language l, String key) {
-        if (langs.containsKey(l))
-            return langs.get(l).getProperty(key, langs.get(Language.ENGLISH).getProperty(key, key));
-        return langs.get(Language.ENGLISH).getProperty(key, key);
+        if (languages.containsKey(l))
+            return languages.get(l).getProperty(key, languages.get(Language.ENGLISH).getProperty(key, key));
+        return languages.get(Language.ENGLISH).getProperty(key, key);
     }
 
     public Language getLanguage(Guild guild) {
-        // TODO guild lang
-        return Language.ENGLISH;
+        try {
+            Language l = languageCache.get(guild.getId(),
+                    gid -> databaseManager.getGuild(guild).getLanguage());
+
+            return l == Language.DEFAULT ? Language.ENGLISH : l;
+        } catch (Exception e) {
+            logger.error("Error while getting guild language!", e);
+            return Language.ENGLISH;
+        }
     }
 
     public Language getLanguage(Member member) {
-        try { // TODO guild lang
-            if (!languageCache.containsKey(member.getUser().getIdLong())) {
-                logger.debug("Loading user language to cache...");
-                Language l = databaseManager.getUser(member.getUser()).getLanguage();
-                if (l == Language.DEFAULT) l = getLanguage(member.getGuild());
-                languageCache.put(member.getUser().getIdLong(), l);
-            }
-            return languageCache.get(member.getUser().getIdLong());
+        try {
+            Language l = languageCache.get(member.getUser().getId(),
+                    uid -> databaseManager.getUser(member.getUser()).getLanguage());
+
+            return l == Language.DEFAULT ? getLanguage(member.getGuild()) : l;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while getting user language!", e);
             return Language.ENGLISH;
         }
     }
 
     public Language getLanguage(User user) {
         try {
-            if (!languageCache.containsKey(user.getIdLong())) {
-                Language l = databaseManager.getUser(user).getLanguage();
-                if (l == Language.DEFAULT) l = Language.ENGLISH;
-                return l;
-            } else return languageCache.get(user.getIdLong());
+            Language l = languageCache.get(user.getId(),
+                    uid -> databaseManager.getUser(user).getLanguage());
+
+            return l == Language.DEFAULT ? Language.ENGLISH : l;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while getting user language!", e);
             return Language.ENGLISH;
+        }
+    }
+
+    @Subscribe
+    public void onUpdate(DatabaseUpdateEvent event) {
+        if (event.getEntity() instanceof UserConfig) {
+            languageCache.invalidate(((UserConfig) event.getEntity()).getId());
+        } else if (event.getEntity() instanceof GuildConfig) {
+            languageCache.invalidate(((GuildConfig) event.getEntity()).getGuildId());
         }
     }
 }

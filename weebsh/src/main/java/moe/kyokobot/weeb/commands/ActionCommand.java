@@ -12,8 +12,8 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.CommonUtil;
-import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.bot.util.EmbedBuilder;
+import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class ActionCommand extends Command {
                 CommonErrors.exception(context, e);
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("weebsh.action.needtomention"));
+            context.send(CommandIcons.ERROR + context.getTranslated("weebsh.action.needtomention"));
         }
     }
 }

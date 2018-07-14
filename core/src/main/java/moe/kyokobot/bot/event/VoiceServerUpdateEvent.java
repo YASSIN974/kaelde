@@ -1,7 +1,9 @@
 package moe.kyokobot.bot.event;
 
+import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;
 
+@Getter
 public class VoiceServerUpdateEvent {
     private final String token;
     private final Guild guild;
@@ -13,21 +15,5 @@ public class VoiceServerUpdateEvent {
         this.guild = guild;
         this.endpoint = endpoint;
         this.sessionId = sessionId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public Guild getGuild() {
-        return guild;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public String getSessionId() {
-        return sessionId;
     }
 }

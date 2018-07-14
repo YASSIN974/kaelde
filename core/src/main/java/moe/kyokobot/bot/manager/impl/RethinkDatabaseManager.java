@@ -1,10 +1,13 @@
 package moe.kyokobot.bot.manager.impl;
 
+import com.google.common.eventbus.EventBus;
+import com.google.gson.JsonArray;
 import com.rethinkdb.net.Connection;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.DatabaseEntity;
 import moe.kyokobot.bot.entity.GuildConfig;
 import moe.kyokobot.bot.entity.UserConfig;
+import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.GsonUtil;
@@ -14,22 +17,24 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import static com.rethinkdb.RethinkDB.r;
 
 public class RethinkDatabaseManager implements DatabaseManager {
-    private Logger logger;
-    private Settings settings;
+    private final EventBus eventBus;
+    private final Logger logger;
     private Connection connection;
 
-    public RethinkDatabaseManager(Settings settings) {
-        this.settings = settings;
+    public RethinkDatabaseManager(EventBus eventBus) {
+        this.eventBus = eventBus;
         logger = LoggerFactory.getLogger(getClass());
     }
 
     @Override
     public void load() {
+        Settings settings = Settings.instance;
+
         connection = r.connection()
                 .hostname(settings.connection.rethinkHost)
                 .port(settings.connection.rethinkPort)
@@ -55,13 +60,53 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     @Override
+    public Map<String, Integer> getTopBalances() {
+        JsonArray a = GsonUtil.fromJSON(r.table("users").orderBy(r.desc("money")).limit(10).run(connection).toString(), JsonArray.class);
+        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
+
+        a.forEach(element -> {
+            String id = element.getAsJsonObject().get("id").getAsString();
+            int amount = element.getAsJsonObject().get("money").getAsInt();
+            if (id == null || amount == 0) return;
+            map.put(id, amount);
+        });
+
+        return map;
+    }
+
+    @Override
+    public String getValue(User user, String key, String def) {
+        UserConfig u = getUser(user);
+        String keyR = u.getKvStore().get(key);
+        return keyR == null ? def : keyR;
+    }
+
+    @Override
+    public String getValue(User user, String key) {
+        return getValue(user, key, null);
+    }
+
+    @Override
+    public List<String> getList(User user, String key, List<String> def) {
+        UserConfig u = getUser(user);
+        ArrayList<String> keyR = u.getListStore().get(key);
+        return keyR == null ? def : keyR;
+    }
+
+    @Override
+    public List<String> getList(User user, String key) {
+        return getList(user, key, null);
+    }
+
+    @Override
     public void save(@NotNull DatabaseEntity entity) {
         logger.debug("Saved entity on {} -> {} -> {}", entity.getTableName(), entity.getClass().getName(), entity.toString());
         r.table(entity.getTableName()).insert(r.json(GsonUtil.toJSON(entity))).optArg("conflict", "update").runNoReply(connection);
+        eventBus.post(new DatabaseUpdateEvent(entity));
     }
 
     private UserConfig newUser(String id) {
-        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new ArrayList<>());
+        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new HashMap<>(), new HashMap<>(), 1, false);
     }
 
     private GuildConfig newGuild(String id) {

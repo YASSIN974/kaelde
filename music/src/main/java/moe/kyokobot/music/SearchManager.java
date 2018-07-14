@@ -3,12 +3,13 @@ package moe.kyokobot.music;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Charsets;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.bot.util.NetworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -16,13 +17,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SearchManager {
+    private final Logger logger = LoggerFactory.getLogger(SearchManager.class);
     private final String youtubeApiUrl;
 
     private Cache<String, SearchResult> youtubeResults;
 
     public SearchManager(String youtubeApiKey) {
         youtubeApiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&key=" + youtubeApiKey + "&q=";
-        youtubeResults = Caffeine.newBuilder().expireAfterWrite(90, TimeUnit.MINUTES).maximumSize(2000).build();
+        youtubeResults = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
     }
 
     public SearchResult searchYouTube(String query) {
@@ -51,12 +53,13 @@ public class SearchManager {
                             }
                         });
                     } catch (Exception ex) {
-                        throw new IllegalStateException(ex.getClass().getCanonicalName() + ": " + ex.getMessage() + ": " + data);
+                        throw new IllegalStateException(ex.toString() + ": " + data);
                     }
                 }
+                youtubeResults.put(query.toLowerCase(), jresult);
                 return jresult;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error while searching YouTube!", e);
                 Sentry.capture(e);
             }
         }

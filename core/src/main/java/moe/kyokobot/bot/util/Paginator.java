@@ -78,17 +78,17 @@ public class Paginator {
     protected Message render(int page) {
         MessageBuilder mb = new MessageBuilder();
         if (page < 0) page = 0; else if (page > pageContents.size()) page = pageContents.size() - 1;
-        String content = pageContents.size() == 0 ? "" : pageContents.get(page);
+        String content = pageContents.isEmpty() ? "" : pageContents.get(page);
         if (title != null) mb.append(title.replace("{page}", (page + 1) + "/" + pageContents.size())).append("\n");
         mb.append(content);
-        if (footer != null) mb.append("\n").append(title.replace("{page}", (page + 1) + "/" + pageContents.size()));
+        if (footer != null) mb.append("\n").append(footer.replace("{page}", (page + 1) + "/" + pageContents.size()));
         return mb.build();
     }
 
     private void addReactions(Message message) {
         if (Globals.inKyokoServer) {
-            message.addReaction(message.getJDA().getEmoteById(LEFT_CHEVRON)).queue(); // previous page
-            message.addReaction(message.getJDA().getEmoteById(RIGHT_CHEVRON)).queue(); // next page
+            message.addReaction("Previous-Page:" + LEFT_CHEVRON).queue(); // previous page
+            message.addReaction("Next-Page:" + RIGHT_CHEVRON).queue(); // next page
         } else {
             message.addReaction(LEFT_EMOJI).queue();
             message.addReaction(RIGHT_EMOJI).queue();
@@ -111,7 +111,7 @@ public class Paginator {
                 switch (event.getReactionEmote().getId()) {
                     case LEFT_CHEVRON:
                     case RIGHT_CHEVRON:
-                        if (event.getUser().getIdLong() == userId) return true;
+                        return event.getUser().getIdLong() == userId;
                     default:
                         return false;
                 }
@@ -119,7 +119,7 @@ public class Paginator {
                 switch (event.getReactionEmote().getName()) {
                     case LEFT_EMOJI:
                     case RIGHT_EMOJI:
-                        if (event.getUser().getIdLong() == userId) return true;
+                        return event.getUser().getIdLong() == userId;
                     default:
                         return false;
                 }
@@ -141,8 +141,10 @@ public class Paginator {
         } else {
             switch (event.getReactionEmote().getName()) {
                 case LEFT_EMOJI:
+                    if (page > 0) page--;
                     break;
                 case RIGHT_EMOJI:
+                    if (page < (pageContents.size() - 1)) page++;
                     break;
             }
         }
@@ -153,6 +155,6 @@ public class Paginator {
             // ignored
         }
 
-        message.editMessage(render(page)).override(true).queue(message -> waitForReaction());
+        message.editMessage(render(page)).override(true).queue(msg -> waitForReaction());
     }
 }

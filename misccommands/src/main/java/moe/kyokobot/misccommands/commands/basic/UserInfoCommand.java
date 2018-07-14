@@ -4,9 +4,9 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.bot.util.UserUtil;
-import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
@@ -18,6 +18,7 @@ import java.time.format.FormatStyle;
 public class UserInfoCommand extends Command {
     public UserInfoCommand() {
         name = "userinfo";
+        usage = "generic.useronlyusage";
         category = CommandCategory.BASIC;
     }
 

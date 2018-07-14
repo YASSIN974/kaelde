@@ -5,8 +5,6 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.RandomUtil;
 
-import java.util.Random;
-
 public class RandomTextCommand extends Command {
 
     private final String[] texts;
@@ -17,6 +15,7 @@ public class RandomTextCommand extends Command {
         this.texts = texts;
         this.name = name;
         this.description = texts[0];
+        this.usage = "";
         this.category = CommandCategory.FUN;
     }
 

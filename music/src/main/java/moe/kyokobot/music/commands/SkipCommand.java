@@ -3,10 +3,10 @@ package moe.kyokobot.music.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
+import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
-import moe.kyokobot.music.MusicUtil;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
@@ -34,24 +34,47 @@ public class SkipCommand extends MusicCommand {
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             MusicQueue queue = musicManager.getQueue(context.getGuild());
 
+            if (context.hasArgs()) {
+                try {
+                    int i = Integer.parseUnsignedInt(context.getConcatArgs()) - 1;
+                    if (i < 0) i = 0;
+
+                    while (i != 0 && !queue.isEmpty()) {
+                        queue.poll();
+                        i--;
+                    }
+                } catch (NumberFormatException e) {
+                    CommonErrors.notANumber(context, context.getConcatArgs());
+                    return;
+                }
+            }
+
             if (queue.isEmpty()) {
                 if (player.getPlayingTrack() != null) {
                     context.send(STOP + context.getTranslated("music.stopped"));
-                    musicManager.clean((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
                 } else {
-                    context.send(CommandIcons.error + context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
-                    musicManager.clean((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+                    context.send(CommandIcons.ERROR + context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
+                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
                 }
             } else {
+                boolean wasRepeating = queue.isRepeating();
+
                 // TODO: enable/disable announcing
                 queue.setAnnouncing(context.getChannel(), context);
 
                 AudioTrack track = queue.poll();
+                if (wasRepeating)
+                    queue.setRepeating(false);
+
                 player.playTrack(track);
+
+                if (wasRepeating)
+                    queue.setRepeating(true);
                 queue.announce(track);
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("music.joinchannel"));
+            context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
         }
     }
 }

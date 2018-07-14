@@ -38,7 +38,7 @@ public class ShellCommand extends Command {
         } catch (Exception e) {
             e.printStackTrace();
             Sentry.capture(e);
-            context.send(CommandIcons.error + "Error while running shell command: " + e.getMessage());
+            context.send(CommandIcons.ERROR + "Error while running shell command: " + e.getMessage());
         }
     }
 }

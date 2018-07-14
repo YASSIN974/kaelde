@@ -12,6 +12,7 @@ public class SimpleTextCommand extends Command {
         this.text = text;
         this.name = name;
         this.description = text;
+        this.usage = "";
         this.category = CommandCategory.FUN;
     }
 

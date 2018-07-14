@@ -23,7 +23,7 @@ public class AliasCommand extends Command {
     public void execute(CommandContext context) {
         Command c = commandManager.getCommands().get(execute);
         if (c != null) {
-            CommandContext con = new CommandContext(context.getSettings(), context.getI18n(), c, context.getEvent(), context.getPrefix(), name, Joiner.on(" ").join(args), args);
+            CommandContext con = new CommandContext(context.getI18n(), c, context.getEvent(), context.getPrefix(), name, Joiner.on(" ").join(args), args);
             c.execute(con);
         }
     }

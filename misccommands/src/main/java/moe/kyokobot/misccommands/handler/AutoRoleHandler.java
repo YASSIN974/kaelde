@@ -24,8 +24,10 @@ public class AutoRoleHandler {
     public void onJoin(GuildMemberJoinEvent event) {
         try {
             GuildConfig config = databaseManager.getGuild(event.getGuild());
-            if (!config.getAutoRole().isEmpty()) {
-                Role role = event.getGuild().getRoleById(config.getAutoRole());
+            if (config.getModerationConfig() == null) return;
+
+            if (!config.getModerationConfig().getAutoRole().isEmpty()) {
+                Role role = event.getGuild().getRoleById(config.getModerationConfig().getAutoRole());
                 if (role != null) {
                     event.getGuild().getController().addSingleRoleToMember(event.getMember(), role).queue();
                 }

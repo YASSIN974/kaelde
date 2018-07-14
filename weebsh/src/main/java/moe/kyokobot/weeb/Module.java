@@ -4,6 +4,7 @@ import com.github.natanbc.weeb4j.TokenType;
 import com.github.natanbc.weeb4j.Weeb4J;
 import com.google.inject.Inject;
 import moe.kyokobot.bot.Constants;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.AliasCommand;
 import moe.kyokobot.bot.command.Command;
@@ -24,8 +25,6 @@ public class Module implements KyokoModule {
     private Logger logger;
     @Inject
     private CommandManager commandManager;
-    @Inject
-    private Settings settings;
     private ArrayList<Command> commands;
     private HashMap<Guild, Long> cooldowns;
 
@@ -39,8 +38,9 @@ public class Module implements KyokoModule {
 
     @Override
     public void startUp() {
+        Settings settings = Settings.instance;
         if (settings.apiKeys.containsKey("weebsh")) {
-            weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION).setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
+            weeb4J = new Weeb4J.Builder().setBotInfo("Kyoko", Constants.VERSION, Globals.production ? "production" : "development").setToken(TokenType.WOLKE, settings.apiKeys.get("weebsh")).build();
             commands = new ArrayList<>();
 
             commands.add(new WeebCommand(weeb4J));
@@ -63,7 +63,7 @@ public class Module implements KyokoModule {
         commands.forEach(commandManager::unregisterCommand);
     }
 
-    public List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
+    private List<Command> createWeebCommandAliases(CommandManager commandManager, String... commands) {
         List<Command> cmds = new ArrayList<>();
         for (String name : commands) {
             String srcname = name;
@@ -78,9 +78,11 @@ public class Module implements KyokoModule {
                 case "initiald":
                     srcname = "initial_d";
                     break;
+                default:
+                    break;
             }
 
-            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, null, CommandCategory.IMAGES, "weeb", new String[]{srcname}));
+            cmds.add(new AliasCommand(commandManager, name, new String[0], "weebsh.description." + name, "", CommandCategory.IMAGES, "weeb", new String[]{srcname}));
         }
         return cmds;
     }

@@ -7,28 +7,11 @@ buildscript {
 
     dependencies {
         classpath 'io.franzbecker:gradle-lombok:1.14'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
     }
 }
 
-group 'moe.kyokobot'
-version "2.0.0-SNAPSHOT"
-
-apply plugin: 'java'
+apply plugin: 'maven-publish'
 apply plugin: 'io.franzbecker.gradle-lombok'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-sourceCompatibility = 1.8
-
-repositories {
-    jcenter()
-    mavenCentral()
-    maven { url "https://dl.bintray.com/gabixdev/kyoko/"}
-    maven { url "https://jitpack.io" }
-    maven { url "https://jcenter.bintray.com" }
-    maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-}
 
 // DEPENDENCY HEEEEEELL
 dependencies {
@@ -44,13 +27,18 @@ dependencies {
     compile 'com.rethinkdb:rethinkdb-driver:2.3.3'
     compile 'com.github.ben-manes.caffeine:caffeine:2.6.2'
     compile 'io.sentry:sentry:1.7.3'
-    compile 'com.google.code.gson:gson:2.8.4'
+    compile 'com.google.code.gson:gson:2.8.5'
     compile 'org.apache.httpcomponents:httpasyncclient:4.1'
     compile 'commons-io:commons-io:2.6'
     compile 'com.fasterxml.jackson.core:jackson-core:2.9.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-    compile 'com.github.SamOphis:LavaClient:v2.1.0'
-    compile 'moe.kyokobot:lavaplayer:1.3.1'
+    compile 'com.github.samophis:LavaClient:2.5.0'
+    compile 'com.sedmelluq:jda-nas:1.0.6'
+    compile 'de.vandermeer:asciitable:0.3.2'
+    compile 'com.sedmelluq:lavaplayer:1.3.7'
+    compile 'com.github.micromod:ibxm:a73'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile 'com.github.DiscordBotList:DBL-Java-Wrapper:v1.0'
     compile group: 'com.jsoniter', name: 'jsoniter', version: '0.9.22'
     compile group: 'javassist', name: 'javassist', version: '3.12.1.GA'
     compile group: 'it.unimi.dsi', name: 'fastutil', version: '8.1.1'

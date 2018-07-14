@@ -7,6 +7,8 @@ import moe.kyokobot.bot.util.GsonUtil;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -15,7 +17,8 @@ public class UserConfig implements DatabaseEntity {
 
     }
 
-    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, ArrayList<String> tags) {
+    @SuppressWarnings("squid:S00107")
+    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, Map<String, String> kvStore, Map<String, ArrayList<String>> listStore, int theme, boolean noDMs) {
         this.id = id;
         this.language = language;
         this.level = level;
@@ -24,7 +27,10 @@ public class UserConfig implements DatabaseEntity {
         this.claim = claim;
         this.reputation = reputation;
         this.image = image;
-        this.tags = tags;
+        this.kvStore = kvStore;
+        this.listStore = listStore;
+        this.theme = theme;
+        this.noDMs = noDMs;
     }
 
     private String id = "";
@@ -34,9 +40,12 @@ public class UserConfig implements DatabaseEntity {
     private long xp = 0L;
     private long claim = 0L;
     private long reputation = 0L;
-    private int theme = 0;
+    private long voted = 0L;
+    private int theme = 1;
+    private boolean noDMs = false;
     private String image = "default";
-    private ArrayList<String> tags = new ArrayList<>();
+    private Map<String, String> kvStore = new HashMap<>();
+    private Map<String, ArrayList<String>> listStore = new HashMap<>();
 
     @Transient
     @Override

@@ -10,7 +10,6 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,14 +40,14 @@ public class SendMoneyCommand extends Command {
                 CommonErrors.noUserFound(context, stringuser);
             } else {
                 if (context.getSender() == m.getUser()) {
-                    context.send(CommandIcons.error + context.getTranslated("sendmoney.self"));
+                    context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.self"));
                 } else {
                     UserConfig sender = databaseManager.getUser(context.getSender());
                     if (sender.getMoney() >= amount) {
                         requests.put(context.getSender(), new SendMoneyRequest(amount, System.currentTimeMillis() + 30000, m.getUser()));
-                        context.send(CommandIcons.info + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
+                        context.send(CommandIcons.INFO + String.format(context.getTranslated("sendmoney.request"), amount, UserUtil.toDiscrim(m.getUser()), context.getPrefix()));
                     } else {
-                        context.send(CommandIcons.error + context.getTranslated("sendmoney.nomoney"));
+                        context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.nomoney"));
                     }
                 }
             }
@@ -68,7 +67,7 @@ public class SendMoneyCommand extends Command {
         if (request != null) {
             requests.invalidate(context.getSender());
             if (request.isExpiried()) {
-                context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
+                context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.expiried"));
             } else {
                 try {
                     UserConfig sender = databaseManager.getUser(context.getSender());
@@ -78,9 +77,9 @@ public class SendMoneyCommand extends Command {
                         receiver.setMoney(receiver.getMoney() + request.amount);
                         databaseManager.save(sender);
                         databaseManager.save(receiver);
-                        context.send(CommandIcons.success + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
+                        context.send(CommandIcons.SUCCESS + String.format(context.getTranslated("sendmoney.sent"), request.amount, request.receiver.getName()));
                     } else {
-                        context.send(CommandIcons.error + context.getTranslated("sendmoney.nomoney"));
+                        context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.nomoney"));
                     }
                 } catch (Exception e) {
                     logger.error("Caught exception in SendMoneyCommand!", e);
@@ -89,7 +88,7 @@ public class SendMoneyCommand extends Command {
                 }
             }
         } else {
-            context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
+            context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.expiried"));
         }
     }
 
@@ -97,9 +96,9 @@ public class SendMoneyCommand extends Command {
     public void cancel(CommandContext context) {
         if (requests.asMap().containsKey(context.getSender())) {
             requests.invalidate(context.getSender());
-            context.send(CommandIcons.info + context.getTranslated("sendmoney.cancelled"));
+            context.send(CommandIcons.INFO + context.getTranslated("sendmoney.cancelled"));
         } else {
-            context.send(CommandIcons.error + context.getTranslated("sendmoney.expiried"));
+            context.send(CommandIcons.ERROR + context.getTranslated("sendmoney.expiried"));
         }
     }
 

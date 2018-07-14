@@ -31,7 +31,7 @@ public class ProfileCommand extends Command {
     public void execute(CommandContext context) {
         if (CommonUtil.checkCooldown(cooldowns, context, 5000)) return;
 
-        context.getChannel().sendMessage(CommandIcons.working + context.getTranslated("generic.loading")).queue(message -> {
+        context.getChannel().sendMessage(CommandIcons.WORKING + context.getTranslated("generic.loading")).queue(message -> {
             try {
                 byte[] image;
                 if (context.hasArgs()) {
@@ -45,7 +45,7 @@ public class ProfileCommand extends Command {
                 } else {
                     image = imageRequester.getProfile(context.getSender());
                 }
-                context.getChannel().sendFile(image, "profile.webp").queue(success -> message.delete().queue(), error -> {
+                context.getChannel().sendFile(image, "profile.png").queue(success -> message.delete().queue(), error -> {
                     error.printStackTrace();
                     Sentry.capture(error);
                     CommonErrors.editException(context, error, message);

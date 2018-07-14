@@ -3,6 +3,7 @@ package moe.kyokobot.bot.command;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.util.CommonErrors;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public abstract class Command {
     @Getter
     protected CommandType type = CommandType.NORMAL;
     @Getter
-    protected boolean allowedInDMs = false;
+    protected boolean experimental = false;
     @Getter
     protected HashMap<String, Method> subCommands = new HashMap<>();
 
@@ -52,8 +53,10 @@ public abstract class Command {
                 Method m = subCommands.get(subcommand);
                 try {
                     m.invoke(this, context);
+                } catch (PermissionException e) {
+                    CommonErrors.noPermissionBot(context, e);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Caught error while executing command \"" + name + "\"", e);
                     Sentry.capture(e);
                     CommonErrors.exception(context, e);
                 }

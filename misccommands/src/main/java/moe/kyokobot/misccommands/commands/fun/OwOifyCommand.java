@@ -34,6 +34,11 @@ public class OwOifyCommand extends Command {
             text = text.replace("N", "NY");
             text = text.replace("!", randomElement(faces));
 
+            if (text.length() > 2000) {
+                CommonErrors.tooLong(context);
+                return;
+            }
+
             context.send(text);
         } else {
             CommonErrors.usage(context);
