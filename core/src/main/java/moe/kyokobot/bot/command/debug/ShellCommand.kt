@@ -31,7 +31,7 @@ class ShellCommand: Command() {
                     builder.append(err.lines().toArray().joinToString(System.lineSeparator()))
                 }
             }
-            process.destroy()
+            process.destroyForcibly()
             var result = builder.toString()
             if (result.length > 1993)
                 result = result.substring(0, 1993)
