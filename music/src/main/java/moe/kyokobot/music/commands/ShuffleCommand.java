@@ -2,6 +2,7 @@ package moe.kyokobot.music.commands;
 
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.music.MusicManager;
+import org.jetbrains.annotations.NotNull;
 
 public class ShuffleCommand extends MusicCommand {
 
@@ -14,7 +15,7 @@ public class ShuffleCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         
     }
 }

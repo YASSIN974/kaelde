@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +17,7 @@ public class CleanSelfCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         AtomicInteger i = new AtomicInteger();
 
         context.getChannel().getHistory().retrievePast(100).queue(messages -> messages.forEach(message -> {

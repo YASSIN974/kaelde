@@ -6,6 +6,7 @@ import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.jetbrains.annotations.NotNull;
 
 public class StopCommand extends MusicCommand {
     private final MusicManager musicManager;
@@ -18,7 +19,7 @@ public class StopCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         if (player.getPlayingTrack() != null) {
             player.stopTrack();

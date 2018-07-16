@@ -7,6 +7,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.bot.util.RandomUtil;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
@@ -21,7 +22,7 @@ public class BoobsCommand extends NsfwCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("http://api.oboobs.ru/boobs/0/1/random"));

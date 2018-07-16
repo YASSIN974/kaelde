@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -66,7 +67,7 @@ public abstract class Command {
         execute(context);
     }
 
-    public void execute(CommandContext context) {
+    public void execute(@Nonnull CommandContext context) {
         throw new UnsupportedOperationException("Command has not implemented execute()");
     }
 }

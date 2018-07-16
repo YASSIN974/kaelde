@@ -9,6 +9,7 @@ import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -26,7 +27,7 @@ public class EmojiCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.getConcatArgs().isEmpty()) {
             CommonErrors.usage(context);
             return;

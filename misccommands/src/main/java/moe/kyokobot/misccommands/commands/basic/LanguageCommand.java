@@ -10,6 +10,7 @@ import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 
 public class LanguageCommand extends Command {
 
@@ -24,7 +25,7 @@ public class LanguageCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         try {
             if (context.hasArgs()) {
                 if (context.getConcatArgs().equalsIgnoreCase("default")) {

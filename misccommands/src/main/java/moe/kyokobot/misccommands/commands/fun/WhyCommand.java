@@ -7,6 +7,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.GsonUtil;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
@@ -19,7 +20,7 @@ public class WhyCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://nekos.life/api/v2/why"));

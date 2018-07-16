@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class GenDocsCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         StringBuilder sb = new StringBuilder();
 
         TreeMap<CommandCategory, List<Command>> categories = Arrays.stream(CommandCategory.values()).collect(Collectors.toMap(c -> c, c -> new ArrayList<>(), (a, b) -> b, TreeMap::new));

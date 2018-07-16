@@ -8,6 +8,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.util.CommonErrors;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,7 +20,7 @@ public class ReloadSettingsCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         String cfgname = System.getenv("KYOKO_CONFIG");
         if (cfgname == null) cfgname = System.getProperty("kyoko.config");
 

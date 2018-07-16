@@ -6,6 +6,7 @@ import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class KaraokeCommand extends MusicCommand {
 
@@ -19,7 +20,7 @@ public class KaraokeCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
             // TODO check that user is in same channel as Kyoko.

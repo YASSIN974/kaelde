@@ -9,6 +9,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.music.MusicIcons.STOP;
 
@@ -24,7 +25,7 @@ public class SkipCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         // TODO voteskip
 
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();

@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 
 public class InviteCommand extends Command {
     public InviteCommand() {
@@ -14,7 +15,7 @@ public class InviteCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         EmbedBuilder eb = context.getNormalEmbed();
         eb.setTitle(context.getTranslated("invite.title"));
         eb.addField(context.getTranslated("invite.link"),

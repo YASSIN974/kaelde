@@ -8,6 +8,7 @@ import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import org.jetbrains.annotations.NotNull;
 
 public class AvatarCommand extends Command {
 
@@ -18,7 +19,7 @@ public class AvatarCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             Member member = UserUtil.getMember(context.getGuild(), context.getConcatArgs());
             if (member != null) {

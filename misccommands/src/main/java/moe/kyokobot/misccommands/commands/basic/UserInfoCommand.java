@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -23,7 +24,7 @@ public class UserInfoCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             Member member = UserUtil.getMember(context.getGuild(), context.getConcatArgs());
             if (member != null) {

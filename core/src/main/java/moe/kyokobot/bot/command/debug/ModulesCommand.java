@@ -3,6 +3,7 @@ package moe.kyokobot.bot.command.debug;
 import com.google.common.base.Joiner;
 import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.manager.ModuleManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -130,7 +131,7 @@ public class ModulesCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         printModules(context);
     }
 

@@ -12,6 +12,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class ListCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         MusicQueue queue = musicManager.getQueue(context.getGuild());
 

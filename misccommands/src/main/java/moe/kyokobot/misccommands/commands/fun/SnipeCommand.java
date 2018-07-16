@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class SnipeCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         Snipe snipe = snipes.get(context.getGuild().getIdLong());
         if (snipe != null) {
             Message message = snipe.snipedMessages.remove(context.getChannel().getIdLong());

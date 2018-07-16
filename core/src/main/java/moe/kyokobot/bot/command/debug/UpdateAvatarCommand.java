@@ -8,6 +8,7 @@ import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.NetworkUtil;
 import net.dv8tion.jda.core.entities.Icon;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class UpdateAvatarCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             updateAvatar(context, context.getConcatArgs());
         } else if (!context.getMessage().getAttachments().isEmpty()) {

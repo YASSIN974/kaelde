@@ -11,6 +11,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class WeebCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.getConcatArgs().isEmpty() || !types.contains(context.getConcatArgs().toLowerCase())) {
             printHelp(context);
         } else {

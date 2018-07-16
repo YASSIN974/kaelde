@@ -10,6 +10,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public class HelpCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.getConcatArgs().isEmpty()) {
             if (context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_EMBED_LINKS)) {
                 sendEmbed(context);

@@ -15,6 +15,7 @@ import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class ActionCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             if (CommonUtil.checkCooldown(cooldowns, context, COMMAND_RATELIMIT)) return;
 

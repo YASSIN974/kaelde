@@ -6,6 +6,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
+import org.jetbrains.annotations.NotNull;
 
 public class BananaCommand extends Command {
     public BananaCommand() {
@@ -16,7 +17,7 @@ public class BananaCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         EmbedBuilder eb = context.getNormalEmbed();
 
         if (!context.getConcatArgs().isEmpty()) {

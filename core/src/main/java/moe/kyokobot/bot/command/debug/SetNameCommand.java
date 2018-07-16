@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.CommandType;
+import org.jetbrains.annotations.NotNull;
 
 public class SetNameCommand extends Command {
     public SetNameCommand() {
@@ -13,7 +14,7 @@ public class SetNameCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             context.getMessage().getJDA().getSelfUser().getManager().setName(context.getConcatArgs()).queue(
                     success -> context.send(CommandIcons.SUCCESS + "Name updated!"),

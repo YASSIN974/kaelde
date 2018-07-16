@@ -8,6 +8,7 @@ import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.managers.AudioManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -25,7 +26,7 @@ public class StatsCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         AsciiTable at = new AsciiTable();
         at.addRule();
         at.addRow(null, context.getTranslated("about.title"));

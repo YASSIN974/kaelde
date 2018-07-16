@@ -11,6 +11,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.StringUtil;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.social.SocialConstants.MONEY_PREFIX;
 
@@ -27,7 +28,7 @@ public class ClaimCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         try {
             long currentTime = System.currentTimeMillis();
             UserConfig uc = databaseManager.getUser(context.getSender());

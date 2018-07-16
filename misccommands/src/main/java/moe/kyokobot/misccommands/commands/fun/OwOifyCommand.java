@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
 import net.dv8tion.jda.core.Permission;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.util.RandomUtil.randomElement;
 
@@ -20,7 +21,7 @@ public class OwOifyCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             String text = context.getConcatArgs();
             if (!context.getMember().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {

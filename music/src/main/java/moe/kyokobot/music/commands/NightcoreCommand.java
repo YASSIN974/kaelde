@@ -6,6 +6,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class NightcoreCommand extends MusicCommand {
 
@@ -19,7 +20,7 @@ public class NightcoreCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
             if (!context.hasArgs()) {

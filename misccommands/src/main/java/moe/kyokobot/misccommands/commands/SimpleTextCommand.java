@@ -3,6 +3,7 @@ package moe.kyokobot.misccommands.commands;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
+import org.jetbrains.annotations.NotNull;
 
 public class SimpleTextCommand extends Command {
 
@@ -17,7 +18,7 @@ public class SimpleTextCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(text);
     }
 }

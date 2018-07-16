@@ -8,6 +8,7 @@ import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import net.dv8tion.jda.bot.sharding.ShardManager;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class EvalCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + "Evaluating...", message -> {
             try {
                 if (shardManager != null)

@@ -10,6 +10,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +26,7 @@ public class SendMoneyCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.getArgs().length > 1) {
             sendMoney(context);
         } else CommonErrors.usage(context);

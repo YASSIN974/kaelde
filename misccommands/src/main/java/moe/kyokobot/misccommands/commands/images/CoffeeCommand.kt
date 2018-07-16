@@ -19,10 +19,10 @@ class CoffeeCommand: Command() {
         category = CommandCategory.IMAGES
     }
 
-    override fun execute(context: CommandContext?) {
+    override fun execute(context: CommandContext) {
         // this command is written with null safety -- if a variable is null, the command won't do anything
         // better than possibly throwing NPE's everywhere though
-        context?.send(CommandIcons.WORKING + context.getTranslated("generic.loading")) {
+        context.send(CommandIcons.WORKING + context.getTranslated("generic.loading")) {
             message: Message? ->
             try {
                 val data = String(NetworkUtil.download("https://coffee.alexflipnote.xyz/random.json"))

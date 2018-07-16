@@ -11,6 +11,7 @@ import moe.kyokobot.bot.util.UserUtil;
 import moe.kyokobot.social.requester.ImageRequester;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -28,7 +29,7 @@ public class ProfileCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (CommonUtil.checkCooldown(cooldowns, context, 5000)) return;
 
         context.getChannel().sendMessage(CommandIcons.WORKING + context.getTranslated("generic.loading")).queue(message -> {

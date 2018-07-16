@@ -4,6 +4,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.RandomUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class RandomTextCommand extends Command {
 
@@ -20,7 +21,7 @@ public class RandomTextCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(RandomUtil.randomElement(texts));
     }
 }

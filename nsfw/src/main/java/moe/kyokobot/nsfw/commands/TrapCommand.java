@@ -7,6 +7,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.GsonUtil;
+import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
@@ -17,7 +18,7 @@ public class TrapCommand extends NsfwCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + context.getTranslated("generic.loading"), message -> {
             try {
                 String data = new String(download("https://api.computerfreaker.cf/v1/trap"));

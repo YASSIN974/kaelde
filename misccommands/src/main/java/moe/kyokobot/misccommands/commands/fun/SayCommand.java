@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
 import net.dv8tion.jda.core.Permission;
+import org.jetbrains.annotations.NotNull;
 
 public class SayCommand extends Command {
 
@@ -15,7 +16,7 @@ public class SayCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         if (context.hasArgs()) {
             String msg = context.getConcatArgs();
             if (!context.getMember().hasPermission(Permission.MESSAGE_MENTION_EVERYONE)) {

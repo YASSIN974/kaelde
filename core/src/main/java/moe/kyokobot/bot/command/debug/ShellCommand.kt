@@ -7,6 +7,7 @@ import moe.kyokobot.bot.command.CommandIcons
 import moe.kyokobot.bot.command.CommandType
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ShellCommand: Command() {
@@ -14,21 +15,15 @@ class ShellCommand: Command() {
         this.name = "shell"
         this.type = CommandType.DEBUG
     }
-    override fun execute(context: CommandContext?) {
+    override fun execute(context: CommandContext) {
         try {
-            val process = Runtime.getRuntime().exec(arrayOf(System.getenv("SHELL")!!, "-c", context!!.concatArgs.replace("\"", "\\\"")))
+            val process = ProcessBuilder(Arrays.asList(System.getenv("SHELL")!!, "-c", context.concatArgs.replace("\"", "\\\""))).redirectErrorStream(true).start()
             val output = BufferedReader(InputStreamReader(process.inputStream))
-            val err = BufferedReader(InputStreamReader(process.errorStream))
-            val builder = StringBuilder("Response:```\n")
-            process.waitFor(20, TimeUnit.SECONDS)
+            val builder = StringBuilder()
+            process.waitFor(10, TimeUnit.MINUTES)
             if (output.ready()) {
                 output.use {
                     builder.append(output.lines().toArray().joinToString(System.lineSeparator()))
-                }
-            }
-            if (err.ready()) {
-                err.use {
-                    builder.append(err.lines().toArray().joinToString(System.lineSeparator()))
                 }
             }
             process.destroyForcibly()
@@ -38,7 +33,7 @@ class ShellCommand: Command() {
             context.send("```\n$result```")
         } catch (err: Throwable) {
             Sentry.capture(err)
-            context?.send("${CommandIcons.ERROR} Error while running shell command: ${err.message}")
+            context.send("${CommandIcons.ERROR} Error while running shell command: ${err.message}")
         }
     }
 }

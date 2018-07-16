@@ -2,6 +2,7 @@ package moe.kyokobot.bot.command;
 
 import com.google.common.base.Joiner;
 import moe.kyokobot.bot.manager.CommandManager;
+import org.jetbrains.annotations.NotNull;
 
 public class AliasCommand extends Command {
     private CommandManager commandManager;
@@ -20,7 +21,7 @@ public class AliasCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         Command c = commandManager.getCommands().get(execute);
         if (c != null) {
             CommandContext con = new CommandContext(context.getI18n(), c, context.getEvent(), context.getPrefix(), name, Joiner.on(" ").join(args), args);

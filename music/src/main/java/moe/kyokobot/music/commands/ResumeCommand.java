@@ -5,6 +5,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public class ResumeCommand extends MusicCommand {
     private final MusicManager musicManager;
@@ -16,7 +17,7 @@ public class ResumeCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         if (player.getPlayingTrack() != null) {
             if (player.isPaused()) {

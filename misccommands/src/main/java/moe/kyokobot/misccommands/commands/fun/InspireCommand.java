@@ -8,6 +8,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.NetworkUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class InspireCommand extends Command {
 
@@ -18,7 +19,7 @@ public class InspireCommand extends Command {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + context.getTranslated("generic.loading"), message -> {
             try {
                 String url = new String(NetworkUtil.download("http://inspirobot.me/api?generate=true"));

@@ -3,6 +3,7 @@ package moe.kyokobot.music.commands;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.SearchManager;
+import org.jetbrains.annotations.NotNull;
 
 public class SearchCommand extends MusicCommand {
 
@@ -17,7 +18,7 @@ public class SearchCommand extends MusicCommand {
     }
 
     @Override
-    public void execute(CommandContext context) {
+    public void execute(@NotNull CommandContext context) {
 
     }
 }
