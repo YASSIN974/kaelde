@@ -10,7 +10,6 @@ public class Constants {
 
     }
 
-    public static boolean DEBUG = false;
     public static final String VERSION;
     public static final String SITE_URL = "https://kyokobot.moe";
     public static final String SITE_URL_MD = "[kyokobot.moe](https://kyokobot.moe)";
@@ -36,6 +35,11 @@ public class Constants {
     ));
 
     static {
-        VERSION = "2.0.0";
+        String version = Constants.class.getPackage().getImplementationVersion();
+
+        if (version == null)
+            VERSION = "unknown";
+        else
+            VERSION = version;
     }
 }

@@ -15,7 +15,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'io.franzbecker.gradle-lombok'
 apply plugin: "com.github.ben-manes.versions"
 
-// DEPENDENCY HEEEEEELL
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'net.dv8tion', name: 'JDA', version: jdaVersion
@@ -41,6 +40,7 @@ dependencies {
     compile 'com.github.micromod:ibxm:a73'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'com.github.DiscordBotList:DBL-Java-Wrapper:v1.0'
+    compile 'com.github.natanbc:lavadsp:0.3'
     compile group: 'com.jsoniter', name: 'jsoniter', version: '0.9.23'
     compile group: 'javassist', name: 'javassist', version: '3.12.1.GA'
     compile group: 'it.unimi.dsi', name: 'fastutil', version: '8.2.1'

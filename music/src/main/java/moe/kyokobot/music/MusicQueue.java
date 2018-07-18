@@ -1,5 +1,6 @@
 package moe.kyokobot.music;
 
+import com.google.common.collect.Lists;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import moe.kyokobot.bot.command.CommandContext;
@@ -7,6 +8,9 @@ import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+
+import java.util.Collections;
+import java.util.List;
 
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
@@ -55,6 +59,12 @@ public class MusicQueue {
 
     public ObjectLinkedOpenHashSet<AudioTrack> getTracks() {
         return tracks;
+    }
+
+    public void shuffle() {
+        List<AudioTrack> list = Lists.newArrayList(tracks);
+        Collections.shuffle(list);
+        tracks = new ObjectLinkedOpenHashSet<>(list);
     }
 
     public JDAImpl getJDA() {

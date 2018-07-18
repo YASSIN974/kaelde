@@ -37,6 +37,8 @@ import java.util.ArrayList;
 public class Module implements KyokoModule {
     private Logger logger;
     @Inject
+    private EventWaiter eventWaiter;
+    @Inject
     private ModuleManager moduleManager;
     @Inject
     private CommandManager commandManager;
@@ -109,6 +111,8 @@ public class Module implements KyokoModule {
         commands.add(new NightcoreCommand(musicManager));
         commands.add(new PauseCommand(musicManager));
         commands.add(new ResumeCommand(musicManager));
+        commands.add(new SearchCommand(eventWaiter, musicManager, searchManager));
+        commands.add(new ShuffleCommand(musicManager));
         commands.add(new StopCommand(musicManager));
 
         commands.forEach(commandManager::registerCommand);

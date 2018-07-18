@@ -1,33 +1,25 @@
 package moe.kyokobot.music.commands;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.*;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.TimeUnit;
-
 import static moe.kyokobot.music.MusicIcons.PLAY;
+import static moe.kyokobot.music.MusicUtil.locks;
 
 public class PlayCommand extends MusicCommand {
     private final MusicManager musicManager;
     private final SearchManager searchManager;
-    private Cache<Guild, Boolean> locks = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(2000).build();
 
     public PlayCommand(MusicManager musicManager, SearchManager searchManager) {
         this.musicManager = musicManager;
@@ -40,10 +32,7 @@ public class PlayCommand extends MusicCommand {
 
     @Override
     public void execute(@NotNull CommandContext context) {
-        if (locks.getIfPresent(context.getGuild()) != null) {
-            context.send(CommandIcons.ERROR + context.getTranslated("music.locked"));
-            return;
-        }
+        if (MusicUtil.lock(context)) return;
 
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
@@ -54,7 +43,7 @@ public class PlayCommand extends MusicCommand {
                 queue.setAnnouncing(context.getChannel(), context);
 
                 if (loadTracks(context, queue))
-                    play(player, queue, context, voiceChannel);
+                    MusicUtil.play(musicManager, player, queue, context, voiceChannel);
 
                 locks.invalidate(context.getGuild());
             } else {
@@ -133,41 +122,5 @@ public class PlayCommand extends MusicCommand {
             return false;
         }
         return true;
-    }
-
-    private void play(MusicPlayer player, MusicQueue queue, CommandContext context, VoiceChannel voiceChannel) {
-        if (player.getPlayingTrack() == null) {
-            int timeout = 0;
-
-            try {
-                musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
-            } catch (PermissionException e) {
-                locks.invalidate(context.getGuild());
-                return;
-            }
-
-            while (!player.isConnected()) {
-                if (timeout == 100) { // wait max 10 seconds
-                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
-                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
-                    locks.invalidate(context.getGuild());
-                    return;
-                }
-
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    locks.invalidate(context.getGuild());
-                    Thread.currentThread().interrupt();
-                }
-                timeout++;
-            }
-
-            locks.invalidate(context.getGuild());
-            player.playTrack(queue.poll()); // it shouldn't be null!
-        } else
-            player.setPaused(false);
-
-        locks.invalidate(context.getGuild());
     }
 }

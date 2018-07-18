@@ -1,6 +1,7 @@
 package moe.kyokobot.bot.util;
 
 import moe.kyokobot.bot.Constants;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
 import net.dv8tion.jda.core.entities.Message;
@@ -26,11 +27,11 @@ public class CommonErrors {
     }
 
     public static void editException(CommandContext context, Throwable e, Message message) {
-        message.editMessage(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
+        message.editMessage(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Globals.debug ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : "")).override(true).queue();
     }
 
     public static void exception(CommandContext context, Throwable e) {
-        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Constants.DEBUG ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
+        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Globals.debug ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
     }
 
     public static void notANumber(CommandContext context, String arg) {
