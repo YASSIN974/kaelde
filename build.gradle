@@ -15,14 +15,14 @@ buildscript {
 
 allprojects {
     ext {
-        jdaVersion = "3.7.0_382"
+        jdaVersion = "3.7.1_385"
     }
     repositories {
         jcenter()
-        mavenCentral()
         maven { url "https://jcenter.bintray.com" }
         maven { url "https://dl.bintray.com/gabixdev/kyoko" }
         maven { url "https://dl.bintray.com/samophis/maven" }
+        maven { url "http://central.maven.org/maven2"}
         maven { url "http://www.atilika.org/nexus/content/repositories/atilika" }
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url "https://jitpack.io" }

@@ -95,7 +95,7 @@ public class Main {
                 builder.setShardsTotal(count);
                 builder.setShards(min, max);
                 builder.setAudioEnabled(true);
-                builder.setAudioSendFactory(new NativeAudioSendFactory());
+                //builder.setAudioSendFactory(new NativeAudioSendFactory());
                 builder.setAutoReconnect(true);
                 builder.setToken(settings.connection.token);
                 builder.addEventListeners(eventHandler);

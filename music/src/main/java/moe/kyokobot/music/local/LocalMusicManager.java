@@ -19,6 +19,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
+import moe.kyokobot.music.video.TestVideoSender;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
@@ -98,6 +99,7 @@ public class LocalMusicManager implements MusicManager {
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
         audioManager.openAudioConnection(channel);
         audioManager.setSendingHandler(new LocalSendHandler((LocalPlayerWrapper) getMusicPlayer(guild)));
+        audioManager.setVideoSendingHandler(new TestVideoSender());
     }
 
     @Override

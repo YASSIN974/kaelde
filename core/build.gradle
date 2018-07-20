@@ -41,6 +41,10 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'com.github.DiscordBotList:DBL-Java-Wrapper:v1.0'
     compile 'com.github.natanbc:lavadsp:0.3'
+    compile ('com.github.hoary.javaav:JavaAV:0.1') {
+        exclude group: 'com.googlecode.javacv'
+    }
+    compile group: 'org.bytedeco', name: 'javacv', version: '0.9'
     compile group: 'com.jsoniter', name: 'jsoniter', version: '0.9.23'
     compile group: 'javassist', name: 'javassist', version: '3.12.1.GA'
     compile group: 'it.unimi.dsi', name: 'fastutil', version: '8.2.1'
