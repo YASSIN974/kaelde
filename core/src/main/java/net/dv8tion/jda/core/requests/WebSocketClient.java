@@ -412,7 +412,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         .put("guild_id", channel.getGuild().getId())
                         .put("channel_id", channel.getId())
                         .put("self_mute", manager.isSelfMuted())
-                        .put("self_video", true)
+                        .put("self_video", false)
                         .put("self_deaf", manager.isSelfDeafened()));
     }
 
