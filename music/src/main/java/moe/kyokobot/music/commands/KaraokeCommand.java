@@ -27,7 +27,7 @@ public class KaraokeCommand extends MusicCommand {
 
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             player.setKaraoke(!player.isKaraoke());
-            context.send(CommandIcons.INFO + "karaoke enabled: " + player.isKaraoke());
+            context.send(CommandIcons.INFO + context.getTranslated("music.karaoke." + (player.isVaporwave() ? "enabled" : "disabled")));
         }
     }
 

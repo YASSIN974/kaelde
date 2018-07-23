@@ -3,7 +3,8 @@ package moe.kyokobot.bot.command;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.util.CommonErrors;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,9 @@ public abstract class Command {
     }
 
     public void preExecute(CommandContext context) {
+        if (!context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_WRITE))
+            return;
+
         if (context.hasArgs()) {
             String subcommand = context.getArgs()[0].toLowerCase();
             if (subcommand.equalsIgnoreCase("-help") || subcommand.equalsIgnoreCase("--help")) {
@@ -54,7 +58,7 @@ public abstract class Command {
                 Method m = subCommands.get(subcommand);
                 try {
                     m.invoke(this, context);
-                } catch (PermissionException e) {
+                } catch (InsufficientPermissionException e) {
                     CommonErrors.noPermissionBot(context, e);
                 } catch (Exception e) {
                     logger.error("Caught error while executing command \"" + name + "\"", e);

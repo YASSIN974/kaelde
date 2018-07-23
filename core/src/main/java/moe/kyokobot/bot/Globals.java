@@ -8,4 +8,5 @@ public class Globals {
     public static boolean inKyokoServer = false;
     public static boolean inDiscordBotsServer = false;
     public static boolean debug = false;
+    public static boolean noVoteLock = false;
 }

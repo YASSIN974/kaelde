@@ -1,6 +1,5 @@
 package moe.kyokobot.bot.command.debug
 
-import io.sentry.Sentry
 import moe.kyokobot.bot.command.Command
 import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.command.CommandIcons
@@ -30,9 +29,9 @@ class ShellCommand: Command() {
             var result = builder.toString()
             if (result.length > 1993)
                 result = result.substring(0, 1993)
-            context.send("```\n$result```")
+            context.sendChecked("```\n$result```", null)
+
         } catch (err: Throwable) {
-            Sentry.capture(err)
             context.send("${CommandIcons.ERROR} Error while running shell command: ${err.message}")
         }
     }

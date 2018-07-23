@@ -59,6 +59,11 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public boolean isVaporwave() {
+        return false;
+    }
+
+    @Override
     public boolean isPaused() {
         return player.isPaused();
     }
@@ -115,6 +120,11 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public void setKaraokeLevel(float level) {
+
+    }
+
+    @Override
+    public void setVaporwave(boolean enabled) {
 
     }
 

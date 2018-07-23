@@ -37,26 +37,15 @@ public class EvalCommand extends Command {
 
         name = "eval";
         type = CommandType.DEBUG;
-        engine = new ScriptEngineManager().getEngineByName("JavaScript");
-
-        if (getClass().getResource("/babel.min.js") != null) {
-            logger.info("Loading Babel...");
-
-            try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {
-                engine.put("logger", logger);
-                CompiledScript compiled = ((Compilable) engine).compile(r);
-                compiled.eval();
-                babelEnabled = true;
-            } catch (Exception e) {
-                logger.error("Error loading Babel!", e);
-            }
-        }
     }
 
     @Override
     public void execute(@NotNull CommandContext context) {
         context.send(CommandIcons.WORKING + "Evaluating...", message -> {
             try {
+                if (engine == null)
+                    setupEngine();
+
                 if (shardManager != null)
                     engine.put("shardManager", shardManager);
                 engine.put("logger", logger);
@@ -79,6 +68,7 @@ public class EvalCommand extends Command {
                 if (babelEnabled && e.equals("use strict")) e = "null";
 
                 if (e.length() > 1990) e = e.substring(1990);
+
                 if (context.checkSensitive(e)) {
                     message.editMessage(CommandIcons.ERROR + context.getTranslated("generic.sensitive")).queue();
                 } else {
@@ -89,5 +79,22 @@ public class EvalCommand extends Command {
                 message.editMessage(CommandIcons.ERROR + e.getMessage()).queue();
             }
         });
+    }
+
+    private void setupEngine() {
+        engine = new ScriptEngineManager().getEngineByName("JavaScript");
+
+        if (getClass().getResource("/babel.min.js") != null) {
+            logger.info("Loading Babel...");
+
+            try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {
+                engine.put("logger", logger);
+                CompiledScript compiled = ((Compilable) engine).compile(r);
+                compiled.eval();
+                babelEnabled = true;
+            } catch (Exception e) {
+                logger.error("Error loading Babel!", e);
+            }
+        }
     }
 }

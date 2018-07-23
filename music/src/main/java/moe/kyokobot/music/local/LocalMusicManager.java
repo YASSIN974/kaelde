@@ -2,7 +2,6 @@ package moe.kyokobot.music.local;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -19,6 +18,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
+import moe.kyokobot.music.event.TrackStartEvent;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
@@ -52,8 +52,7 @@ public class LocalMusicManager implements MusicManager {
         playerManager = new DefaultAudioPlayerManager();
         playerManager.setFrameBufferDuration(500);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-        playerManager.getConfiguration().setOpusEncodingQuality(9);
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.MEDIUM);
+        playerManager.getConfiguration().setOpusEncodingQuality(10);
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
 
         LocalPlayerWrapper.configuration = playerManager.getConfiguration();
@@ -154,7 +153,6 @@ public class LocalMusicManager implements MusicManager {
             if (audioManager.isConnected())
                 audioManager.prepareForRegionChange();
             if (!audioManager.isAttemptingToConnect()) {
-                logger.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
                 return;
             }
 
@@ -170,6 +168,11 @@ public class LocalMusicManager implements MusicManager {
         MusicPlayer player = players.get(event.getGuild().getIdLong());
         if (player != null && (event.getChannelLeft().getMembers().contains(event.getGuild().getSelfMember()) && isChannelEmpty(event.getGuild(), event.getChannelLeft())))
             dispose((JDAImpl) event.getJDA(), event.getGuild());
+    }
+
+    @Subscribe
+    public void onTrackStart(TrackStartEvent event) {
+        event.getPlayer().updateFilters();
     }
 
     @Subscribe
@@ -200,16 +203,5 @@ public class LocalMusicManager implements MusicManager {
     private void playAndAnnounce(TrackEndEvent event, MusicQueue queue, AudioTrack track) {
         event.getPlayer().playTrack(track);
         queue.announce(track);
-        int w = 0;
-        while (event.getPlayer().getPlayingTrack() == null) {
-            try {
-                if (w > 20) return;
-                Thread.sleep(100);
-                w++;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        event.getPlayer().updateFilters();
     }
 }

@@ -2,6 +2,7 @@ package moe.kyokobot.bot.services;
 
 import com.google.common.util.concurrent.AbstractScheduledService;
 import io.sentry.Sentry;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.entities.Game;
@@ -9,7 +10,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.discordbots.api.client.DiscordBotListAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,6 @@ public class GuildCountService extends AbstractScheduledService {
     private ShardManager shardManager;
 
     private OkHttpClient client = new OkHttpClient();
-    private DiscordBotListAPI dblAPI;
     private int last = 0;
 
     public GuildCountService(ShardManager shardManager) {
@@ -33,10 +32,6 @@ public class GuildCountService extends AbstractScheduledService {
     @Override
     protected void runOneIteration() {
         Settings settings = Settings.instance;
-
-        if (dblAPI == null && settings.apiKeys.containsKey("dbl")) {
-            dblAPI = new DiscordBotListAPI.Builder().token(settings.apiKeys.get("dbl")).build();
-        }
 
         setPresence(settings);
         sendStats(settings);
@@ -56,11 +51,36 @@ public class GuildCountService extends AbstractScheduledService {
     }
 
     private void sendStats(Settings settings) {
-        if (dblAPI != null) {
-            shardManager.getShards().forEach(shard -> dblAPI.setStats(shard.getSelfUser().getId(),
-                    shard.getGuilds().size(), shard.getShardInfo().getShardId(), shard.getShardInfo().getShardTotal()));
-        }
+        sendDBL(settings);
+        sendListcord(settings);
+        sendDBots(settings);
+    }
 
+    private void sendDBL(Settings settings) {
+        if (settings.apiKeys.containsKey("dbl")) {
+            shardManager.getShards().forEach(shard -> {
+                RequestBody body = RequestBody.create(JSON,
+                        "{\"server_count\":" + shard.getGuilds().size() + ", \"shard_id\":"
+                                + shard.getShardInfo().getShardId() + ", \"shard_count\":"
+                                + shard.getShardInfo().getShardTotal() + "}");
+                Request request = new Request.Builder()
+                        .header("Authorization", settings.apiKeys.get("dbl"))
+                        .url("https://discordbots.org/api/bots/" + shard.getSelfUser().getId() + "/stats")
+                        .post(body)
+                        .build();
+                try {
+                    client.newCall(request).execute().close();
+                    Globals.noVoteLock = false;
+                } catch (IOException e) {
+                    logger.error("Error while sending stats to DBL!", e);
+                    Globals.noVoteLock = true; // disable votelocks when DBL is down
+                    Sentry.capture(e);
+                }
+            });
+        }
+    }
+
+    private void sendListcord(Settings settings) {
         if (settings.apiKeys.containsKey("listcord")) {
             shardManager.getShards().forEach(shard -> {
                 RequestBody body = RequestBody.create(JSON,
@@ -78,7 +98,9 @@ public class GuildCountService extends AbstractScheduledService {
                 }
             });
         }
+    }
 
+    private void sendDBots(Settings settings) {
         if (settings.apiKeys.containsKey("dbots")) {
             shardManager.getShards().forEach(shard -> {
                 RequestBody body = RequestBody.create(JSON,
@@ -102,6 +124,6 @@ public class GuildCountService extends AbstractScheduledService {
 
     @Override
     protected Scheduler scheduler() {
-        return Scheduler.newFixedRateSchedule(0, 2, TimeUnit.MINUTES);
+        return Scheduler.newFixedRateSchedule(0, 5, TimeUnit.MINUTES);
     }
 }

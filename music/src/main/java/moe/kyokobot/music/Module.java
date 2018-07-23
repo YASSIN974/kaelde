@@ -19,6 +19,7 @@ import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.event.ConnectedEvent;
 import moe.kyokobot.bot.manager.CommandManager;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
@@ -38,6 +39,8 @@ public class Module implements KyokoModule {
     private Logger logger;
     @Inject
     private EventWaiter eventWaiter;
+    @Inject
+    private DatabaseManager databaseManager;
     @Inject
     private ModuleManager moduleManager;
     @Inject
@@ -114,6 +117,7 @@ public class Module implements KyokoModule {
         commands.add(new SearchCommand(eventWaiter, musicManager, searchManager));
         commands.add(new ShuffleCommand(musicManager));
         commands.add(new StopCommand(musicManager));
+        commands.add(new VaporwaveCommand(musicManager, databaseManager));
 
         commands.forEach(commandManager::registerCommand);
     }

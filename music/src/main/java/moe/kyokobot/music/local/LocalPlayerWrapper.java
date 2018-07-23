@@ -1,7 +1,9 @@
 package moe.kyokobot.music.local;
 
+import com.github.natanbc.lavadsp.karaoke.KaraokePcmAudioFilter;
+import com.github.natanbc.lavadsp.timescale.TimescalePcmAudioFilter;
+import com.github.natanbc.lavadsp.volume.VolumePcmAudioFilter;
 import com.google.common.collect.ImmutableList;
-import com.sedmelluq.discord.lavaplayer.filter.ResamplingPcmAudioFilter;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
@@ -18,8 +20,10 @@ public class LocalPlayerWrapper implements MusicPlayer {
     private final AudioPlayer player;
     private final Guild guild;
 
+    private float volume = 1.0f;
     private float nightcore = 1.0f;
     private boolean karaoke = false;
+    private boolean vaporwave = false;
     private float karaokeWidth = KaraokeFilter.DEFAULT_FILTER_WIDTH;
     private float karaokeBand = KaraokeFilter.DEFAULT_FILTER_BAND;
     private float karaokeLevel = KaraokeFilter.DEFAULT_LEVEL;
@@ -61,7 +65,7 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     @Override
     public int getVolume() {
-        return player.getVolume();
+        return (int) (volume * 100);
     }
 
     @Override
@@ -72,6 +76,11 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public boolean isKaraoke() {
         return karaoke;
+    }
+
+    @Override
+    public boolean isVaporwave() {
+        return vaporwave;
     }
 
     @Override
@@ -107,7 +116,8 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     @Override
     public void setVolume(int volume) {
-        player.setVolume(volume);
+        this.volume = Math.abs(volume / 100);
+        updateFilters();
     }
 
     @Override
@@ -143,6 +153,12 @@ public class LocalPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public void setVaporwave(boolean enabled) {
+        this.vaporwave = enabled;
+        updateFilters();
+    }
+
+    @Override
     public boolean hasFiltersEnabled() {
         return nightcore != 1.0f && !karaoke;
     }
@@ -154,39 +170,50 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     @Override
     public void updateFilters() {
-        if (!canBeNightcored(getPlayingTrack())) nightcore = 1.0f;
 
-        if (nightcore == 1.0f && !karaoke) { // no filters
+        // _ _ _ _ _ V K N
+        byte flags = 0;
+
+        if (karaoke) flags |= 0b010;
+
+        if (canChangeSpeed(getPlayingTrack())) {
+            if (nightcore != 1.0f) flags |= 0b001;
+            if (vaporwave) flags |= 0b100;
+        }
+
+        if (flags == 0) {
             player.setFilterFactory(null);
-        } else if (nightcore != 1.0f && !karaoke) { // nightcore filter
-            player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(
-                    new ResamplingPcmAudioFilter(
-                            configuration,
+        } else {
+            final byte f = flags;
+
+            player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> {
+                TimescalePcmAudioFilter timescale;
+                if (volume == 1.0f)
+                    timescale = new TimescalePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate);
+                else
+                    timescale = new TimescalePcmAudioFilter(
+                            new VolumePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate).setVolume(volume),
                             audioDataFormat.channelCount,
-                            audioFilter,
-                            audioDataFormat.sampleRate,
-                            (int) (audioDataFormat.sampleRate * (1f / nightcore))
-                    )
-            ));
-        } else if (nightcore == 1.0f) { // karaoke filter only
-            player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(
-                    new KaraokeFilter(audioFilter, audioDataFormat.sampleRate, karaokeLevel, karaokeBand, karaokeWidth)
-            ));
-        } else { // karaoke + nightcore filters
-            player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) -> ImmutableList.of(
-                    new KaraokeFilter(audioFilter, audioDataFormat.sampleRate, karaokeLevel, karaokeBand, karaokeWidth),
-                    new ResamplingPcmAudioFilter(
-                            configuration,
-                            audioDataFormat.channelCount,
-                            audioFilter,
-                            audioDataFormat.sampleRate,
-                            (int) (audioDataFormat.sampleRate * (1f / nightcore))
-                    )
-            ));
+                            audioDataFormat.sampleRate);
+
+                if ((f & 0b001) != 0)
+                    timescale.setRate(nightcore);
+                if ((f & 0b100) != 0)
+                    timescale.setSpeed(0.5f).setPitchSemiTones(-7);
+
+                if (karaoke) {
+                    if ((f & 0b101) != 0)
+                        return ImmutableList.of(new KaraokePcmAudioFilter(timescale, audioDataFormat.channelCount, audioDataFormat.sampleRate));
+                    else
+                        return ImmutableList.of(new KaraokePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate));
+                } else {
+                    return ImmutableList.of(timescale);
+                }
+            });
         }
     }
 
-    private boolean canBeNightcored(AudioTrack track) {
+    private boolean canChangeSpeed(AudioTrack track) {
         if (track == null) return false;
         return (!(track.getSourceManager() instanceof YoutubeAudioSourceManager) || track.getDuration() != Long.MAX_VALUE)
                 && (!(track.getSourceManager() instanceof TwitchStreamAudioSourceManager));

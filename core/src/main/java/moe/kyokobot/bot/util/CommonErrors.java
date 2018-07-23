@@ -31,7 +31,7 @@ public class CommonErrors {
     }
 
     public static void exception(CommandContext context, Throwable e) {
-        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, Globals.debug ? "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`" : ""));
+        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.error.message"), Constants.DISCORD_URL, "\n\n`" + e.getClass().getCanonicalName() + ": " + e.getMessage() + "`"));
     }
 
     public static void notANumber(CommandContext context, String arg) {
@@ -57,5 +57,9 @@ public class CommonErrors {
 
     public static void tooLong(CommandContext context) {
         context.send(CommandIcons.ERROR + context.getTranslated("generic.toolong"));
+    }
+
+    public static void voteLock(CommandContext context) {
+        context.send(CommandIcons.INFO + String.format(context.getTranslated("generic.votelock"), "https://discordbots.org/bot/375750637540868107/vote"));
     }
 }

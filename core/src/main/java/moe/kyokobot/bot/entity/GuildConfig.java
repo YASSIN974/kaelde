@@ -34,6 +34,8 @@ public class GuildConfig implements DatabaseEntity {
     @SerializedName("music-config")
     private MusicConfig musicConfig = new MusicConfig();
     private boolean experimental = false;
+    @SerializedName("no-vote-lock")
+    private boolean noVoteLock = false;
 
     @Transient
     @Override

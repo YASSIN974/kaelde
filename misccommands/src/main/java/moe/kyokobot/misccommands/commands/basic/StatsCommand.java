@@ -1,5 +1,6 @@
 package moe.kyokobot.misccommands.commands.basic;
 
+import com.sun.management.OperatingSystemMXBean;
 import de.vandermeer.asciitable.AsciiTable;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.Command;
@@ -15,6 +16,7 @@ import java.lang.management.RuntimeMXBean;
 
 public class StatsCommand extends Command {
     private final RuntimeMXBean rb;
+    private final OperatingSystemMXBean osb;
     private final CommandManager commandManager;
 
     public StatsCommand(CommandManager commandManager) {
@@ -23,6 +25,8 @@ public class StatsCommand extends Command {
 
         this.commandManager = commandManager;
         rb = ManagementFactory.getRuntimeMXBean();
+        osb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
     }
 
     @Override
@@ -38,6 +42,7 @@ public class StatsCommand extends Command {
         at.addRow("Uptime", StringUtil.prettyPeriod(rb.getUptime()));
         at.addRow("Commands executed", commandManager.getRuns());
         at.addRow("Audio connections", context.getEvent().getJDA().getAudioManagers().stream().filter(AudioManager::isConnected).count());
+        at.addRow("CPU usage", Math.floor(osb.getProcessCpuLoad() * 100) + "%");
         at.addRule();
 
         context.send("```markdown\n" + at.render(50) + "\n```");

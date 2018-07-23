@@ -4,6 +4,7 @@ import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandCategory;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
+import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.EmbedBuilder;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,11 @@ public class SnowflakeCommand extends Command {
     @Override
     public void execute(@NotNull CommandContext context) {
         try {
+            if (!context.hasArgs()) {
+                CommonErrors.usage(context);
+                return;
+            }
+
             long snowflake = MiscUtil.parseSnowflake(context.getConcatArgs());
 
             DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withZone(TimeZone.getTimeZone("UTC").toZoneId()).withLocale(context.getLanguage().getLocale());
