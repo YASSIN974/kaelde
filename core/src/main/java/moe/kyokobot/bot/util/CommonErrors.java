@@ -60,6 +60,6 @@ public class CommonErrors {
     }
 
     public static void voteLock(CommandContext context) {
-        context.send(CommandIcons.INFO + String.format(context.getTranslated("generic.votelock"), "https://discordbots.org/bot/375750637540868107/vote"));
+        context.send(CommandIcons.INFO + String.format(context.getTranslated("generic.votelock"), 24, "https://discordbots.org/bot/375750637540868107/vote"));
     }
 }

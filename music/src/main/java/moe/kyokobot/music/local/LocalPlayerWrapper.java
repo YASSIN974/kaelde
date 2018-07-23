@@ -116,7 +116,7 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     @Override
     public void setVolume(int volume) {
-        this.volume = Math.abs(volume / 100);
+        this.volume = Math.abs((float) volume / 100);
         updateFilters();
     }
 
@@ -182,7 +182,13 @@ public class LocalPlayerWrapper implements MusicPlayer {
         }
 
         if (flags == 0) {
-            player.setFilterFactory(null);
+            if (volume == 1.0f)
+                player.setFilterFactory(null);
+            else
+                player.setFilterFactory((audioTrack, audioDataFormat, audioFilter) ->
+                    ImmutableList.of(new VolumePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate).setVolume(volume))
+                );
+
         } else {
             final byte f = flags;
 

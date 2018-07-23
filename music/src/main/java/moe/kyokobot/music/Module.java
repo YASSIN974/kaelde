@@ -82,14 +82,8 @@ public class Module implements KyokoModule {
                 break;
         }
 
-        if (Globals.inKyokoServer) { // Kyoko Discord Bot Support
-            MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
-            MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
-            MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
-            MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
-            MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
-            MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
-        }
+        if (Globals.inKyokoServer)
+            setKyokoEmotes();
 
         musicManager.registerSourceManager(new YoutubeAudioSourceManager());
         musicManager.registerSourceManager(new SoundCloudAudioSourceManager());
@@ -107,17 +101,18 @@ public class Module implements KyokoModule {
         commands = new ArrayList<>();
 
         commands.add(new PlayCommand(musicManager, searchManager));
-        commands.add(new KaraokeCommand(musicManager));
+        commands.add(new KaraokeCommand(musicManager, databaseManager));
         commands.add(new ListCommand(musicManager, waiter));
         commands.add(new SkipCommand(musicManager));
         commands.add(new RepeatCommand(musicManager));
-        commands.add(new NightcoreCommand(musicManager));
+        commands.add(new NightcoreCommand(musicManager, databaseManager));
         commands.add(new PauseCommand(musicManager));
         commands.add(new ResumeCommand(musicManager));
         commands.add(new SearchCommand(eventWaiter, musicManager, searchManager));
         commands.add(new ShuffleCommand(musicManager));
         commands.add(new StopCommand(musicManager));
         commands.add(new VaporwaveCommand(musicManager, databaseManager));
+        commands.add(new VolumeCommand(musicManager, databaseManager));
 
         commands.forEach(commandManager::registerCommand);
     }
@@ -148,8 +143,7 @@ public class Module implements KyokoModule {
                     Files.write(cfg.toPath(), data.getBytes(Charsets.UTF_8));
                 }
             } catch (Exception e) {
-                logger.error("Error creating default configuration!");
-                e.printStackTrace();
+                logger.error("Error creating default configuration!", e);
                 Sentry.capture(e);
             }
         }
@@ -157,21 +151,23 @@ public class Module implements KyokoModule {
         try {
             musicSettings = GsonUtil.gson.fromJson(new FileReader(cfg), MusicSettings.class);
         } catch (Exception e) {
-            logger.error("Cannot read configuration file!");
-            e.printStackTrace();
+            logger.error("Cannot read configuration file!", e);
             Sentry.capture(e);
         }
     }
 
     @Subscribe
     public void onConnect(ConnectedEvent event) {
-        if (Globals.inKyokoServer) { // Kyoko Discord Bot Support
-            MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
-            MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
-            MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
-            MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
-            MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
-            MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
-        }
+        if (Globals.inKyokoServer) setKyokoEmotes();
+    }
+
+    private void setKyokoEmotes() {
+        MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
+        MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
+        MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
+        MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
+        MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
+        MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";
+        MusicIcons.VOLUME = "<:volume:435575467622531072>  |  ";
     }
 }

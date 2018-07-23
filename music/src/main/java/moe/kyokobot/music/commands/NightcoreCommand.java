@@ -2,7 +2,9 @@ package moe.kyokobot.music.commands;
 
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
+import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.bot.util.VoteUtil;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -11,9 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class NightcoreCommand extends MusicCommand {
 
     private final MusicManager musicManager;
+    private final DatabaseManager databaseManager;
 
-    public NightcoreCommand(MusicManager musicManager) {
+    public NightcoreCommand(MusicManager musicManager, DatabaseManager databaseManager) {
         this.musicManager = musicManager;
+        this.databaseManager = databaseManager;
 
         name = "nightcore";
         usage = "";
@@ -42,6 +46,14 @@ public class NightcoreCommand extends MusicCommand {
             }
 
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
+
+            if (player.getNightcore() == 1.0f) { // only lock while enabling
+                if (VoteUtil.voteLock(context, databaseManager)) {
+                    CommonErrors.voteLock(context);
+                    return;
+                }
+            }
+
             player.setNightcore(f);
 
             if (f == 1.0f) {

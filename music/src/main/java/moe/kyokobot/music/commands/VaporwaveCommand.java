@@ -23,14 +23,17 @@ public class VaporwaveCommand extends MusicCommand {
 
     @Override
     public void execute(CommandContext context) {
-        if (VoteUtil.voteLock(context, databaseManager)) {
-            CommonErrors.voteLock(context);
-            return;
-        }
-
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
+
+            if (!player.isVaporwave()) { // only lock while enabling
+                if (VoteUtil.voteLock(context, databaseManager)) {
+                    CommonErrors.voteLock(context);
+                    return;
+                }
+            }
+
             player.setVaporwave(!player.isVaporwave());
             context.send(CommandIcons.INFO + context.getTranslated("music.vaporwave." + (player.isVaporwave() ? "enabled" : "disabled")));
         }
