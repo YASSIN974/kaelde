@@ -51,7 +51,7 @@ public class Module implements KyokoModule {
             commands.add(new ActionCommand(weeb4J, cooldowns, "lick"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "punch"));
             commands.add(new ActionCommand(weeb4J, cooldowns, "tickle"));
-            commands.addAll(createWeebCommandAliases(commandManager, "awoo", "blush", "clagwimoth", "cry", "dance", "jojo", "lewd", "megumin", "kemonomimi", "cat", "discordmeme", "initiald"));
+            commands.addAll(createWeebCommandAliases(commandManager, "awoo", "blush", "clagwimoth", "cry", "dance", "jojo", "lewd", "megumin", "kemonomimi", "discordmeme", "initiald"));
         } else {
             logger.warn("No weebsh token set in config!");
         }
@@ -69,9 +69,6 @@ public class Module implements KyokoModule {
             String srcname = name;
 
             switch (name) {
-                case "cat":
-                    srcname = "animal_cat";
-                    break;
                 case "discordmeme":
                     srcname = "discord_memes";
                     break;
