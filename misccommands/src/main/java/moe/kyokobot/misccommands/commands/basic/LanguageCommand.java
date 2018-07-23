@@ -75,7 +75,7 @@ public class LanguageCommand extends Command {
                         .append("` - ").append(l.getEmoji()).append(" ").append(l.getLocalized()).append("\n");
         }
 
-        langs.append("\nIf you want to change guild language use `").append(context.getPrefix()).append("settings`");
+        langs.append("\n[Translate Kyoko](https://crwd.in/kyoko)\nIf you want to change guild language use `").append(context.getPrefix()).append("settings`");
         eb.setTitle("Select language");
         eb.setDescription(langs.toString());
         context.send(eb.build());
