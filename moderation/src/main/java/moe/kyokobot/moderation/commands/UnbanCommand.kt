@@ -40,7 +40,8 @@ class UnbanCommand: Command() {
         val formattedName = "${ban.user.name}#${ban.user.discriminator}"
         try {
             context.guild.controller.unban(ban.user).queue({
-                val translated = String.format(context.getTranslated("moderation.unban.output"), formattedName, ban.reason)
+                val translated = String.format(context.getTranslated("moderation.unban.output"), formattedName,
+                        ban.reason ?: context.getTranslated("moderation.noreason"))
                 context.send("${CommandIcons.SUCCESS}$translated")
             }) { err ->
                 Sentry.capture(err)
