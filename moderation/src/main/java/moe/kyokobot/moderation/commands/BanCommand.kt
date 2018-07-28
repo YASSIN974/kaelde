@@ -7,7 +7,7 @@ import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.command.CommandIcons
 import moe.kyokobot.bot.util.CommonErrors
 import moe.kyokobot.bot.util.UserUtil
-import moe.kyokobot.moderation.BAN
+import moe.kyokobot.moderation.ModerationIcons.BAN
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 
