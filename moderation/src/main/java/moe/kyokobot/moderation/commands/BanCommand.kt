@@ -44,24 +44,25 @@ class BanCommand: Command() {
             return
         }
         try {
-            val (reasonObj, reasonString) = if (context.args.size > 2) {
-                val arg = context.skipConcatArgs(2)
-                Pair(arg, arg)
-            } else {
-                Pair(null, "No reason provided")
-            }
-            val purgeDays: Int = if (context.args.size > 1) {
+            val (number, purgeDays) = if (context.args.size > 1) {
                 val arg = context.args[1]
                 try {
-                    Integer.parseUnsignedInt(arg)
+                    Pair(2, Integer.parseUnsignedInt(arg))
                 } catch (err: NumberFormatException) {
-                    CommonErrors.notANumber(context, arg)
-                    return
+                    Pair(1, 0)
                 }
             }
             else {
-                0
+                Pair(1, 0)
             }
+
+            val (reasonObj, reasonString) = if (context.args.size > number) {
+                val arg = context.skipConcatArgs(number)
+                Pair(arg, arg)
+            } else {
+                Pair(null, context.getTranslated("moderation.noreason"))
+            }
+
             context.guild.controller.ban(member, purgeDays, reasonObj).queue({
                 val translated = String.format(context.getTranslated("moderation.ban.output"), formattedName, reasonString, purgeDays)
                 context.send("${CommandIcons.SUCCESS}$translated")
