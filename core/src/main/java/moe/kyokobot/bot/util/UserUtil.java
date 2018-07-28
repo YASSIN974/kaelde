@@ -27,8 +27,7 @@ public class UserUtil {
         return member.orElse(null);
     }
 
-    public static User getBannedUser(Guild guild, String arg) throws PermissionException {
-        //try {
+    public static Guild.Ban getBan(Guild guild, String arg) throws PermissionException {
         Optional<Guild.Ban> ban = guild.getBanList().complete().stream().parallel().filter(ftr ->
                 ftr.getUser().getAsMention().equals(arg)
                         || ftr.getUser().getName().equalsIgnoreCase(arg)
@@ -37,7 +36,7 @@ public class UserUtil {
                         || arg.equals("<@!" + ftr.getUser().getId() + ">")
                         || arg.equalsIgnoreCase(ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())
                         || arg.equalsIgnoreCase("@" + ftr.getUser().getName() + "#" + ftr.getUser().getDiscriminator())).findFirst();
-        return ban.map(Guild.Ban::getUser).orElse(null);
+        return ban.orElse(null);
     }
 
     public static String toDiscrim(User u) {
