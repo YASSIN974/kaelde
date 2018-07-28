@@ -14,7 +14,7 @@ class KickCommand: Command() {
     init {
         name = "kick"
         description = "moderation.kick.description"
-        usage = "moderation.usage"
+        usage = "moderation.kick.usage"
         category = CommandCategory.MODERATION
     }
 
@@ -55,11 +55,13 @@ class KickCommand: Command() {
                 context.send("${CommandIcons.SUCCESS}$translated")
             }) { err ->
                 Sentry.capture(err)
-                context.send("${CommandIcons.ERROR}Error when kicking Guild Member $formattedName: ${err.message}")
+                val error = String.format(context.getTranslated("moderation.kick.error"), formattedName, err.message)
+                context.send("${CommandIcons.ERROR}$error")
             }
         } catch (err: Throwable) {
             Sentry.capture(err)
-            context.send("${CommandIcons.ERROR}Error when kicking Guild Member $formattedName: ${err.message}")
+            val error = String.format(context.getTranslated("moderation.kick.error"), formattedName, err.message)
+            context.send("${CommandIcons.ERROR}$error")
         }
     }
 }
