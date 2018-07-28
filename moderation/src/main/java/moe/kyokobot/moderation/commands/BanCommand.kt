@@ -48,7 +48,7 @@ class BanCommand: Command() {
                 val arg = context.skipConcatArgs(2)
                 Pair(arg, arg)
             } else {
-                Pair(null, "No reason provided.")
+                Pair(null, "No reason provided")
             }
             val purgeDays: Int = if (context.args.size > 1) {
                 val arg = context.args[1]
