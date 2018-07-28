@@ -47,6 +47,10 @@ public class CommandContext {
         return event.getMember();
     }
 
+    public Member getSelfMember() {
+        return event.getGuild().getSelfMember();
+    }
+
     public TextChannel getChannel() {
         return event.getTextChannel();
     }

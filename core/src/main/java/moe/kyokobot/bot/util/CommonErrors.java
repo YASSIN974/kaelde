@@ -4,6 +4,7 @@ import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
@@ -16,6 +17,10 @@ public class CommonErrors {
 
     public static void noPermissionBot(CommandContext context, PermissionException pex) {
         context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.botnoperm"), pex.getPermission().getName()));
+    }
+
+    public static void noPermissionBot(CommandContext context, Permission permission) {
+        context.send(CommandIcons.ERROR + String.format(context.getTranslated("generic.botnoperm"), permission.getName()));
     }
 
     public static void noUserFound(CommandContext context, String user) {
