@@ -45,7 +45,7 @@ class KickCommand: Command() {
         }
         try {
             val (reasonObj, reasonString) = if (context.args.size > 1) {
-                val arg = context.args[1]
+                val arg = context.skipConcatArgs(1)
                 Pair(arg, arg)
             } else {
                 Pair(null, "No reason provided.")
