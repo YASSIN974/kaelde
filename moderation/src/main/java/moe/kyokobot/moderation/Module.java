@@ -6,7 +6,10 @@ import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.util.EventWaiter;
+import moe.kyokobot.moderation.commands.BanCommand;
+import moe.kyokobot.moderation.commands.KickCommand;
 import moe.kyokobot.moderation.commands.SettingsCommand;
+import moe.kyokobot.moderation.commands.UnbanCommand;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,9 @@ public class Module implements KyokoModule {
         commands = new ArrayList<>();
 
         commands.add(new SettingsCommand(eventWaiter, databaseManager));
-
+        commands.add(new KickCommand());
+        commands.add(new BanCommand());
+        commands.add(new UnbanCommand());
         commands.forEach(commandManager::registerCommand);
     }
 

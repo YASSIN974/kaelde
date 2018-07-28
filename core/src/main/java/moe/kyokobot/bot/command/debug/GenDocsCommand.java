@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import moe.kyokobot.bot.command.*;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.util.StringUtil;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class GenDocsCommand extends Command {
                     "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.command")).append("</th>\n" +
                     "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.aliases")).append("</th>\n" +
                     "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.description")).append("</th>\n" +
-                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(context.getTranslated("generic.usage")).append("</th>\n" +
+                    "\t\t\t\t\t<th style=\"width: 25%\" scope=\"col\">").append(StringEscapeUtils.escapeHtml4(context.getTranslated("generic.usage"))).append("</th>\n" +
                     "\t\t\t\t</tr>\n" +
                     "\t\t\t</thead>\n" +
                     "\t\t\t<tbody>\n");
@@ -55,7 +56,7 @@ public class GenDocsCommand extends Command {
                         .append(cmd.getAliases() == null || cmd.getAliases().length == 0 ? "(" + context.getTranslated("generic.none") + ")" :
                                 Joiner.on(", ").join(cmd.getAliases())).append("</td>\n\t\t\t\t\t<td>")
                         .append(context.getTranslated(cmd.getDescription()).replaceAll("(\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", "<a href=\"$1\">$1</a>")).append("</td>\n\t\t\t\t\t<td><code>")
-                        .append("ky!").append(cmd.getName()).append(" ").append(context.getTranslated(cmd.getUsage())).append("</code></td>\n\t\t\t\t</tr>\n");
+                        .append("ky!").append(cmd.getName()).append(" ").append(StringEscapeUtils.escapeHtml4(context.getTranslated(cmd.getUsage()))).append("</code></td>\n\t\t\t\t</tr>\n");
             });
             sb.append("\t\t\t</tbody>\n" +
                     "\t\t</table>\n" +
