@@ -15,6 +15,7 @@ class UnbanCommand: Command() {
         description = "moderation.unban.description"
         usage = "moderation.unban.usage"
         category = CommandCategory.MODERATION
+        aliases = arrayOf("pardon")
     }
 
     override fun execute(context: CommandContext) {
