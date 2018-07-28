@@ -7,6 +7,7 @@ import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.command.CommandIcons
 import moe.kyokobot.bot.util.CommonErrors
 import moe.kyokobot.bot.util.UserUtil
+import moe.kyokobot.moderation.BAN
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.Member
 
@@ -65,7 +66,7 @@ class BanCommand: Command() {
 
             context.guild.controller.ban(member, purgeDays, reasonObj).queue({
                 val translated = String.format(context.getTranslated("moderation.ban.output"), formattedName, reasonString, purgeDays)
-                context.send("${CommandIcons.SUCCESS}$translated")
+                context.send("$BAN$translated")
             }) { err ->
                 Sentry.capture(err)
                 val error = String.format(context.getTranslated("moderation.ban.error"), formattedName, err.message)
