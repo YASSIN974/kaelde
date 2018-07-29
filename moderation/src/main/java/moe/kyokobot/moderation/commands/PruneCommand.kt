@@ -83,9 +83,10 @@ class PruneCommand: Command() {
             null
         }
         val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
-        MessageHistory.getHistoryBefore(context.channel, timestamp).limit(amountToClear).queue({ history ->
+        MessageHistory.getHistoryBefore(context.channel, timestamp).limit(amountToClear + 1).queue({ history ->
             val filtered = history.retrievedHistory
                     .stream()
+                    .skip(1)
                     .filter { msg ->
                         (shouldAllowAll || mentioned!!.contains(msg.author.idLong))
                                 && ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2
@@ -129,8 +130,9 @@ class PruneCommand: Command() {
             }
         }
     }
-    private fun handleError(context: CommandContext, err: Throwable) {
-        val translated = String.format(context.getTranslated("moderation.prune.error"), err.message)
+    private fun handleError(context: CommandContext, err: Throwable, self: Boolean = false) {
+        val str = if (!self) "moderation.prune.error" else "moderation.prune.errorcleaningself"
+        val translated = String.format(context.getTranslated(str), err.message)
         Sentry.capture(err)
         context.send("${CommandIcons.ERROR}$translated")
     }
