@@ -3,13 +3,11 @@ package moe.kyokobot.moderation.commands
 import io.sentry.Sentry
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
-import moe.kyokobot.bot.command.Command
 import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.command.CommandIcons
-import moe.kyokobot.bot.util.CommonErrors
 import moe.kyokobot.bot.util.UserUtil
+import moe.kyokobot.moderation.ModerationCommand
 import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.ChannelType
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageHistory
 import net.dv8tion.jda.core.utils.MiscUtil
@@ -18,31 +16,8 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 
-class PruneCommand: Command() {
-    init {
-        name = "prune"
-        description = "moderation.prune.description"
-        usage = "moderation.prune.usage"
-    }
-
+class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE) {
     override fun execute(context: CommandContext) {
-        if (!context.message.isFromType(ChannelType.TEXT)) {
-            val translated = context.getTranslated("moderation.prune.cannotpruneprivate")
-            context.send("${CommandIcons.ERROR}$translated")
-            return
-        }
-        if (!context.selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
-            CommonErrors.noPermissionBot(context, Permission.MESSAGE_MANAGE)
-            return
-        }
-        if (!context.selfMember.hasPermission(Permission.MESSAGE_HISTORY)) {
-            CommonErrors.noPermissionBot(context, Permission.MESSAGE_HISTORY)
-            return
-        }
-        if (!context.member.hasPermission(Permission.MESSAGE_MANAGE) || !context.member.hasPermission(Permission.MESSAGE_HISTORY)) {
-            CommonErrors.noPermissionUser(context)
-            return
-        }
         val args = context.args
         val size = args.size
         var (number, amountToClear, containMode) = Triple(0, 15, false)
@@ -50,7 +25,7 @@ class PruneCommand: Command() {
             try {
                 val num = Integer.parseUnsignedInt(args[0])
                 if (num > 100) {
-                    val translated = context.getTranslated("moderation.prune.cannotprunenumber")
+                    val translated = getTranslated(context, "cannotprunenumber")
                     context.send("${CommandIcons.ERROR}$translated")
                     return
                 }
@@ -67,7 +42,7 @@ class PruneCommand: Command() {
                         if (size > number + 1) {
                             containMode = true
                         } else {
-                            val translated = context.getTranslated("moderation.prune.containserror")
+                            val translated = getTranslated(context, "containserror")
                             context.send("${CommandIcons.ERROR}$translated")
                             return
                         }
@@ -164,7 +139,7 @@ class PruneCommand: Command() {
                     .collect(Collectors.groupingBy { it })
             Pair(filtered.size, unique.keys.size)
         }
-        val translated = String.format(context.getTranslated("moderation.prune.output"), filter, unique)
+        val translated = getTranslated(context, "output", filter, unique)
         context.send("${CommandIcons.SUCCESS}$translated") { msg ->
             val two = listOf(context.message, msg)
             context.channel.deleteMessages(two).queueAfter(5, TimeUnit.SECONDS, null) {
@@ -174,8 +149,8 @@ class PruneCommand: Command() {
     }
 
     private fun handleError(context: CommandContext, err: Throwable, self: Boolean = false) {
-        val str = if (!self) "moderation.prune.error" else "moderation.prune.errorcleaningself"
-        val translated = String.format(context.getTranslated(str), err.message)
+        val str = if (!self) "error" else "errorcleaningself"
+        val translated = getTranslated(context, str, err.message ?: "No message.")
         Sentry.capture(err)
         context.send("${CommandIcons.ERROR}$translated")
     }

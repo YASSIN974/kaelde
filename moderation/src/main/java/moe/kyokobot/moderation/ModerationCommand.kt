@@ -36,4 +36,6 @@ open class ModerationCommand(name: String, private vararg val permissions: Permi
             return
         super.preExecute(context)
     }
+
+    fun getTranslated(context: CommandContext, key: String, vararg params: Any = emptyArray()): String? = context.getTranslated("moderation.$name.$key")?.format(params)
 }
