@@ -43,21 +43,21 @@ class PruneCommand: Command() {
             CommonErrors.noPermissionUser(context)
             return
         }
-        val (number, amountToClear) = if (context.hasArgs()) {
+        val (number, amountToClear, containMode) = if (context.hasArgs()) {
+            val arg = context.args[0]
             try {
-                val arg = context.args[0]
                 val num = Integer.parseUnsignedInt(arg)
                 if (num > 100) {
                     val translated = context.getTranslated("moderation.prune.cannotprunenumber")
                     context.send("${CommandIcons.ERROR}$translated")
                     return
                 }
-                Pair(1, num)
+                Triple(1, num, false)
             } catch (err: NumberFormatException) {
-                Pair(0, 15)
+                Triple(0, 15, arg.equals("contains", true))
             }
         } else {
-            Pair(-1, 15)
+            Triple(-1, 15, false)
         }
         if (amountToClear == 0) {
             val translated = String.format(context.getTranslated("moderation.prune.output"), 0, 0)
@@ -65,12 +65,21 @@ class PruneCommand: Command() {
             return
         }
         var shouldAllowAll = true
-        val mentioned: LongSet? = if (number != -1 && context.args.size > number) {
+        var addedBots = false
+        val mentioned: LongSet? = if (!containMode && number != -1 && context.args.size > number) {
             val set = LongOpenHashSet()
             context.args
                     .asSequence()
                     .drop(number)
                     .map { str ->
+                        if (str.equals("bots", true) && !addedBots) {
+                            context.guild.members
+                                    .filter { it.user.isBot }
+                                    .forEach { set.add(it.user.idLong) }
+                            addedBots = true
+                            shouldAllowAll = false
+
+                        }
                         val id = UserUtil.getMember(context.guild, str)?.user?.idLong
                         if (id != null) {
                             shouldAllowAll = false
@@ -82,15 +91,21 @@ class PruneCommand: Command() {
         } else {
             null
         }
+        val trueAmount = if (shouldAllowAll) amountToClear else 99
         val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
-        MessageHistory.getHistoryBefore(context.channel, timestamp).limit(amountToClear + 1).queue({ history ->
-            val filtered = history.retrievedHistory
+        MessageHistory.getHistoryBefore(context.channel, timestamp).limit(trueAmount + 1).queue({ history ->
+            val content = if (containMode) context.skipConcatArgs(1) else null
+            val filteredStream = history.retrievedHistory
                     .stream()
                     .skip(1)
                     .filter { msg ->
-                        (shouldAllowAll || mentioned!!.contains(msg.author.idLong))
-                                && ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2
+                        ((containMode && msg.contentRaw.contains(content!!))
+                        || (shouldAllowAll || mentioned!!.contains(msg.author.idLong)))
+                            && ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2
                     }
+            if (!shouldAllowAll)
+                filteredStream.limit(trueAmount.toLong())
+            val filtered = filteredStream
                     .collect(Collectors.toList())
             if (filtered.isEmpty()) {
                 val translated = String.format(context.getTranslated("moderation.prune.output"), 0, 0)
@@ -121,12 +136,12 @@ class PruneCommand: Command() {
                 .stream()
                 .map { it.author.id }
                 .collect(Collectors.groupingBy { it })
+
         val translated = String.format(context.getTranslated("moderation.prune.output"), filtered.size, unique.keys.size)
-        context.send("${CommandIcons.SUCCESS}$translated") {
-            it.delete().queueAfter(2, TimeUnit.SECONDS, {
-
-            }) {
-
+        context.send("${CommandIcons.SUCCESS}$translated") { msg ->
+            val two = listOf(context.message, msg)
+            context.channel.deleteMessages(two).queueAfter(5, TimeUnit.SECONDS, null) {
+                handleError(context, it, true)
             }
         }
     }
