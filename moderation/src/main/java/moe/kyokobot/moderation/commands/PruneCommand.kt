@@ -43,25 +43,42 @@ class PruneCommand: Command() {
             CommonErrors.noPermissionUser(context)
             return
         }
-        val (number, amountToClear, containMode) = if (context.hasArgs()) {
-            val arg = context.args[0]
+        val args = context.args
+        val size = args.size
+        var (number, amountToClear, containMode) = Triple(0, 15, false)
+        if (!args.isEmpty()) {
             try {
-                val num = Integer.parseUnsignedInt(arg)
+                val num = Integer.parseUnsignedInt(args[0])
                 if (num > 100) {
                     val translated = context.getTranslated("moderation.prune.cannotprunenumber")
                     context.send("${CommandIcons.ERROR}$translated")
                     return
                 }
-                Triple(1, num, false)
-            } catch (err: NumberFormatException) {
-                Triple(0, 15, arg.equals("contains", true))
+                number = 1
+                amountToClear = num
+            }
+            catch (ignored: NumberFormatException) {
+                // this is already handled by the default values
+            }
+            finally {
+                if (size > number) {
+                    val contains = args[number]
+                    if (contains.equals("contains", true)) {
+                        if (size > number + 1) {
+                            containMode = true
+                        } else {
+                            val translated = context.getTranslated("moderation.prune.containserror")
+                            context.send("${CommandIcons.ERROR}$translated")
+                            return
+                        }
+                    }
+                }
             }
         } else {
-            Triple(-1, 15, false)
+            number = -1
         }
         if (amountToClear == 0) {
-            val translated = String.format(context.getTranslated("moderation.prune.output"), 0, 0)
-            context.send("${CommandIcons.SUCCESS}$translated")
+            handleSuccess(context, null, 0)
             return
         }
         var shouldAllowAll = true
@@ -91,31 +108,36 @@ class PruneCommand: Command() {
         } else {
             null
         }
-        val trueAmount = if (shouldAllowAll) amountToClear else 99
+        val trueAmount = when {
+            containMode -> 99
+            shouldAllowAll -> amountToClear
+            else -> 99
+        }
         val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
         MessageHistory.getHistoryBefore(context.channel, timestamp).limit(trueAmount + 1).queue({ history ->
-            val content = if (containMode) context.skipConcatArgs(1) else null
-            val filteredStream = history.retrievedHistory
+            val content = if (containMode) context.skipConcatArgs(number + 1) else null
+            var filteredStream = history.retrievedHistory
                     .stream()
                     .skip(1)
                     .filter { msg ->
-                        ((containMode && msg.contentRaw.contains(content!!))
-                        || (shouldAllowAll || mentioned!!.contains(msg.author.idLong)))
-                            && ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2
+                        val check = if (containMode) {
+                            msg.contentRaw.contains(content!!)
+                        } else {
+                            shouldAllowAll || mentioned!!.contains(msg.author.idLong)
+                        }
+                        check && (ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2)
                     }
             if (!shouldAllowAll)
-                filteredStream.limit(trueAmount.toLong())
+                filteredStream = filteredStream.limit(trueAmount.toLong())
             val filtered = filteredStream
                     .collect(Collectors.toList())
             if (filtered.isEmpty()) {
-                val translated = String.format(context.getTranslated("moderation.prune.output"), 0, 0)
-                context.send("${CommandIcons.SUCCESS}$translated")
+                handleSuccess(context, filtered, 0)
                 return@queue
             }
             if (filtered.size == 1) {
                 filtered.first().delete().queue({
-                    val translated = String.format(context.getTranslated("moderation.prune.output"), 1, 1)
-                    context.send("${CommandIcons.SUCCESS}$translated")
+                    handleSuccess(context, filtered, 1)
                 }) {
                     handleError(context, it)
                 }
@@ -131,13 +153,18 @@ class PruneCommand: Command() {
             handleError(context, it)
         }
     }
-    private fun handleSuccess(context: CommandContext, filtered: List<Message>) {
-        val unique: Map<String, List<String>> = filtered
-                .stream()
-                .map { it.author.id }
-                .collect(Collectors.groupingBy { it })
 
-        val translated = String.format(context.getTranslated("moderation.prune.output"), filtered.size, unique.keys.size)
+    private fun handleSuccess(context: CommandContext, filtered: List<Message>?, placeholder: Int? = null) {
+        val (filter, unique) = if (placeholder != null) {
+            Pair(placeholder, placeholder)
+        } else {
+            val unique: Map<String, List<String>> = filtered!!
+                    .stream()
+                    .map { it.author.id }
+                    .collect(Collectors.groupingBy { it })
+            Pair(filtered.size, unique.keys.size)
+        }
+        val translated = String.format(context.getTranslated("moderation.prune.output"), filter, unique)
         context.send("${CommandIcons.SUCCESS}$translated") { msg ->
             val two = listOf(context.message, msg)
             context.channel.deleteMessages(two).queueAfter(5, TimeUnit.SECONDS, null) {
@@ -145,6 +172,7 @@ class PruneCommand: Command() {
             }
         }
     }
+
     private fun handleError(context: CommandContext, err: Throwable, self: Boolean = false) {
         val str = if (!self) "moderation.prune.error" else "moderation.prune.errorcleaningself"
         val translated = String.format(context.getTranslated(str), err.message)
