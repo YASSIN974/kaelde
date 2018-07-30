@@ -19,8 +19,14 @@ open class ModerationCommand(name: String, private vararg val permissions: Permi
             CommonErrors.usage(context)
             return
         }
-        if (context.member.hasPermission(*permissions)) {
-            CommonErrors.noPermissionUser(context)
+        if (!context.member.hasPermission(Permission.ADMINISTRATOR)) {
+            if (context.member.hasPermission(*permissions)) {
+                CommonErrors.noPermissionUser(context)
+                return
+            }
+        }
+        if (context.selfMember.hasPermission(Permission.ADMINISTRATOR)) {
+            super.preExecute(context)
             return
         }
         /* -- An iterator is used over varargs here so I can get the specific permission the bot lacks. -- */
@@ -37,5 +43,6 @@ open class ModerationCommand(name: String, private vararg val permissions: Permi
         super.preExecute(context)
     }
 
-    fun getTranslated(context: CommandContext, key: String, vararg params: Any = emptyArray()): String? = context.getTranslated("moderation.$name.$key")?.format(params)
+    fun getTranslated(context: CommandContext, key: String, vararg params: Any? = emptyArray()): String? =
+            context.getTranslated("moderation.$name.$key")?.format(*params)
 }
