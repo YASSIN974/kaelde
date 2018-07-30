@@ -38,7 +38,7 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
             finally {
                 if (size > number) {
                     val contains = args[number]
-                    if (contains.equals("contains", true)) {
+                    if (contains.equals("contains", true) || contains.equals("-contains", true)) {
                         if (size > number + 1) {
                             containMode = true
                         } else {
@@ -64,7 +64,7 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
                     .asSequence()
                     .drop(number)
                     .map { str ->
-                        if (str.equals("bots", true) && !addedBots) {
+                        if (str.equals("bots", true) || str.equals("-bots", true) && !addedBots) {
                             context.guild.members
                                     .filter { it.user.isBot }
                                     .forEach { set.add(it.user.idLong) }
