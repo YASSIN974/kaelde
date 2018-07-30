@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 
-class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE) {
+class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE, hasArgs = false) {
     override fun execute(context: CommandContext) {
         val args = context.args
         val size = args.size
