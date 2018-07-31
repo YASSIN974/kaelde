@@ -87,8 +87,9 @@ public class LocalMusicManager implements MusicManager {
     public MusicPlayer getMusicPlayer(Guild guild) {
         return players.computeIfAbsent(guild.getIdLong(), id -> {
             AudioPlayer player = playerManager.createPlayer();
-            player.addListener(new LocalEventHandler(eventBus, guild));
-            return new LocalPlayerWrapper(player, guild);
+            MusicPlayer wrapper = new LocalPlayerWrapper(player, guild);
+            player.addListener(new LocalEventHandler(wrapper, eventBus));
+            return wrapper;
         });
     }
 
@@ -172,7 +173,7 @@ public class LocalMusicManager implements MusicManager {
 
     @Subscribe
     public void onTrackStart(TrackStartEvent event) {
-        event.getPlayer().updateFilters();
+        event.getPlayer().updateFilters(event.getTrack());
     }
 
     @Subscribe

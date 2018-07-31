@@ -29,5 +29,5 @@ public interface MusicPlayer {
     void setVaporwave(boolean enabled);
     boolean hasFiltersEnabled();
     boolean isConnected();
-    void updateFilters();
+    void updateFilters(AudioTrack track);
 }

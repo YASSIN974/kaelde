@@ -9,6 +9,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.Getter;
+import lombok.Setter;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.util.KaraokeFilter;
 import net.dv8tion.jda.core.entities.Guild;
@@ -17,12 +19,17 @@ import javax.annotation.Nonnull;
 
 public class LocalPlayerWrapper implements MusicPlayer {
     static AudioConfiguration configuration;
-    private final AudioPlayer player;
+    @Getter
+    @Setter
+    private AudioPlayer player;
     private final Guild guild;
 
     private float volume = 1.0f;
+    @Getter
     private float nightcore = 1.0f;
+    @Getter
     private boolean karaoke = false;
+    @Getter
     private boolean vaporwave = false;
     private float karaokeWidth = KaraokeFilter.DEFAULT_FILTER_WIDTH;
     private float karaokeBand = KaraokeFilter.DEFAULT_FILTER_BAND;
@@ -32,10 +39,6 @@ public class LocalPlayerWrapper implements MusicPlayer {
     public LocalPlayerWrapper(AudioPlayer player, Guild guild) {
         this.player = player;
         this.guild = guild;
-    }
-
-    public AudioPlayer getPlayer() {
-        return player;
     }
 
     @Override
@@ -66,21 +69,6 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public int getVolume() {
         return (int) (volume * 100);
-    }
-
-    @Override
-    public float getNightcore() {
-        return nightcore;
-    }
-
-    @Override
-    public boolean isKaraoke() {
-        return karaoke;
-    }
-
-    @Override
-    public boolean isVaporwave() {
-        return vaporwave;
     }
 
     @Override
@@ -117,7 +105,7 @@ public class LocalPlayerWrapper implements MusicPlayer {
     @Override
     public void setVolume(int volume) {
         this.volume = Math.abs((float) volume / 100);
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
@@ -125,42 +113,42 @@ public class LocalPlayerWrapper implements MusicPlayer {
         if (speed == 0.f) speed = 1.0f;
         speed = Math.abs(speed);
         nightcore = speed;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public void setKaraoke(boolean enabled) {
         this.karaoke = enabled;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public void setKaraokeWidth(float width) {
         this.karaokeWidth = width;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public void setKaraokeBand(float band) {
         this.karaokeBand = band;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public void setKaraokeLevel(float level) {
         this.karaokeLevel = level;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public void setVaporwave(boolean enabled) {
         this.vaporwave = enabled;
-        updateFilters();
+        updateFilters(getPlayingTrack());
     }
 
     @Override
     public boolean hasFiltersEnabled() {
-        return nightcore != 1.0f && !karaoke;
+        return nightcore != 1.0f || karaoke || vaporwave;
     }
 
     @Override
@@ -169,14 +157,13 @@ public class LocalPlayerWrapper implements MusicPlayer {
     }
 
     @Override
-    public void updateFilters() {
-
+    public void updateFilters(AudioTrack track) {
         // _ _ _ _ _ V K N
         byte flags = 0;
 
         if (karaoke) flags |= 0b010;
 
-        if (canChangeSpeed(getPlayingTrack())) {
+        if (canChangeSpeed(track)) {
             if (nightcore != 1.0f) flags |= 0b001;
             if (vaporwave) flags |= 0b100;
         }
@@ -221,7 +208,7 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     private boolean canChangeSpeed(AudioTrack track) {
         if (track == null) return false;
-        return (!(track.getSourceManager() instanceof YoutubeAudioSourceManager) || track.getDuration() != Long.MAX_VALUE)
-                && (!(track.getSourceManager() instanceof TwitchStreamAudioSourceManager));
+        if (track.getSourceManager() instanceof YoutubeAudioSourceManager && track.getDuration() == Long.MAX_VALUE) return false;
+        return !(track.getSourceManager() instanceof TwitchStreamAudioSourceManager);
     }
 }

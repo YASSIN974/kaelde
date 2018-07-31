@@ -139,7 +139,7 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
-    public void updateFilters() {
+    public void updateFilters(AudioTrack track) {
         //
     }
 }

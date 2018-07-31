@@ -11,6 +11,7 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.*;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,14 +48,17 @@ public class PlayCommand extends MusicCommand {
 
                 locks.invalidate(context.getGuild());
             } else {
-                if (player.isPaused()) {
+                if (!context.getMessage().getAttachments().isEmpty()) {
+                    if (loadTracksFromAttachment(context, queue))
+                        MusicUtil.play(musicManager, player, queue, context, voiceChannel);
+                } else if (player.isPaused()) {
                     queue.setAnnouncing(context.getChannel(), context);
                     player.setPaused(false);
                     context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
                     locks.invalidate(context.getGuild());
-                    return;
+                } else {
+                    CommonErrors.usage(context);
                 }
-                CommonErrors.usage(context);
             }
         } else {
             context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
@@ -69,6 +73,26 @@ public class PlayCommand extends MusicCommand {
     @SubCommand
     public void formats(CommandContext context) {
         context.send("YouTube, SoundCloud, Twitch, Bandcamp, NicoNico, ");
+    }
+
+
+    private boolean loadTracksFromAttachment(CommandContext context, MusicQueue queue) {
+        AudioTrack track;
+        int items = 0;
+
+        for (Message.Attachment attachment : context.getMessage().getAttachments()) {
+            try {
+                track = (AudioTrack) musicManager.resolve(context.getGuild(), attachment.getUrl());
+                queue.add(track);
+                items++;
+            } catch (Exception e) {
+                context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.error"), e.getMessage()));
+                return false;
+            }
+        }
+
+        context.send(MusicIcons.PLAY + String.format(context.getTranslated("music.addeditems"), items));
+        return true;
     }
 
     private boolean loadTracks(CommandContext context, MusicQueue queue) {
