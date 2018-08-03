@@ -50,7 +50,7 @@ public class LocalMusicManager implements MusicManager {
         players = new Long2ObjectOpenHashMap<>();
         queues = new Long2ObjectOpenHashMap<>();
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setFrameBufferDuration(500);
+        playerManager.setFrameBufferDuration(600);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
         playerManager.getConfiguration().setOpusEncodingQuality(10);
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);

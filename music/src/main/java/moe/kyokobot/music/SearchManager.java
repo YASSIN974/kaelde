@@ -23,7 +23,7 @@ public class SearchManager {
     private Cache<String, SearchResult> youtubeResults;
 
     public SearchManager(String youtubeApiKey) {
-        youtubeApiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&key=" + youtubeApiKey + "&q=";
+        youtubeApiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&key=" + youtubeApiKey + "&q=";
         youtubeResults = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).maximumSize(2000).build();
     }
 

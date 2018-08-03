@@ -10,7 +10,6 @@ import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
@@ -27,6 +26,7 @@ import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.music.commands.*;
 import moe.kyokobot.music.lavalink.LavaMusicManager;
 import moe.kyokobot.music.local.LocalMusicManager;
+import moe.kyokobot.music.source.TwitchStreamAudioSourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
