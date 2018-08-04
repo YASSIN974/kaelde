@@ -61,7 +61,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
-public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
+public class WebSocketClient extends WebSocketAdapter
 {
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;

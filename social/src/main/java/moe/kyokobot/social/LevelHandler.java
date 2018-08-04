@@ -2,6 +2,7 @@ package moe.kyokobot.social;
 
 import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
+import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.entity.GuildConfig;
 import moe.kyokobot.bot.entity.UserConfig;
@@ -47,7 +48,9 @@ public class LevelHandler {
                 }
 
                 if (oldLevel != data.getLevel()) {
-                    if (guildConfig.getModerationConfig().isLevelupMessages()) {
+                    if (!Constants.BOTLIST_GUILDS.contains(event.getGuild().getId())
+                        && guildConfig.getModerationConfig().isLevelupMessages()) {
+                        
                         Language l = i18n.getLanguage(event.getGuild());
 
                         event.getChannel().sendMessage(CommandIcons.LEVELUP +

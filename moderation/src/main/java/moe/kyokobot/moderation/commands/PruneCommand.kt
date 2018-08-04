@@ -50,7 +50,9 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
                 }
             }
         } else {
-            number = -1
+            //number = -1
+            displayUsage(context)
+            return
         }
         if (amountToClear == 0) {
             handleSuccess(context, null, 0)
@@ -88,45 +90,63 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
             shouldAllowAll -> amountToClear
             else -> 99
         }
-        val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
-        MessageHistory.getHistoryBefore(context.channel, timestamp).limit(trueAmount + 1).queue({ history ->
-            val content = if (containMode) context.skipConcatArgs(number + 1) else null
-            var filteredStream = history.retrievedHistory
-                    .stream()
-                    .skip(1)
-                    .filter { msg ->
-                        val check = if (containMode) {
-                            msg.contentRaw.contains(content!!)
-                        } else {
-                            shouldAllowAll || mentioned!!.contains(msg.author.idLong)
+
+        context.message.delete().queue {
+            val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
+            MessageHistory.getHistoryBefore(context.channel, timestamp).limit(trueAmount + 1).queue({ history ->
+                val content = if (containMode) context.skipConcatArgs(number + 1) else null
+                var filteredStream = history.retrievedHistory
+                        .stream()
+                        .skip(1)
+                        .filter { msg ->
+                            val check = if (containMode) {
+                                msg.contentRaw.contains(content!!)
+                            } else {
+                                shouldAllowAll || mentioned!!.contains(msg.author.idLong)
+                            }
+                            check && (ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2)
                         }
-                        check && (ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2)
+                if (!shouldAllowAll)
+                    filteredStream = filteredStream.limit(trueAmount.toLong())
+                val filtered = filteredStream
+                        .collect(Collectors.toList())
+                if (filtered.isEmpty()) {
+                    handleSuccess(context, filtered, 0)
+                    return@queue
+                }
+                if (filtered.size == 1) {
+                    filtered.first().delete().queue({
+                        handleSuccess(context, filtered, 1)
+                    }) {
+                        handleError(context, it)
                     }
-            if (!shouldAllowAll)
-                filteredStream = filteredStream.limit(trueAmount.toLong())
-            val filtered = filteredStream
-                    .collect(Collectors.toList())
-            if (filtered.isEmpty()) {
-                handleSuccess(context, filtered, 0)
-                return@queue
-            }
-            if (filtered.size == 1) {
-                filtered.first().delete().queue({
-                    handleSuccess(context, filtered, 1)
+                    return@queue
+                }
+                context.channel.deleteMessages(filtered).queue({
+                    handleSuccess(context, filtered)
                 }) {
                     handleError(context, it)
                 }
-                return@queue
-            }
-            context.channel.deleteMessages(filtered).queue({
-                handleSuccess(context, filtered)
+
             }) {
                 handleError(context, it)
             }
-
-        }) {
-            handleError(context, it)
         }
+    }
+
+    private fun displayUsage(context: CommandContext) {
+        val eb = context.normalEmbed
+        eb.setTitle(context.getTranslated("generic.usage"))
+        val sb = StringBuilder()
+        sb.append("`${context.prefix}prune 10` - ${context.getTranslated("moderation.prune.usage.messages")}\n")
+        sb.append("`${context.prefix}prune bots` - ${context.getTranslated("moderation.prune.usage.bots1")}\n")
+        sb.append("`${context.prefix}prune 50 bots` - ${context.getTranslated("moderation.prune.usage.bots2")}\n")
+        sb.append("`${context.prefix}prune contains discord.gg` - ${context.getTranslated("moderation.prune.usage.contains1")}\n")
+        sb.append("`${context.prefix}prune 30 contains please join` - ${context.getTranslated("moderation.prune.usage.contains2")}\n")
+        sb.append("`${context.prefix}prune 25 ${context.sender.asMention}` - ${context.getTranslated("moderation.prune.usage.member")}")
+        eb.setDescription(sb.toString())
+        context.send(eb.build())
+
     }
 
     private fun handleSuccess(context: CommandContext, filtered: List<Message>?, placeholder: Int? = null) {

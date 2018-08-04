@@ -6,9 +6,9 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.ModuleManager;
-import moe.kyokobot.bot.manager.impl.ExternalModuleManager;
-import moe.kyokobot.bot.manager.impl.KyokoCommandManager;
 import moe.kyokobot.bot.manager.impl.RethinkDatabaseManager;
+import moe.kyokobot.bot.manager.impl.SimpleCommandManager;
+import moe.kyokobot.bot.manager.impl.SimpleModuleManager;
 import moe.kyokobot.bot.util.EventWaiter;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import org.slf4j.Logger;
@@ -36,8 +36,8 @@ public class KyokoService extends AbstractIdleService {
         this.shardManager = shardManager;
         databaseManager = new RethinkDatabaseManager(eventBus);
         i18n = new I18n(databaseManager);
-        commandManager = new KyokoCommandManager(databaseManager, i18n, executor);
-        moduleManager = new ExternalModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
+        commandManager = new SimpleCommandManager(databaseManager, i18n, executor);
+        moduleManager = new SimpleModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(eventWaiter);
         eventBus.register(commandManager);

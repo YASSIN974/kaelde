@@ -86,8 +86,7 @@ public class ModulesCommand extends Command {
         else {
             File f = new File(modname);
             if (f.exists()) {
-                try {
-                    ZipFile zipFile = new ZipFile(f);
+                try (ZipFile zipFile = new ZipFile(f)) {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
                     while (entries.hasMoreElements()) {
@@ -100,7 +99,7 @@ public class ModulesCommand extends Command {
                     }
                     context.send(CommandIcons.ERROR + "Not a valid module!");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error while loading module {}", modname, e);
                     context.send(CommandIcons.ERROR + "Error while loading module `" + modname + "`: " + e.getMessage());
                 }
             } else {
@@ -116,8 +115,8 @@ public class ModulesCommand extends Command {
                 moduleManager.loadModules();
                 msg.editMessage(CommandIcons.SUCCESS + "Modules reloaded!").queue();
             } catch (Exception e) {
+                logger.error("Error while reloading modules!", e);
                 msg.editMessage(CommandIcons.ERROR + "Error reloading modules: " + e.getMessage()).queue();
-                e.printStackTrace();
             }
         });
     }

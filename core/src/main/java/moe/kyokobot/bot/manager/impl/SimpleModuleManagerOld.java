@@ -13,7 +13,7 @@ import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
 import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
-import moe.kyokobot.bot.module.KyokoModuleDescription;
+import moe.kyokobot.bot.module.ModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.GsonUtil;
@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ExternalModuleManager implements ModuleManager {
+public class SimpleModuleManagerOld implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
 
     private final ShardManager shardManager;
@@ -49,7 +49,7 @@ public class ExternalModuleManager implements ModuleManager {
     private Injector injector;
     private EventBus moduleEventBus;
 
-    public ExternalModuleManager(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+    public SimpleModuleManagerOld(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
         logger = LoggerFactory.getLogger(getClass());
         this.shardManager = shardManager;
         this.databaseManager = databaseManager;
@@ -114,7 +114,7 @@ public class ExternalModuleManager implements ModuleManager {
                         bind(I18n.class).toInstance(i18n);
                         bind(DatabaseManager.class).toInstance(databaseManager);
                         bind(CommandManager.class).toInstance(commandManager);
-                        bind(ModuleManager.class).toInstance(ExternalModuleManager.this);
+                        bind(ModuleManager.class).toInstance(SimpleModuleManagerOld.this);
                         bind(EventBus.class).toInstance(moduleEventBus);
                         bind(EventWaiter.class).toInstance(eventWaiter);
                     }
@@ -201,21 +201,21 @@ public class ExternalModuleManager implements ModuleManager {
 
         if (config == null) throw new FileNotFoundException("Cannot find plugin.json");
         String data = CommonUtil.fromStream(config.openStream());
-        KyokoModuleDescription description = GsonUtil.fromJSON(data, KyokoModuleDescription.class);
+        ModuleDescription description = GsonUtil.fromJSON(data, ModuleDescription.class);
 
-        if (description.moduleName == null) throw new IllegalArgumentException("No module name specified!");
-        if (description.mainClass == null) throw new IllegalArgumentException("No main class specified!");
+        if (description.getName() == null) throw new IllegalArgumentException("No module name specified!");
+        if (description.getMain() == null) throw new IllegalArgumentException("No main class specified!");
 
-        if (isLoaded(description.moduleName)) throw new IllegalArgumentException("Module is already loaded!");
+        if (isLoaded(description.getName())) throw new IllegalArgumentException("Module is already loaded!");
 
-        Class jarClass = cl.loadClass(description.mainClass);
+        Class jarClass = cl.loadClass(description.getMain());
 
         if (!KyokoModule.class.isAssignableFrom(jarClass)) throw new IllegalArgumentException("Module main class does not implement KyokoModule!");
 
         KyokoModule mod = (KyokoModule) jarClass.newInstance();
-        modules.put(description.moduleName, mod);
-        classLoaders.put(description.moduleName, cl);
-        tempFiles.put(description.moduleName, jar2);
+        modules.put(description.getName(), mod);
+        classLoaders.put(description.getName(), cl);
+        tempFiles.put(description.getName(), jar2);
     }
 
     @Override public boolean isLoaded(String name) {
@@ -234,7 +234,6 @@ public class ExternalModuleManager implements ModuleManager {
         return started;
     }
 
-    @Override
     @Subscribe
     public void onEvent(Object object) {
         if (moduleEventBus != null)

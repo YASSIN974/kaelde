@@ -8,7 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.*;
 
 public class CommonUtil {
     public static boolean checkCooldown(HashMap<Guild, Long> cooldowns, CommandContext context, long time) {
@@ -37,6 +37,14 @@ public class CommonUtil {
             buf.write((byte) result);
             result = bis.read();
         }
+        bis.close();
+        buf.close();
         return buf.toString("UTF-8");
+    }
+
+    public static <T> Set<T> reversedSet(Set<T> set) {
+        List<T> list = new ArrayList<>(set);
+        Collections.reverse(list);
+        return new LinkedHashSet<>(list);
     }
 }

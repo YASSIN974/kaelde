@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class KyokoCommandManager implements CommandManager {
+public class SimpleCommandManager implements CommandManager {
     private final Logger logger;
     private final I18n i18n;
     private final ScheduledExecutorService executor;
@@ -42,7 +42,7 @@ public class KyokoCommandManager implements CommandManager {
     private Map<String, Command> commands;
     @Getter private long runs = 0;
 
-    public KyokoCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor) {
+    public SimpleCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();

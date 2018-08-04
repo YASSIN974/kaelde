@@ -1,6 +1,5 @@
 package moe.kyokobot.bot.manager;
 
-import com.google.common.eventbus.Subscribe;
 import moe.kyokobot.bot.module.KyokoModule;
 
 import java.util.ArrayList;
@@ -24,7 +23,4 @@ public interface ModuleManager {
     HashMap<String, KyokoModule> getModules();
 
     ArrayList<String> getStarted();
-
-    @Subscribe
-    void onEvent(Object object);
 }
