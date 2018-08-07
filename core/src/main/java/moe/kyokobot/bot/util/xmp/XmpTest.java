@@ -20,7 +20,7 @@ public class XmpTest {
         byte[] buffer = new byte[4096];
 
         Player p = new Player(44100);
-        byte[] fileContent = Files.readAllBytes(new File(args[1]).toPath());
+        byte[] fileContent = Files.readAllBytes(new File(args[0]).toPath());
 
         System.out.println("file len: " + fileContent.length);
 
