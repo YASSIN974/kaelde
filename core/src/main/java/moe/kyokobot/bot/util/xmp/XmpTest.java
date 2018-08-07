@@ -15,7 +15,7 @@ public class XmpTest {
         byte[] buffer = new byte[4096];
 
         Player p = new Player(44100);
-        byte[] fileContent = Files.readAllBytes(new File("drunk_razor_girl.module").toPath());
+        byte[] fileContent = Files.readAllBytes(new File("drunk_razor_girl.xm").toPath());
 
         System.out.println("file len: " + fileContent.length);
 
