@@ -6,8 +6,13 @@ import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.nio.file.Files;
 
+@SuppressWarnings("squid:S106")
 public class XmpTest {
     public static void main(String... args) throws Exception {
+        if (args.length == 0) {
+            System.err.println("usage: <module file>");
+            System.exit(1);
+        }
         AudioFormat af = new AudioFormat(44100, 16, 2, true, false);
         SourceDataLine line = AudioSystem.getSourceDataLine(af);
 
@@ -15,7 +20,7 @@ public class XmpTest {
         byte[] buffer = new byte[4096];
 
         Player p = new Player(44100);
-        byte[] fileContent = Files.readAllBytes(new File("drunk_razor_girl.xm").toPath());
+        byte[] fileContent = Files.readAllBytes(new File(args[1]).toPath());
 
         System.out.println("file len: " + fileContent.length);
 
@@ -29,7 +34,6 @@ public class XmpTest {
 
         int o = 0;
         while (o == 0) {
-            //System.out.println("write");
             if (line.available() >= buffer.length) {
                 o = p.getBuffer(buffer, 0, buffer.length);
                 line.write(buffer, 0, buffer.length);
