@@ -1,4 +1,4 @@
-package com.sedmelluq.discord.lavaplayer.container.xm;
+package com.sedmelluq.discord.lavaplayer.container.module;
 
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
@@ -15,12 +15,12 @@ import java.io.IOException;
 
 import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection.UNKNOWN_ARTIST;
 
-public class XmContainerProbe implements MediaContainerProbe {
-    private static final Logger log = LoggerFactory.getLogger(XmContainerProbe.class);
+public class IbxmContainerProbe implements MediaContainerProbe {
+    private static final Logger log = LoggerFactory.getLogger(IbxmContainerProbe.class);
 
     @Override
     public String getName() {
-        return "module";
+        return "ibxm";
     }
 
     @Override
@@ -32,12 +32,13 @@ public class XmContainerProbe implements MediaContainerProbe {
     public MediaContainerDetectionResult probe(AudioReference reference, SeekableInputStream inputStream) throws IOException {
         Module module;
         try {
+            log.debug("Trying IBXM...");
             module = new Module(inputStream);
         } catch (IllegalArgumentException e) {
             return null;
         }
 
-        log.debug("Track {} is a module.", reference.identifier);
+        log.debug("Loaded module {} via IBXM.", reference.identifier);
 
         inputStream.seek(0);
 
@@ -53,6 +54,6 @@ public class XmContainerProbe implements MediaContainerProbe {
 
     @Override
     public AudioTrack createTrack(AudioTrackInfo trackInfo, SeekableInputStream inputStream) {
-        return new XmAudioTrack(trackInfo, inputStream);
+        return new IbxmAudioTrack(trackInfo, inputStream);
     }
 }

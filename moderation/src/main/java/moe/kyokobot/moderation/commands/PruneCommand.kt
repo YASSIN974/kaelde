@@ -24,7 +24,7 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
         if (!args.isEmpty()) {
             try {
                 val num = Integer.parseUnsignedInt(args[0])
-                if (num > 100) {
+                if (num >= 100) {
                     val translated = getTranslated(context, "cannotprunenumber")
                     context.send("${CommandIcons.ERROR}$translated")
                     return
@@ -60,6 +60,7 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
         }
         var shouldAllowAll = true
         var addedBots = false
+
         val mentioned: LongSet? = if (!containMode && number != -1 && context.args.size > number) {
             val set = LongOpenHashSet()
             context.args
@@ -85,15 +86,18 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
         } else {
             null
         }
+
         val trueAmount = when {
             containMode -> 99
             shouldAllowAll -> amountToClear
             else -> 99
         }
 
-        context.message.delete().queue {
+        context.message.delete().queue out@ {
             val timestamp = MiscUtil.getDiscordTimestamp(System.currentTimeMillis()).toString()
+
             MessageHistory.getHistoryBefore(context.channel, timestamp).limit(trueAmount + 1).queue({ history ->
+
                 val content = if (containMode) context.skipConcatArgs(number + 1) else null
                 var filteredStream = history.retrievedHistory
                         .stream()
@@ -106,14 +110,18 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
                             }
                             check && (ChronoUnit.WEEKS.between(msg.creationTime, OffsetDateTime.now()) < 2)
                         }
+
                 if (!shouldAllowAll)
                     filteredStream = filteredStream.limit(trueAmount.toLong())
+
                 val filtered = filteredStream
                         .collect(Collectors.toList())
+
                 if (filtered.isEmpty()) {
                     handleSuccess(context, filtered, 0)
                     return@queue
                 }
+
                 if (filtered.size == 1) {
                     filtered.first().delete().queue({
                         handleSuccess(context, filtered, 1)
@@ -122,6 +130,7 @@ class PruneCommand: ModerationCommand("prune", Permission.MESSAGE_HISTORY, Permi
                     }
                     return@queue
                 }
+
                 context.channel.deleteMessages(filtered).queue({
                     handleSuccess(context, filtered)
                 }) {
