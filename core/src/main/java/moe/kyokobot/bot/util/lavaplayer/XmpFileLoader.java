@@ -1,7 +1,8 @@
-package com.sedmelluq.discord.lavaplayer.container.module;
+package moe.kyokobot.bot.util.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.util.xmp.Player;
 
 import java.io.IOException;
@@ -14,7 +15,12 @@ public class XmpFileLoader {
     }
 
     public XmpTrackProvider loadTrack(AudioProcessingContext context) throws IOException {
-        byte[] data = new byte[4 * 1024 * 1024];
+        byte[] data;
+        if (!Globals.production && Globals.patreon) {
+            data = new byte[16 * 1024 * 1024]; // 16 MB of buffer for patreons and selfhosters
+        } else {
+            data = new byte[4 * 1024 * 1024];
+        }
         int i = 0;
         int d = 0;
 

@@ -1,4 +1,4 @@
-package com.sedmelluq.discord.lavaplayer.container.module;
+package moe.kyokobot.bot.util.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.filter.AudioPipeline;
 import com.sedmelluq.discord.lavaplayer.filter.AudioPipelineFactory;

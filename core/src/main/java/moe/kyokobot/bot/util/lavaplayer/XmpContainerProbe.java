@@ -1,4 +1,4 @@
-package com.sedmelluq.discord.lavaplayer.container.module;
+package moe.kyokobot.bot.util.lavaplayer;
 
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.util.xmp.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,12 @@ public class XmpContainerProbe implements MediaContainerProbe {
 
     @Override
     public MediaContainerDetectionResult probe(AudioReference reference, SeekableInputStream inputStream) throws IOException {
-        byte[] buf = new byte[4 * 1024 * 1024];
+        byte[] buf;
+        if (!Globals.production && Globals.patreon) {
+            buf = new byte[16 * 1024 * 1024];
+        } else {
+            buf = new byte[4 * 1024 * 1024];
+        }
 
         log.debug("Trying XMP...");
         Player p = new Player(44100);
@@ -40,12 +46,10 @@ public class XmpContainerProbe implements MediaContainerProbe {
                 p.loadModule(buf);
             } catch (IOException ee) {
                 log.debug("xmp error: {}", ee.getMessage());
-                buf = null;
                 return null;
             }
         }
 
-        buf = null;
         log.debug("Loaded module {} via XMP.", reference.identifier);
 
         inputStream.seek(0);

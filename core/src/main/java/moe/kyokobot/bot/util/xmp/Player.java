@@ -44,7 +44,6 @@ public class Player {
     @Override
     @SuppressWarnings("ObjectFinalizeOverridenCheck")
     protected void finalize() throws Throwable {
-        System.out.println("finalized");
         Xmp.destroy(instance);
         super.finalize();
     }
