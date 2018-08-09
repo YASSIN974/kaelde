@@ -1,0 +1,8 @@
+dependencies {
+    compile project(":core")
+}
+
+jar {
+    archiveName = "commands.jar"
+    destinationDir project.file('../deploy/modules')
+}

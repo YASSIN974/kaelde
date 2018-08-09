@@ -11,7 +11,6 @@ import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
-import moe.kyokobot.bot.module.CoreModule;
 import moe.kyokobot.bot.module.KyokoModule;
 import moe.kyokobot.bot.module.ModuleDescription;
 import moe.kyokobot.bot.util.CommonUtil;
@@ -88,8 +87,8 @@ public class SimpleModuleManagerOld implements ModuleManager {
 
         if (MODULES_DIR.exists()) {
             try {
-                modules.put("core", new CoreModule());
-                classLoaders.put("core", null);
+                //modules.put("core", new CoreModule());
+                //classLoaders.put("core", null);
                 Stream<Path> pathStream = Files.list(MODULES_DIR.toPath());
 
                 pathStream.filter(path -> path.toString().toLowerCase().endsWith(".jar")).forEach(path -> {

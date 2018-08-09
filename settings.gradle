@@ -1,9 +1,14 @@
 rootProject.name = 'kyoko'
 
 include ':core'
-include ':misccommands'
+include ':commands'
 include ':nsfw'
 include ':music'
 include ':moderation'
 include ':social'
 include ':weebsh'
+
+if(file('sdk').exists()){
+    include ':sdk'
+    apply from: 'sdk/settings.gradle'
+}

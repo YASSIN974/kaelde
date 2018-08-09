@@ -8,6 +8,7 @@ buildscript {
         }
     }
     dependencies {
+        classpath 'io.franzbecker:gradle-lombok:1.14'
         classpath "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -31,10 +32,15 @@ allprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'io.franzbecker.gradle-lombok'
     group = 'moe.kyokobot'
     version = '2.0.0-SNAPSHOT'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+    lombok {
+        version = "1.18.2"
+    }
 }
 
 subprojects {
@@ -42,6 +48,7 @@ subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'io.franzbecker.gradle-lombok'
 
     group = 'moe.kyokobot'
     version = '2.0.0-SNAPSHOT'
@@ -50,5 +57,9 @@ subprojects {
 
     compileKotlin {
         kotlinOptions.jvmTarget = '1.8'
+    }
+
+    lombok {
+        version = "1.18.2"
     }
 }

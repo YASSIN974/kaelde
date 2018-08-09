@@ -7,15 +7,19 @@ avatar.jpg
 weebsh/build
 social/build
 core/build
-misccommands/build
+commands/build
+moderation/build
 nsfw/build
 music/build
 weebsh/out
 social/out
 core/out
-misccommands/out
+commands/out
+moderation/out
 nsfw/out
 music/out
+
+sdk
 
 # ----------------------------------- #
 # ----- Java Language Gitignore ----- #

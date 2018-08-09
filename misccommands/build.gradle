@@ -1,8 +1,0 @@
-dependencies {
-    compile project(":core")
-}
-
-jar {
-    archiveName = "misccommands.jar"
-    destinationDir project.file('../deploy/modules')
-}
