@@ -4,13 +4,14 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.CommandIcons;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.concurrent.TimeUnit;
+
+import static java.lang.String.format;
+import static moe.kyokobot.bot.command.CommandIcons.ERROR;
 
 public class MusicUtil {
     public static Cache<Guild, Boolean> locks = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(2000).build();
@@ -25,7 +26,7 @@ public class MusicUtil {
             int timeout = 0;
 
             try {
-                musicManager.openConnection((JDAImpl) context.getEvent().getJDA(), context.getGuild(), voiceChannel);
+                musicManager.openConnection(context.getGuild(), voiceChannel);
             } catch (PermissionException e) {
                 locks.invalidate(context.getGuild());
                 return;
@@ -33,8 +34,8 @@ public class MusicUtil {
 
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds
-                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
-                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+                    context.send(ERROR + format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
+                    musicManager.dispose(context.getGuild());
                     locks.invalidate(context.getGuild());
                     return;
                 }
@@ -61,7 +62,7 @@ public class MusicUtil {
         while (locks.getIfPresent(context.getGuild()) != null) {
             try {
                 if (u == 100) {
-                    context.send(CommandIcons.ERROR + context.getTranslated("music.locked"));
+                    context.send(ERROR + context.getTranslated("music.locked"));
                     return true;
                 }
                 Thread.sleep(100);

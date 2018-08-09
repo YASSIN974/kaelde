@@ -8,25 +8,32 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 
 import java.nio.ByteBuffer;
 
-public class LocalSendHandler implements AudioSendHandler {
+public class MagmaSendHandler implements AudioSendHandler {
+    private final MagmaPlayerWrapper wrapper;
     private final AudioPlayer audioPlayer;
     private final MutableAudioFrame frame;
 
-    public LocalSendHandler(LocalPlayerWrapper audioPlayer) {
+    public MagmaSendHandler(MagmaPlayerWrapper audioPlayer) {
+        this.wrapper = audioPlayer;
         this.audioPlayer = audioPlayer.getPlayer();
         this.frame = new MutableAudioFrame();
+
         AudioDataFormat format = StandardAudioDataFormats.DISCORD_OPUS;
+
         frame.setBuffer(ByteBuffer.allocate(format.maximumChunkSize()));
         frame.setFormat(format);
     }
 
     @Override
     public boolean canProvide() {
+        System.out.println("canProvide");
+        wrapper.connected = true; // workaround for magma
         return audioPlayer.provide(frame);
     }
 
     @Override
     public byte[] provide20MsAudio() {
+        System.out.println("provide");
         return frame.getData();
     }
 

@@ -77,6 +77,7 @@ public class Module implements KyokoModule {
                 musicManager = new LavaMusicManager(musicSettings, eventBus);
                 break;
             case INTERNAL:
+            case MAGMA:
                 logger.info("Using internal music manager.");
                 musicManager = new LocalMusicManager(musicSettings, eventBus);
                 break;

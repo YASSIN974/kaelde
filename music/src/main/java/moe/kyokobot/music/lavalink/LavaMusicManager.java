@@ -17,6 +17,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
+import moe.kyokobot.music.event.TrackStartEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.VoiceState;
@@ -103,7 +104,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Override
     public MusicQueue getQueue(Guild guild) {
-        return queues.computeIfAbsent(guild.getIdLong(), queue -> new MusicQueue((JDAImpl) guild.getJDA(), this, guild));
+        return queues.computeIfAbsent(guild.getIdLong(), queue -> new MusicQueue(this, guild));
     }
 
     @Override
@@ -114,19 +115,18 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Override
-    public void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel) {
-        jda.getClient().queueAudioConnect(channel);
+    public void openConnection(Guild guild, VoiceChannel channel) {
+        ((JDAImpl) guild.getJDA()).getClient().queueAudioConnect(channel);
     }
 
     @Override
-    public void closeConnection(JDAImpl jda, Guild guild) {
-        jda.getClient().queueAudioDisconnect(guild);
+    public void closeConnection(Guild guild) {
+        ((JDAImpl) guild.getJDA()).getClient().queueAudioDisconnect(guild);
     }
 
     @Override
     public String getDebug() {
-        return "LavaMusicManager\n" +
-                "----------------\n" +
+        return "# LavaMusicManager\n\n" +
                 "Connected nodes: " + lavaClient.getAudioNodes().size() + "\n" +
                 "Active player count: " + lavaClient.getPlayers().size() + "\n";
     }
@@ -137,8 +137,8 @@ public class LavaMusicManager implements MusicManager {
     }
 
     @Override
-    public void dispose(JDAImpl jda, Guild guild) {
-        closeConnection(jda, guild);
+    public void dispose(Guild guild) {
+        closeConnection(guild);
         LavaPlayer lp = lavaClient.getPlayerMap().get(guild.getIdLong());
         if (lp != null && lp.getState() == State.CONNECTED) lp.destroyPlayer();
         queues.remove(guild.getIdLong());
@@ -153,7 +153,7 @@ public class LavaMusicManager implements MusicManager {
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
-        dispose((JDAImpl) event.getJDA(), event.getGuild());
+        dispose(event.getGuild());
     }
 
     @Subscribe
@@ -179,7 +179,12 @@ public class LavaMusicManager implements MusicManager {
     public void onVoiceChannelLeave(GuildVoiceLeaveEvent event) {
         LavaPlayer lp = lavaClient.getPlayerMap().get(event.getGuild().getIdLong());
         if (lp != null && (lp.getChannelId() == event.getChannelLeft().getIdLong() && isChannelEmpty(event.getGuild(), event.getChannelLeft())))
-            dispose((JDAImpl) event.getJDA(), event.getGuild());
+            dispose(event.getGuild());
+    }
+
+    @Subscribe
+    public void onTrackStart(TrackStartEvent event) {
+        event.getPlayer().updateFilters(event.getTrack());
     }
 
     @Subscribe
@@ -187,24 +192,28 @@ public class LavaMusicManager implements MusicManager {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
             if (queue.isRepeating()) {
-                event.getPlayer().playTrack(queue.getLastTrack());
+                event.getPlayer().playTrack(queue.getLastTrack().makeClone());
             } else {
-                Guild g = queue.getJDA().getGuildById(event.getPlayer().getGuildId());
+                Guild g = queue.getGuild();
 
                 if (queue.getTracks().isEmpty() && queue.getLastTrack() == null) {
-                    dispose(queue.getJDA(), g);
+                    dispose(g);
                 } else if (event.getReason().mayStartNext) {
                     AudioTrack track = queue.poll();
 
                     if (track == null) {
-                        dispose(queue.getJDA(), g);
+                        dispose(g);
                         return;
                     }
 
-                    event.getPlayer().playTrack(track);
-                    queue.announce(track);
+                    playAndAnnounce(event, queue, track);
                 }
             }
         }
+    }
+
+    private void playAndAnnounce(TrackEndEvent event, MusicQueue queue, AudioTrack track) {
+        event.getPlayer().playTrack(track);
+        queue.announce(track);
     }
 }

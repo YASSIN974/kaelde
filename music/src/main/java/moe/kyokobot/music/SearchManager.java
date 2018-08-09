@@ -68,8 +68,8 @@ public class SearchManager {
 
     public String getDebug() {
         StringBuilder sb = new StringBuilder();
-        sb.append("SearchManager\n");
-        sb.append("----------------\n");
+        sb.append("# SearchManager\n\n");
+
         sb.append("Cached YouTube results: ").append(youtubeResults.asMap().size()).append("\n");
         return sb.toString();
     }

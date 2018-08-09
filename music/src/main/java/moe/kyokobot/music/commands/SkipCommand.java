@@ -8,7 +8,6 @@ import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.music.MusicIcons.STOP;
@@ -51,13 +50,17 @@ public class SkipCommand extends MusicCommand {
             }
 
             if (queue.isEmpty()) {
+
                 if (player.getPlayingTrack() != null) {
                     context.send(STOP + context.getTranslated("music.stopped"));
-                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+
+                    musicManager.dispose(context.getGuild());
                 } else {
                     context.send(CommandIcons.ERROR + context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
-                    musicManager.dispose((JDAImpl) context.getEvent().getJDA(), context.getGuild());
+
+                    musicManager.dispose(context.getGuild());
                 }
+
             } else {
                 boolean wasRepeating = queue.isRepeating();
 
@@ -65,6 +68,7 @@ public class SkipCommand extends MusicCommand {
                 queue.setAnnouncing(context.getChannel(), context);
 
                 AudioTrack track = queue.poll();
+
                 if (wasRepeating)
                     queue.setRepeating(false);
 
@@ -72,10 +76,10 @@ public class SkipCommand extends MusicCommand {
 
                 if (wasRepeating)
                     queue.setRepeating(true);
+
                 queue.announce(track);
             }
-        } else {
+        } else
             context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
-        }
     }
 }

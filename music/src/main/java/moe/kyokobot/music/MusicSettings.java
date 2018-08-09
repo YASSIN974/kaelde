@@ -12,7 +12,7 @@ public class MusicSettings {
     public int queueLimit = 1000;
 
     public enum AudioType {
-        INTERNAL, LAVALINK, NOZOMI;
+        INTERNAL, LAVALINK, MAGMA;
     }
 
     public class AudioNode {

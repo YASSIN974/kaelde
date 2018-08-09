@@ -67,7 +67,7 @@ public class PlayCommand extends MusicCommand {
 
     @SubCommand
     public void debug(CommandContext context) {
-        context.send("```\n" + musicManager.getDebug() + "\n" + searchManager.getDebug() + "\n```");
+        context.send("```ldif\n" + musicManager.getDebug() + "\n" + searchManager.getDebug() + "\n```");
     }
 
     @SubCommand

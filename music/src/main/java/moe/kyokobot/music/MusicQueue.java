@@ -3,6 +3,8 @@ package moe.kyokobot.music;
 import com.google.common.collect.Lists;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import lombok.Getter;
+import lombok.Setter;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
@@ -12,20 +14,31 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.*;
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
 public class MusicQueue {
-    private final JDAImpl jda;
+    @Getter
     private final MusicManager manager;
+
+    @Getter
     private final Guild guild;
+
     private TextChannel announcingChannel;
+
     private CommandContext context;
+
+    @Getter
     private ObjectLinkedOpenHashSet<AudioTrack> tracks;
+
+    @Getter
     private AudioTrack lastTrack;
+
+    @Getter
+    @Setter
     private boolean repeating;
 
-    public MusicQueue(JDAImpl jda, MusicManager manager, Guild guild) {
-        this.jda = jda;
+    public MusicQueue(MusicManager manager, Guild guild) {
         this.manager = manager;
         this.guild = guild;
         tracks = new ObjectLinkedOpenHashSet<>();
@@ -45,20 +58,14 @@ public class MusicQueue {
 
     public void announce(AudioTrack track) {
         if (announcingChannel != null) {
-            announcingChannel.sendMessage(PLAY + String.format(context.getTranslated("music.nowplaying"), track.getInfo().title.replace("`", "\\`"), StringUtil.musicPrettyPeriod(track.getDuration()))).queue();
+            announcingChannel.sendMessage(PLAY + format(context.getTranslated("music.nowplaying"),
+                    track.getInfo().title.replace("`", "\\`"),
+                    StringUtil.musicPrettyPeriod(track.getDuration()))).queue();
         }
     }
 
     public boolean isEmpty() {
-        return tracks.size() == 0;
-    }
-
-    public AudioTrack getLastTrack() {
-        return lastTrack;
-    }
-
-    public ObjectLinkedOpenHashSet<AudioTrack> getTracks() {
-        return tracks;
+        return tracks.isEmpty();
     }
 
     public void shuffle() {
@@ -67,20 +74,8 @@ public class MusicQueue {
         tracks = new ObjectLinkedOpenHashSet<>(list);
     }
 
-    public JDAImpl getJDA() {
-        return jda;
-    }
-
     public void setAnnouncing(TextChannel announcingChannel, CommandContext context) {
         this.announcingChannel = announcingChannel;
         this.context = context;
-    }
-
-    public void setRepeating(boolean repeating) {
-        this.repeating = repeating;
-    }
-
-    public boolean isRepeating() {
-        return repeating;
     }
 }

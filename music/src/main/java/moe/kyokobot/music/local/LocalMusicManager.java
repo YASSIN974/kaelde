@@ -13,27 +13,25 @@ import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBu
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
+import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import moe.kyokobot.music.MusicSettings;
 import moe.kyokobot.music.event.TrackEndEvent;
 import moe.kyokobot.music.event.TrackStartEvent;
-import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static moe.kyokobot.music.MusicSettings.AudioType.MAGMA;
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
 
 public class LocalMusicManager implements MusicManager {
@@ -41,14 +39,24 @@ public class LocalMusicManager implements MusicManager {
     private final List<AudioSourceManager> sourceManagers;
     private final Long2ObjectMap<MusicPlayer> players;
     private final Long2ObjectMap<MusicQueue> queues;
+    private final AudioConnection connectionHandler;
     private final AudioPlayerManager playerManager;
     private final EventBus eventBus;
+    private boolean magmaWorkaround = false;
 
     public LocalMusicManager(MusicSettings settings, EventBus eventBus) {
         logger = LoggerFactory.getLogger(this.getClass());
         sourceManagers = new ArrayList<>();
         players = new Long2ObjectOpenHashMap<>();
         queues = new Long2ObjectOpenHashMap<>();
+
+        if (settings.type == MAGMA) {
+            connectionHandler = new MagmaAudioConnection();
+            magmaWorkaround = true;
+        } else {
+            connectionHandler = new JDAAudioConnection();
+        }
+
         playerManager = new DefaultAudioPlayerManager();
         playerManager.setFrameBufferDuration(600);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
@@ -80,37 +88,41 @@ public class LocalMusicManager implements MusicManager {
 
     @Override
     public MusicQueue getQueue(Guild guild) {
-        return queues.computeIfAbsent(guild.getIdLong(), queue -> new MusicQueue((JDAImpl) guild.getJDA(), this, guild));
+        return queues.computeIfAbsent(guild.getIdLong(), queue -> new MusicQueue(this, guild));
     }
 
     @Override
     public MusicPlayer getMusicPlayer(Guild guild) {
         return players.computeIfAbsent(guild.getIdLong(), id -> {
             AudioPlayer player = playerManager.createPlayer();
-            MusicPlayer wrapper = new LocalPlayerWrapper(player, guild);
+
+            MusicPlayer wrapper = magmaWorkaround
+                    ? new MagmaPlayerWrapper(player, guild)
+                    : new LocalPlayerWrapper(player, guild);
+
             player.addListener(new LocalEventHandler(wrapper, eventBus));
+
             return wrapper;
         });
     }
 
     @Override
-    public void openConnection(JDAImpl jda, Guild guild, VoiceChannel channel) {
-        AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-        audioManager.openAudioConnection(channel);
-        audioManager.setSendingHandler(new LocalSendHandler((LocalPlayerWrapper) getMusicPlayer(guild)));
+    public void openConnection(Guild guild, VoiceChannel channel) {
+        if (connectionHandler != null)
+            connectionHandler.openConnection(guild, channel, magmaWorkaround
+                            ? new MagmaSendHandler((MagmaPlayerWrapper) getMusicPlayer(guild))
+                            : new LocalSendHandler((LocalPlayerWrapper) getMusicPlayer(guild)));
     }
 
     @Override
-    public void closeConnection(JDAImpl jda, Guild guild) {
-        jda.pool.submit(() -> {
-            AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-            audioManager.closeAudioConnection();
-        });
+    public void closeConnection(Guild guild) {
+        if (connectionHandler != null)
+            connectionHandler.closeConnection(guild);
     }
 
     @Override
-    public void dispose(JDAImpl jda, Guild guild) {
-        closeConnection(jda, guild);
+    public void dispose(Guild guild) {
+        closeConnection(guild);
         MusicPlayer player = players.remove(guild.getIdLong());
         if (player != null)
             player.destroyPlayer();
@@ -119,7 +131,14 @@ public class LocalMusicManager implements MusicManager {
 
     @Override
     public String getDebug() {
-        return "";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("# LocalMusicManager\n\n");
+
+        sb.append("Connection handler: ").append(connectionHandler.getClass().getName()).append("\n");
+        sb.append("Audio connections: ").append(players.size()).append("\n");
+
+        return sb.toString();
     }
 
     @Override
@@ -129,46 +148,35 @@ public class LocalMusicManager implements MusicManager {
 
     @Override
     public String getDebugString(Guild guild, MusicPlayer player) {
-        return "local:s";
+        return "local:s" + guild.getJDA().getShardInfo().getShardId();
     }
 
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
-        dispose((JDAImpl) event.getJDA(), event.getGuild());
+        dispose(event.getGuild());
+    }
+
+    @Subscribe
+    public void onVoiceStateUpdate(VoiceStateUpdateEvent event) {
+        if (connectionHandler != null)
+            connectionHandler.onVoiceStateUpdate(event);
     }
 
     @Subscribe
     public void onVoiceServerUpdate(VoiceServerUpdateEvent event) {
-        JDAImpl jda = (JDAImpl) event.getGuild().getJDA();
-
-        jda.getClient().updateAudioConnection(event.getGuild().getIdLong(), event.getGuild().getSelfMember().getVoiceState().getChannel());
-
-        if (event.getEndpoint() == null)
-            return;
-
-        String endpoint = event.getEndpoint().replace(":80", "");
-
-        AudioManagerImpl audioManager = (AudioManagerImpl) event.getGuild().getAudioManager();
-        MiscUtil.locked(audioManager.CONNECTION_LOCK, () -> {
-            if (audioManager.isConnected())
-                audioManager.prepareForRegionChange();
-            if (!audioManager.isAttemptingToConnect()) {
-                return;
-            }
-
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, jda, event.getGuild(), event.getSessionId(), event.getToken(), audioManager.isAutoReconnect());
-            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
-            audioManager.setAudioConnection(connection);
-            socket.startConnection();
-        });
+        if (connectionHandler != null)
+            connectionHandler.onVoiceServerUpdate(event);
     }
 
     @Subscribe
     public void onVoiceChannelLeave(GuildVoiceLeaveEvent event) {
         MusicPlayer player = players.get(event.getGuild().getIdLong());
-        if (player != null && (event.getChannelLeft().getMembers().contains(event.getGuild().getSelfMember()) && isChannelEmpty(event.getGuild(), event.getChannelLeft())))
-            dispose((JDAImpl) event.getJDA(), event.getGuild());
+        Guild guild = event.getGuild();
+        List<Member> members = event.getChannelLeft().getMembers();
+
+        if (player != null && (members.contains(guild.getSelfMember()) && isChannelEmpty(guild, event.getChannelLeft())))
+            dispose(guild);
     }
 
     @Subscribe
@@ -183,15 +191,15 @@ public class LocalMusicManager implements MusicManager {
             if (queue.isRepeating()) {
                 event.getPlayer().playTrack(queue.getLastTrack().makeClone());
             } else {
-                Guild g = queue.getJDA().getGuildById(event.getPlayer().getGuildId());
+                Guild g = queue.getGuild();
 
                 if (queue.getTracks().isEmpty() && queue.getLastTrack() == null) {
-                    dispose(queue.getJDA(), g);
+                    dispose(g);
                 } else if (event.getReason().mayStartNext) {
                     AudioTrack track = queue.poll();
 
                     if (track == null) {
-                        dispose(queue.getJDA(), g);
+                        dispose(g);
                         return;
                     }
 
