@@ -21,22 +21,17 @@ public class KyokoService extends AbstractIdleService {
     private final Logger logger;
     private ModuleManager moduleManager;
     private RethinkDatabaseManager databaseManager;
-    private CommandManager commandManager;
-    private EventWaiter eventWaiter;
-    private I18n i18n;
-
-    private boolean sharded;
     private ShardManager shardManager;
 
     public KyokoService(ShardManager shardManager, EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
-        eventWaiter = new EventWaiter();
+        EventWaiter eventWaiter = new EventWaiter();
 
         this.shardManager = shardManager;
         databaseManager = new RethinkDatabaseManager(eventBus);
-        i18n = new I18n(databaseManager);
-        commandManager = new SimpleCommandManager(databaseManager, i18n, executor);
+        I18n i18n = new I18n(databaseManager);
+        CommandManager commandManager = new SimpleCommandManager(databaseManager, i18n, executor, eventBus);
         moduleManager = new SimpleModuleManager(shardManager, databaseManager, i18n, commandManager, eventWaiter);
 
         eventBus.register(eventWaiter);
@@ -62,6 +57,7 @@ public class KyokoService extends AbstractIdleService {
 
     @Override
     public void shutDown() throws Exception {
-        if (shardManager != null) shardManager.shutdown();
+        if (shardManager != null)
+            shardManager.shutdown();
     }
 }

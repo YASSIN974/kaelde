@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.sentry.Sentry;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandType;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.entity.GuildConfig;
+import moe.kyokobot.bot.event.CommandDispatchEvent;
 import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.i18n.I18n;
 import moe.kyokobot.bot.manager.CommandManager;
@@ -35,6 +37,7 @@ public class SimpleCommandManager implements CommandManager {
     private final I18n i18n;
     private final ScheduledExecutorService executor;
     private final DatabaseManager databaseManager;
+    private final EventBus eventBus;
     private final Cache<Guild, Boolean> experimentalCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
     private final Cache<Guild, List<String>> prefixCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
 
@@ -42,13 +45,14 @@ public class SimpleCommandManager implements CommandManager {
     private Map<String, Command> commands;
     @Getter private long runs = 0;
 
-    public SimpleCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor) {
+    public SimpleCommandManager(DatabaseManager databaseManager, I18n i18n, ScheduledExecutorService executor, EventBus eventBus) {
         logger = LoggerFactory.getLogger(getClass());
         this.registered = new HashSet<>();
         this.commands = new HashMap<>();
         this.i18n = i18n;
         this.executor = executor;
         this.databaseManager = databaseManager;
+        this.eventBus = eventBus;
     }
 
     public Set<Command> getRegistered() {
@@ -156,7 +160,13 @@ public class SimpleCommandManager implements CommandManager {
                     logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     runs++;
                     try {
-                        c.preExecute(context);
+                        CommandDispatchEvent dispatchEvent = new CommandDispatchEvent(context);
+                        eventBus.post(dispatchEvent);
+
+                        logger.debug("Cancel: {}", dispatchEvent.isCancelled());
+
+                        if (!dispatchEvent.isCancelled())
+                            c.preExecute(context);
                     } catch (Exception e) {
                         logger.error("Caught error while executing command!", e);
                         Sentry.capture(e);
@@ -242,5 +252,4 @@ public class SimpleCommandManager implements CommandManager {
             }
         }
     }
-
 }
