@@ -103,6 +103,30 @@ public class CommandContext {
         return event.getMessage();
     }
 
+    public void error(CharSequence message) {
+        send(CommandIcons.ERROR + message, null);
+    }
+
+    public void error(CharSequence message, Consumer<Message> callback) {
+        send(CommandIcons.ERROR + message, callback);
+    }
+
+    public void success(CharSequence message) {
+        send(CommandIcons.SUCCESS + message, null);
+    }
+
+    public void success(CharSequence message, Consumer<Message> callback) {
+        send(CommandIcons.SUCCESS + message, callback);
+    }
+
+    public void info(CharSequence message) {
+        send(CommandIcons.INFO + message, null);
+    }
+
+    public void info(CharSequence message, Consumer<Message> callback) {
+        send(CommandIcons.INFO + message, callback);
+    }
+
     public void send(CharSequence message) {
         send(message, null);
     }
@@ -130,6 +154,10 @@ public class CommandContext {
 
     public String getTranslated(String key) {
         return i18n.get(language, key);
+    }
+
+    public String transFormat(String key, Object... args) {
+        return String.format(getTranslated(key), args);
     }
 
     public EmbedBuilder getNormalEmbed() {

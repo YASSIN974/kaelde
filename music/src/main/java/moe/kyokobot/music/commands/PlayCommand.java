@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.*;
@@ -15,6 +14,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
+import static moe.kyokobot.bot.util.StringUtil.markdown;
 import static moe.kyokobot.music.MusicIcons.PLAY;
 import static moe.kyokobot.music.MusicUtil.locks;
 
@@ -36,10 +36,13 @@ public class PlayCommand extends MusicCommand {
         if (MusicUtil.lock(context)) return;
 
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
+
         if (voiceChannel != null) {
             locks.put(context.getGuild(), true);
+
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             MusicQueue queue = musicManager.getQueue(context.getGuild());
+
             if (context.hasArgs()) {
                 queue.setAnnouncing(context.getChannel(), context);
 
@@ -49,20 +52,24 @@ public class PlayCommand extends MusicCommand {
                 locks.invalidate(context.getGuild());
             } else {
                 if (!context.getMessage().getAttachments().isEmpty()) {
+
                     if (loadTracksFromAttachment(context, queue))
                         MusicUtil.play(musicManager, player, queue, context, voiceChannel);
+
                 } else if (player.isPaused()) {
+
                     queue.setAnnouncing(context.getChannel(), context);
                     player.setPaused(false);
+
                     context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
+
                     locks.invalidate(context.getGuild());
-                } else {
+
+                } else
                     CommonErrors.usage(context);
-                }
             }
-        } else {
-            context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
-        }
+        } else
+            context.error(context.getTranslated("music.joinchannel"));
     }
 
     @SubCommand
@@ -86,12 +93,12 @@ public class PlayCommand extends MusicCommand {
                 queue.add(track);
                 items++;
             } catch (Exception e) {
-                context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.error"), e.getMessage()));
+                context.error(context.transFormat("music.error", e.getMessage()));
                 return false;
             }
         }
 
-        context.send(MusicIcons.PLAY + String.format(context.getTranslated("music.addeditems"), items));
+        context.send(MusicIcons.PLAY + context.transFormat("music.addeditems", items));
         return true;
     }
 
@@ -100,7 +107,7 @@ public class PlayCommand extends MusicCommand {
         if (query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + "play")
                 || query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + "p")
                 || query.toLowerCase().startsWith(Settings.instance.bot.normalPrefix + ">")) {
-            context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
+            context.error(context.transFormat("music.nothingfound", query));
             return false; // the user is retarded, do not waste resources to query the track
         }
 
@@ -112,7 +119,7 @@ public class PlayCommand extends MusicCommand {
                 if (result != null && result.getEntries() != null && !result.getEntries().isEmpty()) {
                     item = musicManager.resolve(context.getGuild(), result.getEntries().get(0).getUrl());
                 } else {
-                    context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.nothingfound"), query));
+                    context.error(context.transFormat("music.nothingfound", query));
                     locks.invalidate(context.getGuild());
                     return false;
                 }
@@ -120,28 +127,30 @@ public class PlayCommand extends MusicCommand {
 
             if (item instanceof AudioPlaylist) {
                 int tracks = 0;
+
                 for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
                     queue.add(track);
                     tracks++;
                 }
-                context.send(PLAY + String.format(context.getTranslated("music.addedplaylist"), tracks, ((AudioPlaylist) item).getName().replace("`", "\\`")));
+
+                context.send(PLAY + context.transFormat("music.addedplaylist", tracks, markdown(((AudioPlaylist) item).getName())));
             } else if (item instanceof AudioTrack) {
                 queue.add((AudioTrack) item);
-                context.send(PLAY + String.format(context.getTranslated("music.added"), ((AudioTrack) item).getInfo().title.replace("`", "\\`")));
+                context.send(PLAY + context.transFormat("music.added", markdown(((AudioTrack) item).getInfo().title)));
             } else if (item instanceof AudioReference) {
                 if (((AudioReference) item).identifier == null) {
-                    context.send(CommandIcons.ERROR + context.getTranslated("music.agerestricted"));
+                    context.error(context.getTranslated("music.agerestricted"));
                     return false;
                 }
             } else {
-                logger.debug("Unknown item type: " + item.getClass().getName());
+                logger.debug("Unknown item type: {}", item.getClass().getName());
                 return false;
             }
         } catch (FriendlyException e) {
             if (e.getMessage().equals("The playlist is private.")) {
-                context.send(CommandIcons.ERROR + context.getTranslated("music.privateplaylist"));
+                context.error(context.getTranslated("music.privateplaylist"));
             } else {
-                context.send(CommandIcons.ERROR + String.format(context.getTranslated("music.error"), e.getMessage()));
+                context.error(context.transFormat("music.error", e.getMessage()));
             }
             return false;
         }

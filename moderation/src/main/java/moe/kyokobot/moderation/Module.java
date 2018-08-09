@@ -34,6 +34,8 @@ public class Module implements KyokoModule {
         commands.add(new BanCommand());
         commands.add(new UnbanCommand());
         commands.add(new PruneCommand());
+        commands.add(new VoiceKickCommand());
+
         commands.forEach(commandManager::registerCommand);
     }
 

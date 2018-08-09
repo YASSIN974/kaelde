@@ -50,7 +50,12 @@ public class RethinkDatabaseManager implements DatabaseManager {
     @Override
     public UserConfig getUser(User user) {
         String json = r.table("users").get(user.getId()).toJson().run(connection);
-        return (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, UserConfig.class) : newUser(user.getId());
+        UserConfig config = (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, UserConfig.class) : newUser(user.getId());
+
+        if (config.getKvStore() != null)
+            config.getKvStore().entrySet().removeIf(e -> e.getValue().equals("null"));
+
+        return config;
     }
 
     @Override

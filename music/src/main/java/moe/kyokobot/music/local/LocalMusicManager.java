@@ -23,6 +23,7 @@ import moe.kyokobot.music.event.TrackStartEvent;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import org.slf4j.Logger;
@@ -151,6 +152,12 @@ public class LocalMusicManager implements MusicManager {
         return "local:s" + guild.getJDA().getShardInfo().getShardId();
     }
 
+    @Subscribe
+    public void onChannelRemove(VoiceChannelDeleteEvent event) {
+        if (event.getChannel().getIdLong() == getMusicPlayer(event.getGuild()).getChannelId()) {
+            dispose(event.getGuild());
+        }
+    }
 
     @Subscribe
     public void onLeave(GuildLeaveEvent event) {
