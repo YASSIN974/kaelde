@@ -13,7 +13,6 @@ import java.util.zip.ZipFile;
 
 public class ModulesCommand extends Command {
     private ModuleManager moduleManager;
-    private Runtime rt = Runtime.getRuntime();
 
     public ModulesCommand(ModuleManager moduleManager) {
         this.moduleManager = moduleManager;

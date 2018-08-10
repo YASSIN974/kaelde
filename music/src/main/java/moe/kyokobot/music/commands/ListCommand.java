@@ -53,7 +53,7 @@ public class ListCommand extends MusicCommand {
                     }
                     String title = player.getPlayingTrack().getInfo().title.replace("`", "\\`");
                     sb.append("Now playing: `").append(title.length() > 80 ? title.substring(0, 80) + "..." : title)
-                            .append("` `[").append(StringUtil.prettyPeriod(player.getPlayingTrack().getDuration())).append("]`\n\n");
+                            .append("` `[").append(StringUtil.musicPrettyPeriod(player.getPlayingTrack().getDuration())).append("]`\n\n");
                 }
 
                 if (page < 0) page = 0; else if (page >= pageContents.size()) page = pageContents.size() - 1;
