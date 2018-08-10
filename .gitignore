@@ -1,3 +1,7 @@
+# JS SHIT
+.env
+node_modules
+
 # Kyoko shit
 config.json
 deploy
