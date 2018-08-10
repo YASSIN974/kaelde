@@ -1,0 +1,9 @@
+{
+  "name": "kyoko",
+  "version": "3.0.0",
+  "description": "Multipurpose Discord bot.",
+  "main": "index.js",
+  "repository": "https://github.com/KyokoBot/Kyoko",
+  "author": "gabixdev",
+  "license": "MIT"
+}
