@@ -1,9 +1,0 @@
-dependencies {
-    compile project(":core")
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-}
-
-jar {
-    archiveName = "moderation.jar"
-    destinationDir project.file('../deploy/modules')
-}

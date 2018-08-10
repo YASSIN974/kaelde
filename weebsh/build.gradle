@@ -1,8 +1,0 @@
-dependencies {
-    compile project(":core")
-}
-
-jar {
-    archiveName = "weebsh.jar"
-    destinationDir project.file('../deploy/modules')
-}
