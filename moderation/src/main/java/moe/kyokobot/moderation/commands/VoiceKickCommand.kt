@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel
 
 class VoiceKickCommand : ModerationCommand("voicekick", Permission.MANAGE_CHANNEL, hasArgs = true) {
     init {
-        aliases = arrayOf("vckick", "vkick")
+        aliases = arrayOf("vckick", "vkick", "getthefuckoffmychannel")
     }
 
     override fun execute(context: CommandContext) {
@@ -20,9 +20,9 @@ class VoiceKickCommand : ModerationCommand("voicekick", Permission.MANAGE_CHANNE
                 return@queue
             }
 
-            members.forEach {
-                if (it.voiceState.inVoiceChannel())
-                    context.guild.controller.moveVoiceMember(it, chan as VoiceChannel).complete()
+            members.forEach { member ->
+                if (member.voiceState.inVoiceChannel())
+                    context.guild.controller.moveVoiceMember(member, chan as VoiceChannel).complete()
             }
 
             chan.delete().queue()

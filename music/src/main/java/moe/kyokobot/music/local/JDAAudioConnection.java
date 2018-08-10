@@ -22,7 +22,7 @@ public class JDAAudioConnection implements AudioConnection {
 
     @Override
     public void closeConnection(Guild guild) {
-        ((JDAImpl) guild.getJDA()).pool.submit(() -> {
+        ((JDAImpl) guild.getJDA()).getCallbackPool().submit(() -> {
             AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
             audioManager.closeAudioConnection();
         });

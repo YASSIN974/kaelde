@@ -120,7 +120,7 @@ public class SearchCommand extends MusicCommand {
                 VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
                 if (voiceChannel != null) {
                     context.send(MusicIcons.PLAY + String.format(context.getTranslated("music.addeditems"), items));
-                    ((JDAImpl) context.getEvent().getJDA()).pool.submit(() -> {
+                    ((JDAImpl) context.getEvent().getJDA()).getCallbackPool().submit(() -> {
                         queue.setAnnouncing(context.getChannel(), context);
                         MusicUtil.play(musicManager, player, queue, context, voiceChannel);
                     });

@@ -163,8 +163,6 @@ public class SimpleCommandManager implements CommandManager {
                         CommandDispatchEvent dispatchEvent = new CommandDispatchEvent(context);
                         eventBus.post(dispatchEvent);
 
-                        logger.debug("Cancel: {}", dispatchEvent.isCancelled());
-
                         if (!dispatchEvent.isCancelled())
                             c.preExecute(context);
                     } catch (Exception e) {

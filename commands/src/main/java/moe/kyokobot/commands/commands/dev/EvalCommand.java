@@ -19,6 +19,8 @@ import javax.script.ScriptEngineManager;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import static moe.kyokobot.bot.command.CommandIcons.WORKING;
+
 public class EvalCommand extends Command {
     private final Logger logger = LoggerFactory.getLogger(EvalCommand.class);
     private final ShardManager shardManager;
@@ -41,10 +43,12 @@ public class EvalCommand extends Command {
 
     @Override
     public void execute(@NotNull CommandContext context) {
-        context.send(CommandIcons.WORKING + "Evaluating...", message -> {
+        context.send(WORKING + "Evaluating...", message -> {
             try {
-                if (engine == null)
+                if (engine == null) {
+                    message.editMessage(WORKING + "Initializing JS engine, give me a sec...").queue();
                     setupEngine();
+                }
 
                 if (shardManager != null)
                     engine.put("shardManager", shardManager);
@@ -84,7 +88,7 @@ public class EvalCommand extends Command {
     private void setupEngine() {
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
 
-        if (getClass().getResource("/babel.min.js") != null) {
+        if (getClass().getResource("/babel.js") != null) {
             logger.info("Loading Babel...");
 
             try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {

@@ -45,7 +45,7 @@ public class Module implements KyokoModule {
 
         commands.add(new HelpCommand(commandManager));
         commands.add(new LanguageCommand(databaseManager));
-        commands.add(new StatsCommand(commandManager));
+        commands.add(new StatsCommand(commandManager, shardManager));
         commands.add(new PingCommand());
         commands.add(new InviteCommand());
         commands.add(new UserInfoCommand());

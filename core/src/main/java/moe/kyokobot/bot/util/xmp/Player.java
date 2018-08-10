@@ -2,13 +2,15 @@ package moe.kyokobot.bot.util.xmp;
 
 import lombok.Getter;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 @Getter
-public class Player {
+public class Player implements Closeable {
     private final int sampleRate;
     private final long instance;
     private Module module;
+    private boolean closed = false;
 
     public Player(int sampleRate) {
         XmpNativeLoader.loadKXMPLibrary();
@@ -42,9 +44,9 @@ public class Player {
     }
 
     @Override
-    @SuppressWarnings("ObjectFinalizeOverridenCheck")
-    protected void finalize() throws Throwable {
-        Xmp.destroy(instance);
-        super.finalize();
+    public void close() {
+        if (!closed)
+            Xmp.destroy(instance);
+        closed = true;
     }
 }

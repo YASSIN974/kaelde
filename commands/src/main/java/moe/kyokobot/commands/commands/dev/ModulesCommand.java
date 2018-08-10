@@ -29,13 +29,13 @@ public class ModulesCommand extends Command {
         else {
             if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
-                    context.send(CommandIcons.ERROR + "Module  `" + modname + "` is already started!");
+                    context.error("Module  `" + modname + "` is already started!");
                 } else {
                     moduleManager.startModule(modname);
-                    context.send(CommandIcons.SUCCESS + "Module `" + modname + "` started!");
+                    context.success("Module `" + modname + "` started!");
                 }
             } else {
-                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
+                context.error("Cannot find module `" + modname + "`");
             }
         }
     }
@@ -46,16 +46,16 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(CommandIcons.ERROR + "Cannot stop `core` module!");
+                context.error("Cannot stop `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
-                    context.send(CommandIcons.SUCCESS + "Module `" + modname + "` stopped!");
+                    context.success("Module `" + modname + "` stopped!");
                 } else {
-                    context.send(CommandIcons.ERROR + "Module  `" + modname + "` is already stopped!");
+                    context.error("Module  `" + modname + "` is already stopped!");
                 }
             } else {
-                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
+                context.error("Cannot find module `" + modname + "`");
             }
         }
     }
@@ -66,15 +66,15 @@ public class ModulesCommand extends Command {
         if (modname.isEmpty()) printModules(context);
         else {
             if (modname.equalsIgnoreCase("core")) {
-                context.send(CommandIcons.ERROR + "Cannot unload `core` module!");
+                context.error("Cannot unload `core` module!");
             } else if (moduleManager.isLoaded(modname)) {
                 if (moduleManager.isStarted(modname)) {
                     moduleManager.stopModule(modname);
                 }
                 moduleManager.unload(modname, true);
-                context.send(CommandIcons.SUCCESS + "Module `" + modname + "` unloaded!");
+                context.success("Module `" + modname + "` unloaded!");
             } else {
-                context.send(CommandIcons.ERROR + "Cannot find module `" + modname + "`");
+                context.error("Cannot find module `" + modname + "`");
             }
         }
     }
@@ -97,13 +97,13 @@ public class ModulesCommand extends Command {
                             return;
                         }
                     }
-                    context.send(CommandIcons.ERROR + "Not a valid module!");
+                    context.error("Not a valid module!");
                 } catch (Exception e) {
                     logger.error("Error while loading module {}", modname, e);
-                    context.send(CommandIcons.ERROR + "Error while loading module `" + modname + "`: " + e.getMessage());
+                    context.error("Error while loading module `" + modname + "`: " + e.getMessage());
                 }
             } else {
-                context.send(CommandIcons.ERROR + "Cannot find file `" + modname + "`");
+                context.error("Cannot find file `" + modname + "`");
             }
         }
     }
@@ -119,14 +119,6 @@ public class ModulesCommand extends Command {
                 msg.editMessage(CommandIcons.ERROR + "Error reloading modules: " + e.getMessage()).queue();
             }
         });
-    }
-
-    @SubCommand
-    public void ram(CommandContext context) {
-        long free = rt.freeMemory() / 1024;
-        long total = rt.totalMemory() / 1024;
-        long used = total - free;
-        context.send("```css\nFree: " + free + "KB\nTotal: " + total + "KB\nUsed: " + used + "KB\n```");
     }
 
     @Override

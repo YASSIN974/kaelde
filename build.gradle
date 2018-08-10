@@ -16,7 +16,7 @@ buildscript {
 
 allprojects {
     ext {
-        jdaVersion = "3.7.1_385"
+        jdaVersion = "3.7.1_392"
     }
     repositories {
         jcenter()

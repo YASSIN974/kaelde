@@ -6,12 +6,16 @@ import com.sedmelluq.discord.lavaplayer.filter.PcmFormat;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
 import moe.kyokobot.bot.util.xmp.Player;
 import moe.kyokobot.bot.util.xmp.Xmp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class XmpTrackProvider {
+    private static final Logger logger = LoggerFactory.getLogger(XmpTrackProvider.class);
+
     private int BLOCKS_IN_BUFFER = 2048;
     private final Player player;
     private final AudioPipeline downstream;
@@ -22,10 +26,10 @@ public class XmpTrackProvider {
     }
 
     public void seekToTimecode(long timecode) {
-        // TODO
+        // unimplemented
     }
 
-    public void provideFrames() throws InterruptedException {
+    public void provideFrames() {
         try {
             byte[] buffer = new byte[BLOCKS_IN_BUFFER * 2];
             short[] shortBuffer = new short[BLOCKS_IN_BUFFER];
@@ -37,14 +41,16 @@ public class XmpTrackProvider {
             while (e == 0) {
                 e = player.getBuffer(buffer, 0, buffer.length);
                 if (e != 0) {
-                    System.out.println("Error: " + Xmp.ERROR_STRING[-e]);
+                    logger.error("Error: {}", Xmp.ERROR_STRING[-e]);
                 }
 
                 ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shortBuffer);
                 downstream.process(shortBuffer, 0, BLOCKS_IN_BUFFER);
             }
             player.endPlayer();
+            player.close();
         } catch (Exception e) {
+            player.close();
             throw new RuntimeException(e);
         }
     }

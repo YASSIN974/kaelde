@@ -46,6 +46,7 @@ public class XmpContainerProbe implements MediaContainerProbe {
                 p.loadModule(buf);
             } catch (IOException ee) {
                 log.debug("xmp error: {}", ee.getMessage());
+                p.close();
                 return null;
             }
         }
@@ -53,6 +54,7 @@ public class XmpContainerProbe implements MediaContainerProbe {
         log.debug("Loaded module {} via XMP.", reference.identifier);
 
         inputStream.seek(0);
+        p.close();
 
         return new MediaContainerDetectionResult(this, new AudioTrackInfo(
                 p.getModule().getName(),
