@@ -5,5 +5,11 @@
   "main": "index.js",
   "repository": "https://github.com/KyokoBot/Kyoko",
   "author": "gabixdev",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "eris": "^0.9.0",
+    "eris-sharder": "^1.7.9",
+    "logform": "^1.9.1",
+    "winston": "^3.0.0"
+  }
 }
