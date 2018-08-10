@@ -57,7 +57,7 @@ public class XmpContainerProbe implements MediaContainerProbe {
         p.close();
 
         return new MediaContainerDetectionResult(this, new AudioTrackInfo(
-                p.getModule().getName(),
+                p.getModule().getName().isEmpty() ? "(No title)" : p.getModule().getName(),
                 UNKNOWN_ARTIST,
                 Long.MAX_VALUE,
                 reference.identifier,

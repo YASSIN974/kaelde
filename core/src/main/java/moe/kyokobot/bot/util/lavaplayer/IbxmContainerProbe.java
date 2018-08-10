@@ -43,7 +43,7 @@ public class IbxmContainerProbe implements MediaContainerProbe {
         inputStream.seek(0);
 
         return new MediaContainerDetectionResult(this, new AudioTrackInfo(
-                module.songName,
+                module.songName.isEmpty() ? "(No title)" : module.songName,
                 UNKNOWN_ARTIST,
                 Long.MAX_VALUE,
                 reference.identifier,
