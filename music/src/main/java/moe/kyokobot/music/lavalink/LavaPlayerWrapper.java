@@ -54,6 +54,16 @@ public class LavaPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public int getPitch() {
+        return 0;
+    }
+
+    @Override
+    public float getTempo() {
+        return 1.0f;
+    }
+
+    @Override
     public boolean isKaraoke() {
         return false;
     }
@@ -125,6 +135,16 @@ public class LavaPlayerWrapper implements MusicPlayer {
 
     @Override
     public void setVaporwave(boolean enabled) {
+
+    }
+
+    @Override
+    public void setTempo(float tempo) {
+
+    }
+
+    @Override
+    public void setPitch(int pitch) {
 
     }
 

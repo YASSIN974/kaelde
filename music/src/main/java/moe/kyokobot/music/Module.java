@@ -13,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import io.sentry.Sentry;
+import lombok.Getter;
 import moe.kyokobot.bot.Globals;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.Command;
@@ -50,7 +51,9 @@ public class Module implements KyokoModule {
     @Inject
     private EventWaiter waiter;
     private ArrayList<Command> commands;
+    @Getter
     private MusicManager musicManager;
+    @Getter
     private MusicSettings musicSettings;
 
     public Module() {
@@ -108,6 +111,7 @@ public class Module implements KyokoModule {
         commands.add(new RepeatCommand(musicManager));
         commands.add(new NightcoreCommand(musicManager, databaseManager));
         commands.add(new PauseCommand(musicManager));
+        commands.add(new PitchCommand(musicManager, databaseManager));
         commands.add(new ResumeCommand(musicManager));
         commands.add(new SearchCommand(eventWaiter, musicManager, searchManager));
         commands.add(new ShuffleCommand(musicManager));
@@ -166,6 +170,7 @@ public class Module implements KyokoModule {
         MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
         MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
         MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
+        MusicIcons.SHUFFLE = "<:shuffle:380050031262171136>  |  ";
         MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
         MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
         MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";

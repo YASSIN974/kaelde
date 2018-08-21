@@ -6,18 +6,23 @@ import com.rethinkdb.net.Connection;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.entity.DatabaseEntity;
 import moe.kyokobot.bot.entity.GuildConfig;
+import moe.kyokobot.bot.entity.MemberConfig;
 import moe.kyokobot.bot.entity.UserConfig;
 import moe.kyokobot.bot.event.DatabaseUpdateEvent;
 import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.util.GsonUtil;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.rethinkdb.RethinkDB.r;
 
@@ -44,6 +49,7 @@ public class RethinkDatabaseManager implements DatabaseManager {
 
         r.tableCreate("users").runNoReply(connection);
         r.tableCreate("guilds").runNoReply(connection);
+        r.tableCreate("members").runNoReply(connection);
         r.tableCreate("botsettings").runNoReply(connection);
     }
 
@@ -56,6 +62,14 @@ public class RethinkDatabaseManager implements DatabaseManager {
             config.getKvStore().entrySet().removeIf(e -> e.getValue().equals("null"));
 
         return config;
+    }
+
+    @Override
+    public MemberConfig getMember(Member member) {
+        String pair = member.getGuild().getId() + "$" + member.getUser().getId();
+        String json = r.table("users").get(pair).toJson().run(connection);
+
+        return  (json != null && !json.equals("null")) ? GsonUtil.fromJSON(json, MemberConfig.class) : newMember(pair);
     }
 
     @Override
@@ -111,7 +125,11 @@ public class RethinkDatabaseManager implements DatabaseManager {
     }
 
     private UserConfig newUser(String id) {
-        return new UserConfig( "default", 0L, 1L, 0L, 0L,0L, Language.DEFAULT, id, new HashMap<>(), new HashMap<>(), 1, false);
+        return new UserConfig(id);
+    }
+
+    private MemberConfig newMember(String id) {
+        return new MemberConfig(id);
     }
 
     private GuildConfig newGuild(String id) {

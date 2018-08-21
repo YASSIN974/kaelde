@@ -34,6 +34,10 @@ public class LocalPlayerWrapper implements MusicPlayer {
     private float karaokeWidth = KaraokeFilter.DEFAULT_FILTER_WIDTH;
     private float karaokeBand = KaraokeFilter.DEFAULT_FILTER_BAND;
     private float karaokeLevel = KaraokeFilter.DEFAULT_LEVEL;
+    @Getter
+    private int pitch = 0;
+    @Getter
+    private float tempo = 1.0f;
 
 
     public LocalPlayerWrapper(AudioPlayer player, Guild guild) {
@@ -147,6 +151,18 @@ public class LocalPlayerWrapper implements MusicPlayer {
     }
 
     @Override
+    public void setTempo(float tempo) {
+        this.tempo = tempo;
+        updateFilters(getPlayingTrack());
+    }
+
+    @Override
+    public void setPitch(int pitch) {
+        this.pitch = pitch;
+        updateFilters(getPlayingTrack());
+    }
+
+    @Override
     public boolean hasFiltersEnabled() {
         return nightcore != 1.0f || karaoke || vaporwave;
     }
@@ -158,14 +174,17 @@ public class LocalPlayerWrapper implements MusicPlayer {
 
     @Override
     public void updateFilters(AudioTrack track) {
-        // _ _ _ _ _ V K N
+        // _ _ P T V W K N
         byte flags = 0;
 
-        if (karaoke) flags |= 0b010;
+        if (pitch != 0)            flags |= 0b100000;
+        if (volume != 1.0f)        flags |= 0b001000;
+        if (karaoke)               flags |= 0b000010;
 
         if (canChangeSpeed(track)) {
-            if (nightcore != 1.0f) flags |= 0b001;
-            if (vaporwave) flags |= 0b100;
+            if (tempo != 1.0f)     flags |= 0b010000;
+            if (vaporwave)         flags |= 0b000100;
+            if (nightcore != 1.0f) flags |= 0b000001;
         }
 
         if (flags == 0) {
@@ -189,16 +208,18 @@ public class LocalPlayerWrapper implements MusicPlayer {
                             audioDataFormat.channelCount,
                             audioDataFormat.sampleRate);
 
-                if ((f & 0b001) != 0)
+                if ((f & 0b000001) != 0)
                     timescale.setRate(nightcore);
-                if ((f & 0b100) != 0)
-                    timescale.setSpeed(0.5f).setPitchSemiTones(-7);
+                if ((f & 0b000100) != 0)
+                    timescale.setSpeed(tempo * 0.5f).setPitchSemiTones(pitch - 7.0);
+                else if ((f & 0b110000) != 0)
+                    timescale.setSpeed(tempo).setPitchSemiTones(pitch);
 
                 if (karaoke) {
-                    if ((f & 0b101) != 0)
-                        return ImmutableList.of(new KaraokePcmAudioFilter(timescale, audioDataFormat.channelCount, audioDataFormat.sampleRate));
+                    if ((f & 0b000101) != 0)
+                        return ImmutableList.of(new KaraokePcmAudioFilter(timescale, audioDataFormat.channelCount, audioDataFormat.sampleRate).setLevel(karaokeLevel).setFilterBand(karaokeBand).setFilterWidth(karaokeWidth));
                     else
-                        return ImmutableList.of(new KaraokePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate));
+                        return ImmutableList.of(new KaraokePcmAudioFilter(audioFilter, audioDataFormat.channelCount, audioDataFormat.sampleRate).setLevel(karaokeLevel).setFilterBand(karaokeBand).setFilterWidth(karaokeWidth));
                 } else {
                     return ImmutableList.of(timescale);
                 }

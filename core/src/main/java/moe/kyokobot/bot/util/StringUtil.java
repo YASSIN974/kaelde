@@ -9,12 +9,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
 public class StringUtil {
+    public static final Pattern inviteRegex = Pattern.compile("(https?://)?(www\\.)?(discord\\.(gg|io|me|li)|discordapp\\.com/invite)/.+[0-9a-z]", CASE_INSENSITIVE);
+
     private StringUtil() {
         //
     }
 
     public static String markdown(String in) {
+        in = inviteRegex.matcher(in).replaceAll("[nice try]");
         return in.replace("`", "\\`");
     }
 

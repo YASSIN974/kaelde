@@ -1,20 +1,17 @@
 package moe.kyokobot.music;
 
-import com.google.common.collect.Lists;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.StringUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 import static moe.kyokobot.music.MusicIcons.PLAY;
 
 public class MusicQueue {
@@ -29,7 +26,7 @@ public class MusicQueue {
     private CommandContext context;
 
     @Getter
-    private ObjectLinkedOpenHashSet<AudioTrack> tracks;
+    private LinkedList<AudioTrack> tracks;
 
     @Getter
     private AudioTrack lastTrack;
@@ -41,7 +38,7 @@ public class MusicQueue {
     public MusicQueue(MusicManager manager, Guild guild) {
         this.manager = manager;
         this.guild = guild;
-        tracks = new ObjectLinkedOpenHashSet<>();
+        tracks = new LinkedList<>();
     }
 
     public void add(AudioTrack track) {
@@ -69,9 +66,12 @@ public class MusicQueue {
     }
 
     public void shuffle() {
-        List<AudioTrack> list = Lists.newArrayList(tracks);
-        Collections.shuffle(list);
-        tracks = new ObjectLinkedOpenHashSet<>(list);
+        Collections.shuffle(tracks);
+    }
+
+    public void remove(int index) {
+        if (tracks.size() >= index) return;
+        tracks.remove(index);
     }
 
     public void setAnnouncing(TextChannel announcingChannel, CommandContext context) {

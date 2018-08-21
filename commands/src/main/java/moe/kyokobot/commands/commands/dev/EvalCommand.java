@@ -1,5 +1,6 @@
 package moe.kyokobot.commands.commands.dev;
 
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import moe.kyokobot.bot.command.Command;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.command.CommandIcons;
@@ -15,11 +16,11 @@ import org.slf4j.LoggerFactory;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
 import static moe.kyokobot.bot.command.CommandIcons.WORKING;
+import static moe.kyokobot.bot.manager.impl.SimpleModuleManager.moduleClassLoader;
 
 public class EvalCommand extends Command {
     private final Logger logger = LoggerFactory.getLogger(EvalCommand.class);
@@ -86,9 +87,9 @@ public class EvalCommand extends Command {
     }
 
     private void setupEngine() {
-        engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        engine = new NashornScriptEngineFactory().getScriptEngine(moduleClassLoader);
 
-        if (getClass().getResource("/babel.js") != null) {
+        if (getClass().getResource("/babel.min.js") != null) {
             logger.info("Loading Babel...");
 
             try (Reader r = new InputStreamReader(getClass().getResourceAsStream("/babel.min.js"))) {

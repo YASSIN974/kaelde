@@ -2,7 +2,6 @@ package moe.kyokobot.music.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.command.CommandContext;
-import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
@@ -56,7 +55,7 @@ public class SkipCommand extends MusicCommand {
 
                     musicManager.dispose(context.getGuild());
                 } else {
-                    context.send(CommandIcons.ERROR + context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
+                    context.error(context.getTranslated("music.queueempty").replace("{prefix}", context.getPrefix()));
 
                     musicManager.dispose(context.getGuild());
                 }
@@ -80,6 +79,6 @@ public class SkipCommand extends MusicCommand {
                 queue.announce(track);
             }
         } else
-            context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
+            context.error(context.getTranslated("music.joinchannel"));
     }
 }

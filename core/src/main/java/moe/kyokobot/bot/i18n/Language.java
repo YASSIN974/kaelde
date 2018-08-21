@@ -13,7 +13,7 @@ public enum Language {
     NORWEGIAN_NY("nn-NO", "Norsk (Nynorsk)", "\uD83C\uDDF3\uD83C\uDDF4", new Locale("no_NO_NY")),
     POLISH("pl", "Polski", "\uD83C\uDDF5\uD83C\uDDF1", new Locale("pl_PL")),
     PORTUGUESE_BR("pt-BR", "Português brasileiro", "\uD83C\uDDF5\uD83C\uDDF9", new Locale("pt_BR")),
-    SPANISH("es-ES", "Español", "\uD83C\uDDEA\uD83C\uDDE6 ", new Locale("es_ES"));
+    SPANISH("es-ES", "Español", "\uD83C\uDDEA\uD83C\uDDE6", new Locale("es_ES"));
 
     private String shortName;
     private String localized;

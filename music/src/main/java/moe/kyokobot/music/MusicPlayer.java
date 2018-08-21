@@ -12,6 +12,8 @@ public interface MusicPlayer {
     long getPosition();
     int getVolume();
     float getNightcore();
+    int getPitch();
+    float getTempo();
     boolean isKaraoke();
     boolean isVaporwave();
     boolean isPaused();
@@ -27,6 +29,8 @@ public interface MusicPlayer {
     void setKaraokeBand(float band);
     void setKaraokeLevel(float level);
     void setVaporwave(boolean enabled);
+    void setTempo(float tempo);
+    void setPitch(int pitch);
     boolean hasFiltersEnabled();
     boolean isConnected();
     void updateFilters(AudioTrack track);

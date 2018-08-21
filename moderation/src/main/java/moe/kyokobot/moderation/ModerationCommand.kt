@@ -20,15 +20,17 @@ open class ModerationCommand(name: String, private vararg val permissions: Permi
             return
         }
         if (!context.member.hasPermission(Permission.ADMINISTRATOR)) {
-            if (context.member.hasPermission(*permissions)) {
+            if (!context.member.hasPermission(*permissions)) {
                 CommonErrors.noPermissionUser(context)
                 return
             }
         }
+
         if (context.selfMember.hasPermission(Permission.ADMINISTRATOR)) {
             super.preExecute(context)
             return
         }
+
         /* -- An iterator is used over varargs here so I can get the specific permission the bot lacks. -- */
         var failed = false
         permissions.forEach { perm ->

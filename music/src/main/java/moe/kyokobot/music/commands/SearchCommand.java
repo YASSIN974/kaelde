@@ -3,7 +3,6 @@ package moe.kyokobot.music.commands;
 import com.google.common.base.Splitter;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.Settings;
 import moe.kyokobot.bot.command.CommandContext;
@@ -13,6 +12,7 @@ import moe.kyokobot.bot.util.EmbedBuilder;
 import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.MessageWaiter;
 import moe.kyokobot.music.*;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static moe.kyokobot.bot.command.CommandIcons.WORKING;
+import static moe.kyokobot.music.MusicIcons.PLAY;
 import static moe.kyokobot.music.MusicUtil.locks;
 
 public class SearchCommand extends MusicCommand {
@@ -63,7 +65,7 @@ public class SearchCommand extends MusicCommand {
 
                 context.send(eb.build(), message -> {
                     MessageWaiter mw = new MessageWaiter(eventWaiter, context);
-                    mw.setMessageHandler(m -> handleMessage(context, result, m));
+                    mw.setMessageHandler(m -> handleMessage(context, result, m, message));
                     mw.create();
                 });
             } else {
@@ -74,60 +76,68 @@ public class SearchCommand extends MusicCommand {
         }
     }
 
-    private void handleMessage(CommandContext context, SearchManager.SearchResult result, MessageReceivedEvent m) {
+    private void handleMessage(CommandContext context, SearchManager.SearchResult result, MessageReceivedEvent m, Message resultEmbed) {
         {
             if (MusicUtil.lock(context)) return;
-
             locks.put(context.getGuild(), true);
+
             String content = m.getMessage().getContentRaw();
             if (content.toLowerCase().contains("exit")) return;
 
             List<String> splits = Splitter.on(",").trimResults().omitEmptyStrings().splitToList(content);
+
             int i;
-            AudioItem item;
             int items = 0;
+            AudioItem item;
+
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
             MusicQueue queue = musicManager.getQueue(context.getGuild());
 
-            for (String s : splits) {
-                try {
+            try {
+                resultEmbed.editMessage(WORKING + context.getTranslated("generic.loading")).queue();
+
+                for (String s : splits) {
                     i = Integer.parseUnsignedInt(s);
-                    if (i > 0 && i < result.getEntries().size() + 1) {
+
+                    if (i > 0 && i <= result.getEntries().size()) {
                         item = musicManager.resolve(context.getGuild(), result.getEntries().get(i - 1).getUrl());
-                        if (item == null) continue;
 
                         if (item instanceof AudioPlaylist) {
-                            for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
-                                queue.add(track);
-                                items++;
-                            }
+                            List<AudioTrack> tracks = ((AudioPlaylist) item).getTracks();
+
+                            tracks.forEach(queue::add);
+                            items += tracks.size();
                         } else if (item instanceof AudioTrack) {
                             queue.add((AudioTrack) item);
                             items++;
-                        } else if (item instanceof AudioReference) {
-                            items++;
-                        } else {
-                            logger.debug("Unknown item type: " + item.getClass().getName());
                         }
                     }
-                } catch (NumberFormatException e) {
-                    locks.invalidate(context.getGuild());
-                    return;
                 }
+            } catch (NumberFormatException e) {
+                resultEmbed.delete().queue();
+
+                locks.invalidate(context.getGuild());
+                return;
             }
 
             if (items != 0) {
+                resultEmbed.delete().queue();
+
                 VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
-                if (voiceChannel != null) {
-                    context.send(MusicIcons.PLAY + String.format(context.getTranslated("music.addeditems"), items));
-                    ((JDAImpl) context.getEvent().getJDA()).getCallbackPool().submit(() -> {
-                        queue.setAnnouncing(context.getChannel(), context);
-                        MusicUtil.play(musicManager, player, queue, context, voiceChannel);
-                    });
-                } else {
-                    context.send(CommandIcons.ERROR + context.getTranslated("music.joinchannel"));
+                if (voiceChannel == null) {
+                    context.error(context.getTranslated("music.joinchannel"));
+                    locks.invalidate(context.getGuild());
+                    return;
                 }
+
+                context.send(PLAY + context.transFormat("music.addeditems", items));
+
+                ((JDAImpl) context.getEvent().getJDA()).getCallbackPool().submit(() -> {
+                    queue.setAnnouncing(context.getChannel(), context);
+                    MusicUtil.play(musicManager, player, queue, context, voiceChannel);
+                });
             }
+
             locks.invalidate(context.getGuild());
         }
     }

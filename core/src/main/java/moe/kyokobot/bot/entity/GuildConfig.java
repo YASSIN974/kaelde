@@ -74,6 +74,15 @@ public class GuildConfig implements DatabaseEntity {
         @SerializedName("auto-role")
         private String autoRole = "";
 
+        @SerializedName("anti-invite")
+        private boolean antiInvite = false;
+
+        @SerializedName("invite-ignore")
+        private List<String> inviteIgnore = new ArrayList<>();
+
+        @SerializedName("invite-strikes")
+        private int inviteStrikes = 2;
+
         @SerializedName("self-assignable")
         private List<String> selfAssignable = new ArrayList<>();
     }

@@ -21,6 +21,7 @@ import moe.kyokobot.bot.util.GsonUtil;
 import moe.kyokobot.bot.util.graph.Graph;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import java.util.zip.ZipFile;
 
 public class SimpleModuleManager implements ModuleManager {
     private static final File MODULES_DIR = new File(System.getProperty("kyoko.plugindir", "modules"));
+    public static ModuleClassLoader moduleClassLoader;
 
     private final ShardManager shardManager;
     private final DatabaseManager databaseManager;
@@ -44,6 +46,7 @@ public class SimpleModuleManager implements ModuleManager {
     private final CommandManager commandManager;
     private final EventWaiter eventWaiter;
     private final Logger logger;
+
     @Getter
     private HashMap<String, KyokoModule> modules;
     private HashMap<String, URLClassLoader> classLoaders;
@@ -59,6 +62,7 @@ public class SimpleModuleManager implements ModuleManager {
     Graph<String> graph = null;
 
     public SimpleModuleManager(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
+        moduleClassLoader = new ModuleClassLoader(this);
         logger = LoggerFactory.getLogger(getClass());
         this.shardManager = shardManager;
         this.databaseManager = databaseManager;
@@ -322,15 +326,23 @@ public class SimpleModuleManager implements ModuleManager {
         if (isLoaded(name))
             throw new IllegalArgumentException("Module is already loaded!");
 
-        Class jarClass = cl.loadClass(main);
-
-        if (!KyokoModule.class.isAssignableFrom(jarClass))
-            throw new IllegalArgumentException("Module main class does not implement KyokoModule!");
-
-        KyokoModule mod = (KyokoModule) jarClass.newInstance();
-        modules.put(name, mod);
         classLoaders.put(name, cl);
-        tempFiles.put(name, jar2);
+
+        try {
+            Class jarClass = moduleClassLoader.loadClass(main);
+
+            if (!KyokoModule.class.isAssignableFrom(jarClass)) {
+                classLoaders.remove(name);
+                throw new IllegalArgumentException("Module main class does not implement KyokoModule!");
+            }
+
+            KyokoModule mod = (KyokoModule) jarClass.newInstance();
+            modules.put(name, mod);
+            tempFiles.put(name, jar2);
+        } catch (Exception e) {
+            classLoaders.remove(name);
+            logger.error("Error loading module main class", e);
+        }
     }
 
     @Override
@@ -347,5 +359,71 @@ public class SimpleModuleManager implements ModuleManager {
     public void onEvent(Object object) {
         if (moduleEventBus != null)
             moduleEventBus.post(object);
+    }
+
+    public class ModuleClassLoader extends ClassLoader {
+        private static final boolean CLASSLOADER_DEBUG = true;
+
+        private final SimpleModuleManager manager;
+
+        public ModuleClassLoader(SimpleModuleManager manager) {
+            this.manager = manager;
+        }
+
+        @Override
+        public Class<?> loadClass(String s) throws ClassNotFoundException {
+            if (CLASSLOADER_DEBUG)
+                logger.debug("loadClass: {}", s);
+
+            Class<?> c;
+
+            for (URLClassLoader classLoader : classLoaders.values()) {
+                try {
+                    c = classLoader.loadClass(s);
+
+                    if (c != null)
+                        return c;
+                } catch (ClassNotFoundException e) {
+                    // ignore, go to next one
+                }
+            }
+
+            throw new ClassNotFoundException(s);
+        }
+
+        @Nullable
+        @Override
+        public URL getResource(String s) {
+            if (CLASSLOADER_DEBUG)
+                logger.debug("getResource: {}", s);
+
+            URL resource;
+
+            for (URLClassLoader classLoader : classLoaders.values()) {
+                resource = classLoader.getResource(s);
+
+                if (resource != null)
+                    return resource;
+            }
+
+            return null;
+        }
+
+        @Override
+        public InputStream getResourceAsStream(String s) {
+            if (CLASSLOADER_DEBUG)
+                logger.debug("getResourceAsStream: {}", s);
+
+            InputStream stream;
+
+            for (URLClassLoader classLoader : classLoaders.values()) {
+                stream = classLoader.getResourceAsStream(s);
+
+                if (stream != null)
+                    return stream;
+            }
+
+            return null;
+        }
     }
 }

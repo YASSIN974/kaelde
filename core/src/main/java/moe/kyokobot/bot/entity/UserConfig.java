@@ -1,5 +1,6 @@
 package moe.kyokobot.bot.entity;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 import moe.kyokobot.bot.i18n.Language;
@@ -8,6 +9,7 @@ import moe.kyokobot.bot.util.GsonUtil;
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -17,20 +19,8 @@ public class UserConfig implements DatabaseEntity {
 
     }
 
-    @SuppressWarnings("squid:S00107")
-    public UserConfig(String image, long money, long level, long xp, long claim, long reputation, Language language, String id, Map<String, String> kvStore, Map<String, ArrayList<String>> listStore, int theme, boolean noDMs) {
+    public UserConfig(String id) {
         this.id = id;
-        this.language = language;
-        this.level = level;
-        this.money = money;
-        this.xp = xp;
-        this.claim = claim;
-        this.reputation = reputation;
-        this.image = image;
-        this.kvStore = kvStore;
-        this.listStore = listStore;
-        this.theme = theme;
-        this.noDMs = noDMs;
     }
 
     private String id = "";
@@ -42,10 +32,23 @@ public class UserConfig implements DatabaseEntity {
     private long reputation = 0L;
     private long voted = 0L;
     private int theme = 1;
+    @SerializedName("no-dms")
     private boolean noDMs = false;
     private String image = "default";
+    @SerializedName("kv-store")
     private Map<String, String> kvStore = new HashMap<>();
+    @SerializedName("list-store")
     private Map<String, ArrayList<String>> listStore = new HashMap<>();
+    private List<Item> items = new ArrayList<>();
+    @SerializedName("action-stats")
+    private ActionStats actionStats;
+
+    @Getter
+    @Setter
+    public class ActionStats {
+        private int pats;
+        private int hugs;
+    }
 
     @Transient
     @Override
