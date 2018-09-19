@@ -11,6 +11,8 @@ import io.sentry.Sentry;
 import moe.kyokobot.bot.event.ConnectedEvent;
 import moe.kyokobot.bot.services.GuildCountService;
 import moe.kyokobot.bot.services.KyokoService;
+import moe.kyokobot.bot.util.StringUtil;
+import moe.kyokobot.bot.util.UserUtil;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
@@ -104,22 +106,32 @@ public class Main {
                 ServiceManager kyokoManager = new ServiceManager(ImmutableList.of(new KyokoService(shardManager, eventBus)));
                 ServiceManager guildCountManager = new ServiceManager(ImmutableList.of(new GuildCountService(shardManager)));
 
-                //noinspection StatementWithEmptyBody
-                while (shardManager.getShards().get(0).getSelfUser() == null); // wait for user info on first shard
+                // wait for user info on any shard
+                while(!shardManager.getShards().stream().anyMatch(shard -> shard.getSelfUser() != null)) {
+                    Thread.sleep(100);
+                }
 
-                if (shardManager.getShards().get(0).getSelfUser().getId().equals("375750637540868107")) {
-                    Globals.clientId = shardManager.getShards().get(0).getSelfUser().getIdLong();
+                JDA shard = shardManager.getShards().stream()
+                        .filter(s -> s.getSelfUser() != null).findAny().get();
+
+                if (shard.getSelfUser().getId().equals("375750637540868107")) {
+                    Globals.clientId = shard.getSelfUser().getIdLong();
                     Globals.inDiscordBotsServer = Globals.inKyokoServer = Globals.production = true;
                 }
+
+                shard.asBot().getApplicationInfo().queue(applicationInfo ->
+                        Globals.owner = UserUtil.toDiscrim(applicationInfo.getOwner()));
 
                 kyokoManager.startAsync();
 
                 // Let other shards connect
-                while(shardManager.getShards().stream().anyMatch(shard -> shard.getStatus() != JDA.Status.CONNECTED)) {
-                    Thread.sleep(1000);
+                while(shardManager.getShards().stream().anyMatch(s -> s.getStatus() != JDA.Status.CONNECTED)) {
+                    Thread.sleep(100);
                 }
 
-                if (shardManager.getGuildById("375752406727786498") != null) Globals.inKyokoServer = true;
+                if (shardManager.getGuildById("375752406727786498") != null)
+                    Globals.inKyokoServer = true;
+
                 guildCountManager.startAsync();
 
                 logger.info("Connected!");

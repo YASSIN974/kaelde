@@ -1,6 +1,7 @@
 package moe.kyokobot.bot;
 
 public class Globals {
+    public static volatile String owner = "(still starting)";
     public static volatile long eventsSeen = 0;
     public static volatile long clientId = 0;
     public static volatile int shardCount = 1;

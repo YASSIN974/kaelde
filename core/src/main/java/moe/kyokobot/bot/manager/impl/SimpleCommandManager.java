@@ -7,6 +7,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.RateLimiter;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.Settings;
@@ -38,6 +40,7 @@ public class SimpleCommandManager implements CommandManager {
     private final ScheduledExecutorService executor;
     private final DatabaseManager databaseManager;
     private final EventBus eventBus;
+    private final Cache<Guild, RateLimiter> rateLimits = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(100).build();
     private final Cache<Guild, Boolean> experimentalCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
     private final Cache<Guild, List<String>> prefixCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build();
 
@@ -149,7 +152,7 @@ public class SimpleCommandManager implements CommandManager {
         if (!parts.isEmpty()) {
             Command c = commands.get(parts.get(0).toLowerCase());
             if (c != null && c.getType() == CommandType.NORMAL) {
-                if (c.isExperimental() && !isExperimental(event.getGuild())) return;
+                if (isRateLimited(event.getGuild()) || (c.isExperimental() && !isExperimental(event.getGuild()))) return;
 
                 String[] args = parts.stream().skip(1).toArray(String[]::new);
                 String concatArgs = Joiner.on(" ").join(args);
@@ -212,6 +215,11 @@ public class SimpleCommandManager implements CommandManager {
                 return false;
             }
         } else return b;
+    }
+
+    private boolean isRateLimited(Guild guild) {
+        RateLimiter r = rateLimits.get(guild, g -> RateLimiter.create(3, 5, TimeUnit.SECONDS));
+            return !r.tryAcquire();
     }
 
     private List<String> getPrefixes(Guild guild) {

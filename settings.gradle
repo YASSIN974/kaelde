@@ -1,12 +1,13 @@
 rootProject.name = 'kyoko'
 
 include ':core'
-include ':commands'
-include ':nsfw'
-include ':music'
-include ':moderation'
-include ':social'
-include ':weebsh'
+
+new File(".").eachDir() { dir ->
+    if (file(dir.name + "/build.gradle").exists() && file(dir.name + "/KyokoModule").exists()) {
+        println("[Kyoko] Added module \"" + dir.name + "\" to build path...")
+        include ':' + dir.name
+    }
+}
 
 if(file('sdk').exists()){
     include ':sdk'

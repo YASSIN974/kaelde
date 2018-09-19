@@ -42,7 +42,8 @@ public class MusicQueue {
     }
 
     public void add(AudioTrack track) {
-        tracks.add(track);
+        if (tracks.size() < 250)
+            tracks.add(track);
     }
 
     public void clear() {
