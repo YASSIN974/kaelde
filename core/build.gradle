@@ -6,14 +6,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.nemerosa:versioning:2.7.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     }
 }
 
 apply plugin: 'maven-publish'
 apply plugin: "com.github.ben-manes.versions"
-apply plugin: 'net.nemerosa.versioning'
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -55,12 +53,14 @@ artifacts {
     archives shadowJar
 }
 
+println("Version: ${version}")
+
 shadowJar {
     archiveName = "Kyoko.jar"
     destinationDir project.file('../deploy')
 
     manifest {
-        attributes 'Implementation-Title': 'Kyoko', 'Implementation-Version': versioning.info.lastTag
+        attributes 'Implementation-Title': 'Kyoko', 'Implementation-Version': version
         attributes 'Main-Class': 'moe.kyokobot.bot.Main'
     }
 }
