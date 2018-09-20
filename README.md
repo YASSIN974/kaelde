@@ -11,24 +11,32 @@ Kyoko is an open-source multipurpose Discord bot, mainly for music, fun and mode
 
 **Requirements:**
 
-- Java 8+
+- Java 8
 - RethinkDB 2.3+
 
 **Optional (for full functionality):**
 
-- Lavalink
+- ~~Lavalink~~
 - API Keys (weeb.sh, YouTube Data API, Sentry DSN, Discord Bot List, Discord Bots, ListCord)
 
-**Installation**
-
-(Pre-built binaries will be available soon)
+**Self-hosting**
 
 1. Install Java and RethinkDB.
-2. Look below and compile Kyoko from source code.
-3. Navigate to `deploy` folder in build root - this folder contains all build artifacts - if you want move it outside.
+2. [Grab pre-built binaries (deploy.zip) from releases](https://github.com/KyokoBot/Kyoko/releases) or look below to make your own Kyoko build from source code.
+3. Unpack deploy.zip or copy deploy folder contents (if you compiled Kyoko from source) to your working directory.
 4. Launch `Kyoko.jar`, it should create configuration files and exit.
 5. Edit `config.json` and set your Discord API token (`connection.token`), prefix (`bot.normal-prefix` and `bot.debug-prefix`) and set your ID in `bot.owner` to have access to admin commands.
-6. After completed setup start bot by launching `Kyoko.jar` again, and if you want allocate more memory add `-Xmx2G` (=2 GB, set more if you want) to JVM parameters.
+6. Add desired API keys (do not leave empty fields if you don't have api keys):
+   ```js
+   {
+       "youtube": "YouTube API key (for music stuff)",
+       "weebsh": "Hard to get until you're owner of a bot, needed for reaction commands",
+       "sentry": "Error reporting, you don't need it until you're hosting your own Kyoko-based bot",
+       "dbl", "Discord Bot List API key, for guild count updates, not needed if you are just selfhosting",
+       "dbots", "Discord Bots API key, same as above",
+   }
+   ```
+7. After completed setup start bot by launching `Kyoko.jar` again, and if you want allocate more memory add `-Xmx2G` (=2 GB, set more if you want) to JVM parameters.
 
 ### Building/contributing
 
