@@ -119,8 +119,10 @@ public class Main {
                     Globals.inDiscordBotsServer = Globals.inKyokoServer = Globals.production = true;
                 }
 
-                shard.asBot().getApplicationInfo().queue(applicationInfo ->
-                        Globals.owner = UserUtil.toDiscrim(applicationInfo.getOwner()));
+                shard.asBot().getApplicationInfo().queue(applicationInfo -> {
+                    Globals.owner = UserUtil.toDiscrim(applicationInfo.getOwner());
+                    Globals.ownerId = applicationInfo.getOwner().getIdLong();
+                });
 
                 kyokoManager.startAsync();
 

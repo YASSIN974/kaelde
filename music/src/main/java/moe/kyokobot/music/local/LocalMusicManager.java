@@ -43,7 +43,6 @@ public class LocalMusicManager implements MusicManager {
     private final AudioConnection connectionHandler;
     private final AudioPlayerManager playerManager;
     private final EventBus eventBus;
-    private boolean magmaWorkaround = false;
 
     public LocalMusicManager(MusicSettings settings, EventBus eventBus) {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -51,12 +50,7 @@ public class LocalMusicManager implements MusicManager {
         players = new Long2ObjectOpenHashMap<>();
         queues = new Long2ObjectOpenHashMap<>();
 
-        if (settings.type == MAGMA) {
-            connectionHandler = new MagmaAudioConnection();
-            magmaWorkaround = true;
-        } else {
-            connectionHandler = new JDAAudioConnection();
-        }
+        connectionHandler = new JDAAudioConnection();
 
         playerManager = new DefaultAudioPlayerManager();
         playerManager.setFrameBufferDuration(600);
@@ -97,9 +91,7 @@ public class LocalMusicManager implements MusicManager {
         return players.computeIfAbsent(guild.getIdLong(), id -> {
             AudioPlayer player = playerManager.createPlayer();
 
-            MusicPlayer wrapper = magmaWorkaround
-                    ? new MagmaPlayerWrapper(player, guild)
-                    : new LocalPlayerWrapper(player, guild);
+            MusicPlayer wrapper = new LocalPlayerWrapper(player, guild);
 
             player.addListener(new LocalEventHandler(wrapper, eventBus));
 
@@ -110,9 +102,7 @@ public class LocalMusicManager implements MusicManager {
     @Override
     public void openConnection(Guild guild, VoiceChannel channel) {
         if (connectionHandler != null)
-            connectionHandler.openConnection(guild, channel, magmaWorkaround
-                            ? new MagmaSendHandler((MagmaPlayerWrapper) getMusicPlayer(guild))
-                            : new LocalSendHandler((LocalPlayerWrapper) getMusicPlayer(guild)));
+            connectionHandler.openConnection(guild, channel, new LocalSendHandler((LocalPlayerWrapper) getMusicPlayer(guild)));
     }
 
     @Override

@@ -3,7 +3,6 @@ package moe.kyokobot.music.local;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
-import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -52,10 +51,9 @@ public class JDAAudioConnection implements AudioConnection {
                 return;
             }
 
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, jda, event.getGuild(), event.getSessionId(), event.getToken(), audioManager.isAutoReconnect());
-            net.dv8tion.jda.core.audio.AudioConnection connection = new net.dv8tion.jda.core.audio.AudioConnection(socket, audioManager.getQueuedAudioConnection());
+            net.dv8tion.jda.core.audio.AudioConnection connection = new net.dv8tion.jda.core.audio.AudioConnection(audioManager, endpoint, event.getSessionId(), event.getToken());
             audioManager.setAudioConnection(connection);
-            socket.startConnection();
+            connection.startConnection();
         });
     }
 }

@@ -80,7 +80,6 @@ public class Module implements KyokoModule {
                 musicManager = new LavaMusicManager(musicSettings, eventBus);
                 break;
             case INTERNAL:
-            case MAGMA:
                 logger.info("Using internal music manager.");
                 musicManager = new LocalMusicManager(musicSettings, eventBus);
                 break;
@@ -170,7 +169,7 @@ public class Module implements KyokoModule {
         MusicIcons.PLAY = "<:play:435575362722856970>  |  ";
         MusicIcons.MUSIC = "<:music:435576097497808927>  |  ";
         MusicIcons.REPEAT = "<:repeat:452127280597303306>  |  ";
-        MusicIcons.SHUFFLE = "<:shuffle:380050031262171136>  |  ";
+        MusicIcons.SHUFFLE = "<:shuffle:435575397514477599>  |  ";
         MusicIcons.STOP = "<:stop:435574600076754944>  |  ";
         MusicIcons.PAUSE = "<:pause:458685564716187649>  |  ";
         MusicIcons.SHRUG = "<:toshinoshrug:451519357110190085>";

@@ -8,7 +8,6 @@ import com.google.common.base.Splitter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.RateLimiter;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.Settings;
@@ -162,6 +161,7 @@ public class SimpleCommandManager implements CommandManager {
                 executor.submit(() -> {
                     logger.info("User {}#{} ({}) on guild {}({}) executed: {}", event.getAuthor().getName(), event.getAuthor().getDiscriminator(), event.getAuthor().getId(), event.getGuild().getName(), event.getGuild().getId(), content);
                     runs++;
+
                     try {
                         CommandDispatchEvent dispatchEvent = new CommandDispatchEvent(context);
                         eventBus.post(dispatchEvent);

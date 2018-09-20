@@ -4,20 +4,8 @@ deploy
 avatar.png
 avatar.jpg
 
-weebsh/build
-social/build
-core/build
-commands/build
-moderation/build
-nsfw/build
-music/build
-weebsh/out
-social/out
-core/out
-commands/out
-moderation/out
-nsfw/out
-music/out
+*/build
+*/out
 
 sdk
 

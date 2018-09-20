@@ -4,12 +4,14 @@ include ':core'
 
 new File(".").eachDir() { dir ->
     if (file(dir.name + "/build.gradle").exists() && file(dir.name + "/KyokoModule").exists()) {
-        println("[Kyoko] Added module \"" + dir.name + "\" to build path...")
         include ':' + dir.name
+        println("[Kyoko] Added module \"" + dir.name + "\" to build path...")
     }
 }
 
+/*
 if(file('sdk').exists()){
     include ':sdk'
     apply from: 'sdk/settings.gradle'
 }
+*/

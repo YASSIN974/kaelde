@@ -16,8 +16,9 @@ buildscript {
 
 allprojects {
     ext {
-        jdaVersion = "3.7.1_392"
+        jdaVersion = "3.8.0_425"
     }
+
     repositories {
         jcenter()
         mavenCentral()

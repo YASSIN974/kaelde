@@ -50,7 +50,7 @@ public class JDAEventHandler implements EventListener {
             String token = content.getString("token");
             String id = content.getString("guild_id");
             String endpoint = content.getString("endpoint");
-            Guild guild = api.getGuildMap().get(Long.valueOf(id));
+            Guild guild = getJDA().getGuildMap().get(Long.valueOf(id));
             String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
             eventBus.post(new VoiceServerUpdateEvent(token, guild, endpoint, sessionId));
             return null;
@@ -76,12 +76,12 @@ public class JDAEventHandler implements EventListener {
             boolean suppress = content.getBoolean("suppress");
             String guildId = content.getString("guild_id");
             long guildIdLong = Long.valueOf(guildId);
-            Guild guild = api.getGuildMap().get(guildIdLong);
+            Guild guild = getJDA().getGuildMap().get(guildIdLong);
 
-            if (userId.equals(api.getSelfUser().getId())) {
+            if (userId.equals(getJDA().getSelfUser().getId())) {
                 eventBus.post(new VoiceStateUpdateEvent(guild, channelId, userId, sessionId, deaf, mute, selfDeaf, selfMute, suppress));
             }
-            api.getClient().updateAudioConnection(guildIdLong, guild.getVoiceChannelById(channelId == null ? -1 : channelId));
+            getJDA().getClient().updateAudioConnection(guildIdLong, guild.getVoiceChannelById(channelId == null ? -1 : channelId));
             return super.handleInternally(content);
         }
     }

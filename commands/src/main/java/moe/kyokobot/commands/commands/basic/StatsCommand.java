@@ -50,7 +50,7 @@ public class StatsCommand extends Command {
         at.addRule();
         at.addRow("Bot version", "v" + Constants.VERSION);
         at.addRow("Library version", "JDA " + JDAInfo.VERSION);
-        at.addRow("Author", Globals.owner);
+        at.addRow("Owner", Globals.owner);
         at.addRow("Guilds", shardManager.getGuilds().size());
         at.addRow("Shard", context.getEvent().getJDA().getShardInfo() + " (" + context.getEvent().getJDA().getGuilds().size() + ")");
         at.addRow("Uptime", StringUtil.prettyPeriod(rb.getUptime()));
