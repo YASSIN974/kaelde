@@ -14,17 +14,22 @@ import net.dv8tion.jda.core.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class I18n {
     private RethinkDatabaseManager databaseManager;
     private Logger logger;
-    private HashMap<Language, Properties> languages;
+    private HashMap<Language, Map<String, String>> languages;
     private Cache<String, Language> languageCache;
 
     public I18n(RethinkDatabaseManager databaseManager) {
@@ -39,8 +44,8 @@ public class I18n {
 
         for (Language l : Language.values()) {
             if (l != Language.DEFAULT) try {
-                Properties p = new Properties();
-                File f = new File("./" + l.getShortName() + "/messages.properties");
+                File f = new File("./messages/" + l.getShortName() + "/messages.properties");
+
                 URL url;
                 if (f.exists()) {
                     url = f.toURI().toURL();
@@ -54,21 +59,62 @@ public class I18n {
                     logger.debug("Loaded language {} from jar: {}", l.getLocalized(), url.toString());
                 }
 
-                p.load(new InputStreamReader(url.openStream(), Charsets.UTF_8));
-                languages.put(l, p);
+                loadMessages(l, url.openStream());
             } catch (Exception e) {
                 logger.error("Error while loading language!", e);
             }
         }
     }
 
-    public String get(Language l, String key) {
-        if (languages.containsKey(l))
-            return languages.get(l).getProperty(key, languages.get(Language.ENGLISH).getProperty(key, key));
-        return languages.get(Language.ENGLISH).getProperty(key, key);
+    /**
+     * Loads messages for given language message map from InputStream.
+     * @param language The language we want to load messages for.
+     * @param inputStream The input stream which contains message file.
+     * @throws IOException
+     */
+    public void loadMessages(Language language, InputStream inputStream) throws IOException {
+        Properties p = new Properties();
+        p.load(new InputStreamReader(inputStream, Charsets.UTF_8));
+        loadMessages(language, p);
     }
 
-    public Language getLanguage(Guild guild) {
+    /**
+     * Loads messages for given language message map from Properties object.
+     * @param language The language we want to load messages for.
+     * @param properties Properties instance with messages.
+     */
+    public void loadMessages(Language language, Properties properties) {
+        Map messageMap = languages.computeIfAbsent(language, __ -> new HashMap<>());
+        properties.forEach(messageMap::put);
+    }
+
+    /**
+     * Gets message map of specified language.
+     * @param language The language we want to get message map of.
+     * @return Immutable message map of specified language.
+     */
+    public Map<String, String> getMessageMap(@Nonnull Language language) {
+        return Collections.unmodifiableMap(languages.get(language));
+    }
+
+    /**
+     * Gets message for specific language via specified key.
+     * @param language Preferred language of message.
+     * @param key Message key.
+     * @return Translated message, English fallback or specified key if missing.
+     */
+    public String get(@Nonnull Language language, @Nonnull String key) {
+        if (languages.containsKey(language))
+            return languages.get(language).getOrDefault(key, languages.get(Language.ENGLISH).getOrDefault(key, key));
+        return languages.get(Language.ENGLISH).getOrDefault(key, key);
+    }
+
+    /**
+     * Gets language of specified guild.
+     * @param guild The guild which we want to get language of.
+     * @return The language of specified guild.
+     */
+    public Language getLanguage(@Nonnull Guild guild) {
         try {
             Language l = languageCache.get(guild.getId(),
                     gid -> databaseManager.getGuild(guild).getLanguage());
@@ -80,6 +126,11 @@ public class I18n {
         }
     }
 
+    /**
+     * Gets language of specified member.
+     * @param member The member which we want to get language of.
+     * @return The language of specified member.
+     */
     public Language getLanguage(Member member) {
         try {
             Language l = languageCache.get(member.getUser().getId(),
@@ -92,6 +143,11 @@ public class I18n {
         }
     }
 
+    /**
+     * Gets language of specified user.
+     * @param user The user which we want to get language of.
+     * @return The language of specified user.
+     */
     public Language getLanguage(User user) {
         try {
             Language l = languageCache.get(user.getId(),

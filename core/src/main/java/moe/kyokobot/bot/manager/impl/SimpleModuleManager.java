@@ -10,6 +10,7 @@ import com.google.inject.multibindings.Multibinder;
 import io.sentry.Sentry;
 import lombok.Getter;
 import moe.kyokobot.bot.i18n.I18n;
+import moe.kyokobot.bot.i18n.Language;
 import moe.kyokobot.bot.manager.CommandManager;
 import moe.kyokobot.bot.manager.DatabaseManager;
 import moe.kyokobot.bot.manager.ModuleManager;
@@ -56,13 +57,13 @@ public class SimpleModuleManager implements ModuleManager {
     private Injector injector;
     private EventBus moduleEventBus;
 
-    LinkedHashSet<String> loadOrder = null;
-    Map<String, File> modNames = null;
-    Map<String, Collection<String>> dependencies = null;
-    Graph<String> graph = null;
+    private LinkedHashSet<String> loadOrder = null;
+    private Map<String, File> modNames = null;
+    private Map<String, Collection<String>> dependencies = null;
+    private Graph<String> graph = null;
 
     public SimpleModuleManager(ShardManager shardManager, DatabaseManager databaseManager, I18n i18n, CommandManager commandManager, EventWaiter eventWaiter) {
-        moduleClassLoader = new ModuleClassLoader(this);
+        moduleClassLoader = new ModuleClassLoader();
         logger = LoggerFactory.getLogger(getClass());
         this.shardManager = shardManager;
         this.databaseManager = databaseManager;
@@ -214,7 +215,6 @@ public class SimpleModuleManager implements ModuleManager {
                 ZipEntry entry = entries.nextElement();
                 if (entry.getName().equals("plugin.json")) {
                     String data = CommonUtil.fromStream(zipFile.getInputStream(entry));
-
                     return GsonUtil.fromJSON(data, ModuleDescription.class);
                 }
             }
@@ -225,7 +225,7 @@ public class SimpleModuleManager implements ModuleManager {
     }
 
     private void loadJars() {
-        logger.debug("Module load order: {}", Joiner.on(" <- ").join(loadOrder));
+        logger.debug("Module load order: {}", Joiner.on(" -> ").join(loadOrder));
 
         for (String module : loadOrder) {
             try {
@@ -329,16 +329,20 @@ public class SimpleModuleManager implements ModuleManager {
         classLoaders.put(name, cl);
 
         try {
-            Class jarClass = moduleClassLoader.loadClass(main);
-
-            if (!KyokoModule.class.isAssignableFrom(jarClass)) {
-                classLoaders.remove(name);
-                throw new IllegalArgumentException("Module main class does not implement KyokoModule!");
-            }
-
-            KyokoModule mod = (KyokoModule) jarClass.newInstance();
+            Class<? extends KyokoModule> jarClass = moduleClassLoader.loadClass(main).asSubclass(KyokoModule.class);
+            KyokoModule mod = jarClass.getConstructor().newInstance();
             modules.put(name, mod);
             tempFiles.put(name, jar2);
+
+            // TODO make documentation for module message loading.
+
+            for (Language language : Language.values()) {
+                String msgFile = language.getShortName() + "/" + description.getName() + ".properties";
+                if (cl.getResource(msgFile) != null) {
+                    logger.debug("Loading additional messages for language {} from module {}", language.getLocalized(), description.getName());
+                    i18n.loadMessages(language, cl.getResourceAsStream(msgFile));
+                }
+            }
         } catch (Exception e) {
             classLoaders.remove(name);
             logger.error("Error loading module main class", e);
@@ -362,13 +366,7 @@ public class SimpleModuleManager implements ModuleManager {
     }
 
     public class ModuleClassLoader extends ClassLoader {
-        private static final boolean CLASSLOADER_DEBUG = true;
-
-        private final SimpleModuleManager manager;
-
-        public ModuleClassLoader(SimpleModuleManager manager) {
-            this.manager = manager;
-        }
+        private static final boolean CLASSLOADER_DEBUG = false;
 
         @Override
         public Class<?> loadClass(String s) throws ClassNotFoundException {
