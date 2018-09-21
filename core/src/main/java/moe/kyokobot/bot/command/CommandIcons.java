@@ -1,13 +1,21 @@
 package moe.kyokobot.bot.command;
 
 public class CommandIcons {
-    public static String WORKING = "<a:working:440090198500573184>  |  ";
+    public static String WORKING = "⌛  |  ";
 
-    public static String SUCCESS = "<:success:435574370107129867>  |  ";
+    public static String SUCCESS = "✅  |  ";
 
-    public static String ERROR = "<:error:435574504522121216>  |  ";
+    public static String ERROR = "⚠  |  ";
 
-    public static String INFO = "<:info:435576029680238593>  |  ";
+    public static String INFO = "ℹ  |  ";
 
-    public static String LEVELUP = "<:levelup:466635901703815188>  |  ";
+    public static String LEVELUP = "\uD83C\uDD99  |  ";
+
+    static void loadKyokoIcons() {
+        WORKING = "<a:working:440090198500573184>  |  ";
+        SUCCESS = "<:success:435574370107129867>  |  ";
+        ERROR = "<:error:435574504522121216>  |  ";
+        INFO = "<:info:435576029680238593>  |  ";
+        LEVELUP = "<:levelup:466635901703815188>  |  ";
+    }
 }
