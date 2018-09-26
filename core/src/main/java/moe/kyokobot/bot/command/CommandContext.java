@@ -208,7 +208,7 @@ public class CommandContext {
     }
 
     public void send(CharSequence message, Consumer<Message> callback) {
-        event.getChannel().sendMessage(message).queue(callback);
+        event.getChannel().sendMessage(message.toString().replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere")).queue(callback);
     }
 
     // use this method only for debug commands to prevent theoretical token guessing
