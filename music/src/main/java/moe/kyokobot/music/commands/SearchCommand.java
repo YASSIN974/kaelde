@@ -36,6 +36,7 @@ public class SearchCommand extends MusicCommand {
         this.searchManager = searchManager;
 
         name = "search";
+        checkChannel = true;
     }
 
     @Override

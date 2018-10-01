@@ -15,7 +15,7 @@ public class StopCommand extends MusicCommand {
     public StopCommand(MusicManager musicManager) {
         name = "stop";
         usage = "";
-
+        checkChannel = true;
         this.musicManager = musicManager;
     }
 

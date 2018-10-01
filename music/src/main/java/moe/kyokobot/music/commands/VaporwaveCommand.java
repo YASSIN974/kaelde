@@ -19,6 +19,7 @@ public class VaporwaveCommand extends MusicCommand {
         this.databaseManager = databaseManager;
 
         name = "vaporwave";
+        checkChannel = true;
     }
 
     @Override

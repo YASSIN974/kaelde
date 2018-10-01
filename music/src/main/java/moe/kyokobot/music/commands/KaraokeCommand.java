@@ -19,7 +19,7 @@ public class KaraokeCommand extends MusicCommand {
     public KaraokeCommand(MusicManager musicManager, DatabaseManager databaseManager) {
         this.musicManager = musicManager;
         this.databaseManager = databaseManager;
-
+        checkChannel = true;
         name = "karaoke";
         usage = "";
     }

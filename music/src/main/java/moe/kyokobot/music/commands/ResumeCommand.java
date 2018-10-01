@@ -14,6 +14,7 @@ public class ResumeCommand extends MusicCommand {
         this.musicManager = musicManager;
         name = "resume";
         usage = "";
+        checkChannel = true;
     }
 
     @Override

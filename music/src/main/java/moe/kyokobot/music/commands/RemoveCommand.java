@@ -16,7 +16,7 @@ public class RemoveCommand extends MusicCommand {
     public RemoveCommand(MusicManager musicManager) {
         this.musicManager = musicManager;
 
-        usage = "music.skip.usage";
+        checkChannel = true;
         name = "remove";
     }
 

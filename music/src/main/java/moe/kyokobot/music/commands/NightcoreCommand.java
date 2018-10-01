@@ -18,7 +18,7 @@ public class NightcoreCommand extends MusicCommand {
     public NightcoreCommand(MusicManager musicManager, DatabaseManager databaseManager) {
         this.musicManager = musicManager;
         this.databaseManager = databaseManager;
-
+        checkChannel = true;
         name = "nightcore";
         usage = "";
     }

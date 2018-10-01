@@ -27,7 +27,7 @@ public class PlayCommand extends MusicCommand {
         this.searchManager = searchManager;
 
         name = "play";
-        description = "music.play.description";
+        checkChannel = true;
         aliases = new String[] {">", "p"};
     }
 

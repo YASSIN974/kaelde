@@ -18,7 +18,7 @@ public class SkipCommand extends MusicCommand {
         this.musicManager = musicManager;
 
         name = "skip";
-        description = "music.skip.description";
+        checkChannel = true;
         aliases = new String[] {">>", "forceskip"};
     }
 

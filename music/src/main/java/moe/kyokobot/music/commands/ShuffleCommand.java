@@ -14,7 +14,7 @@ public class ShuffleCommand extends MusicCommand {
     public ShuffleCommand(MusicManager musicManager) {
         name = "shuffle";
         usage = "";
-
+        checkChannel = true;
         this.musicManager = musicManager;
     }
 

@@ -15,7 +15,7 @@ public class RepeatCommand extends MusicCommand {
         this.musicManager = musicManager;
         name = "repeat";
         usage = "";
-        description = "music.repeat.description";
+        checkChannel = true;
     }
 
     @Override

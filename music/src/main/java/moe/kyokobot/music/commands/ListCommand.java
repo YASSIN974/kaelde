@@ -27,7 +27,6 @@ public class ListCommand extends MusicCommand {
 
         name = "list";
         aliases = new String[] {"queue", "q"};
-        description = "music.list.description";
     }
 
     @Override

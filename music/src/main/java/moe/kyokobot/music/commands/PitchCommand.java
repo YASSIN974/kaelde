@@ -20,6 +20,7 @@ public class PitchCommand extends MusicCommand {
 
         name = "pitch";
         usage = "";
+        checkChannel = true;
     }
 
     @Override

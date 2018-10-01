@@ -21,6 +21,7 @@ public class VolumeCommand extends MusicCommand {
 
         name = "volume";
         aliases = new String[] {"vol"};
+        checkChannel = true;
     }
 
     @Override

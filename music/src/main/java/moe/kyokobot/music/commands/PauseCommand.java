@@ -14,7 +14,7 @@ public class PauseCommand extends MusicCommand {
         this.musicManager = musicManager;
         name = "pause";
         usage = "";
-        description = "music.pause.description";
+        checkChannel = true;
     }
 
     @Override
