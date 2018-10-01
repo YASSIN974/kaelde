@@ -117,7 +117,7 @@ public class Module implements KyokoModule {
         commands.add(new StopCommand(musicManager));
         commands.add(new VaporwaveCommand(musicManager, databaseManager));
         commands.add(new VolumeCommand(musicManager, databaseManager));
-
+        commands.add(new JoinCommand());
         commands.forEach(commandManager::registerCommand);
     }
 
