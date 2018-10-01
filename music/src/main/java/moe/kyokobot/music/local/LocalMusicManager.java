@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static moe.kyokobot.music.MusicSettings.AudioType.MAGMA;
 import static moe.kyokobot.music.MusicUtil.isChannelEmpty;
 
 public class LocalMusicManager implements MusicManager {
@@ -185,7 +184,7 @@ public class LocalMusicManager implements MusicManager {
     public void onTrackEnd(TrackEndEvent event) {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
-            if (queue.isRepeating()) {
+            if (queue.getRepeating()) {
                 event.getPlayer().playTrack(queue.getLastTrack().makeClone());
             } else {
                 Guild g = queue.getGuild();

@@ -191,7 +191,7 @@ public class LavaMusicManager implements MusicManager {
     public void onTrackEnd(TrackEndEvent event) {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
-            if (queue.isRepeating()) {
+            if (queue.getRepeating()) {
                 event.getPlayer().playTrack(queue.getLastTrack().makeClone());
             } else {
                 Guild g = queue.getGuild();

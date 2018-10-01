@@ -44,7 +44,7 @@ public class PlayCommand extends MusicCommand {
             MusicQueue queue = musicManager.getQueue(context.getGuild());
 
             if (context.hasArgs()) {
-                queue.setAnnouncing(context.getChannel(), context);
+                queue.setContext(context);
 
                 if (loadTracks(context, queue))
                     MusicUtil.play(musicManager, player, queue, context, voiceChannel);
@@ -58,7 +58,7 @@ public class PlayCommand extends MusicCommand {
 
                 } else if (player.isPaused()) {
 
-                    queue.setAnnouncing(context.getChannel(), context);
+                    queue.setContext(context);
                     player.setPaused(false);
 
                     context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));

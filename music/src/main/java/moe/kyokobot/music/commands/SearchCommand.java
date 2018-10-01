@@ -134,7 +134,7 @@ public class SearchCommand extends MusicCommand {
                 context.send(PLAY + context.transFormat("music.addeditems", items));
 
                 ((JDAImpl) context.getEvent().getJDA()).getCallbackPool().submit(() -> {
-                    queue.setAnnouncing(context.getChannel(), context);
+                    queue.setContext(context);
                     MusicUtil.play(musicManager, player, queue, context, voiceChannel);
                 });
             }

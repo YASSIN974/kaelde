@@ -61,10 +61,10 @@ public class SkipCommand extends MusicCommand {
                 }
 
             } else {
-                boolean wasRepeating = queue.isRepeating();
+                boolean wasRepeating = queue.getRepeating();
 
                 // TODO: enable/disable announcing
-                queue.setAnnouncing(context.getChannel(), context);
+                queue.setContext(context);
 
                 AudioTrack track = queue.poll();
 
