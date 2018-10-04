@@ -13,6 +13,7 @@ import moe.kyokobot.bot.util.EventWaiter;
 import moe.kyokobot.bot.util.MessageWaiter;
 import moe.kyokobot.music.*;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -63,10 +64,13 @@ public class SearchCommand extends MusicCommand {
                 sb.append("\n").append(context.getTranslated("music.searchfooter"));
                 eb.setDescription(sb.toString());
 
-
-                context.send(eb.build(), message -> {
+                MusicQueue queue = musicManager.getQueue(context.getGuild());
+                TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                if (channel == null)
+                    channel = context.getChannel();
+                channel.sendMessage(eb.build()).queue(message -> {
                     MessageWaiter mw = new MessageWaiter(eventWaiter, context);
-                    mw.setMessageHandler(m -> handleMessage(context, result, m, message));
+                    mw.setMessageHandler(m -> handleMessage(context, result, m, message, queue));
                     mw.create();
                 });
             } else {
@@ -77,7 +81,7 @@ public class SearchCommand extends MusicCommand {
         }
     }
 
-    private void handleMessage(CommandContext context, SearchManager.SearchResult result, MessageReceivedEvent m, Message resultEmbed) {
+    private void handleMessage(CommandContext context, SearchManager.SearchResult result, MessageReceivedEvent m, Message resultEmbed, MusicQueue queue) {
         {
             if (MusicUtil.lock(context)) return;
             locks.put(context.getGuild(), true);
@@ -92,7 +96,6 @@ public class SearchCommand extends MusicCommand {
             AudioItem item;
 
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
-            MusicQueue queue = musicManager.getQueue(context.getGuild());
 
             try {
                 resultEmbed.editMessage(WORKING + context.getTranslated("generic.loading")).queue();
@@ -131,7 +134,10 @@ public class SearchCommand extends MusicCommand {
                     return;
                 }
 
-                context.send(PLAY + context.transFormat("music.addeditems", items));
+                TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                if (channel == null)
+                    channel = context.getChannel();
+                channel.sendMessage(PLAY + context.transFormat("music.addeditems", items)).queue();
 
                 ((JDAImpl) context.getEvent().getJDA()).getCallbackPool().submit(() -> {
                     queue.setContext(context);

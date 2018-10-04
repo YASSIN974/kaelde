@@ -7,6 +7,8 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.VoteUtil;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 public class VaporwaveCommand extends MusicCommand {
@@ -36,7 +38,11 @@ public class VaporwaveCommand extends MusicCommand {
             }
 
             player.setVaporwave(!player.isVaporwave());
-            context.send(CommandIcons.INFO + context.getTranslated("music.vaporwave." + (player.isVaporwave() ? "enabled" : "disabled")));
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+            channel.sendMessage(CommandIcons.INFO + context.getTranslated("music.vaporwave." + (player.isVaporwave() ? "enabled" : "disabled")));
         }
     }
 }

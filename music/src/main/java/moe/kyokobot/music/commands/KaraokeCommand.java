@@ -8,6 +8,8 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.VoteUtil;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +42,11 @@ public class KaraokeCommand extends MusicCommand {
             }
 
             player.setKaraoke(!player.isKaraoke());
-            context.send(CommandIcons.INFO + context.getTranslated("music.karaoke." + (player.isVaporwave() ? "enabled" : "disabled")));
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+            channel.sendMessage(CommandIcons.INFO + context.getTranslated("music.karaoke." + (player.isVaporwave() ? "enabled" : "disabled"))).queue();
         }
     }
 

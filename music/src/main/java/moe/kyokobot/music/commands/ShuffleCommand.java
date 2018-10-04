@@ -5,6 +5,7 @@ import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class ShuffleCommand extends MusicCommand {
@@ -25,7 +26,10 @@ public class ShuffleCommand extends MusicCommand {
 
         if (player.getPlayingTrack() != null) {
             queue.shuffle();
-            context.send(MusicIcons.SHUFFLE + context.getTranslated("music.shuffled"));
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+            channel.sendMessage(MusicIcons.SHUFFLE + context.getTranslated("music.shuffled")).queue();
         } else {
             context.error(context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
         }

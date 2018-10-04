@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import moe.kyokobot.bot.Constants;
 import moe.kyokobot.bot.command.CommandContext;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
@@ -34,7 +35,8 @@ public class MusicUtil {
 
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds
-                    context.send(ERROR + format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player)));
+                    TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel()
+                    channel.sendMessage(ERROR + format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player))).queue();
                     musicManager.dispose(context.getGuild());
                     locks.invalidate(context.getGuild());
                     return;

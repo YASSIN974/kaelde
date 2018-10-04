@@ -11,6 +11,7 @@ import moe.kyokobot.bot.command.SubCommand;
 import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.*;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,6 @@ public class PlayCommand extends MusicCommand {
 
             if (context.hasArgs()) {
                 queue.setContext(context);
-
                 if (loadTracks(context, queue))
                     MusicUtil.play(musicManager, player, queue, context, voiceChannel);
 
@@ -61,7 +61,10 @@ public class PlayCommand extends MusicCommand {
                     queue.setContext(context);
                     player.setPaused(false);
 
-                    context.send(MusicIcons.PLAY + context.getTranslated("music.resumed"));
+                    TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                    if (channel == null)
+                        channel = context.getChannel();
+                    channel.sendMessage(MusicIcons.PLAY + context.getTranslated("music.resumed")).queue();
 
                     locks.invalidate(context.getGuild());
 

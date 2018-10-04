@@ -12,6 +12,7 @@ import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -71,6 +72,9 @@ public class ListCommand extends MusicCommand {
                 return mb.build();
             }
         };
-        paginator.create(context.getChannel());
+        TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+        if (channel == null)
+            channel = context.getChannel();
+        paginator.create(channel);
     }
 }

@@ -8,6 +8,8 @@ import moe.kyokobot.bot.util.VoteUtil;
 import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 public class VolumeCommand extends MusicCommand {
@@ -58,7 +60,11 @@ public class VolumeCommand extends MusicCommand {
             player.setVolume(f);
 
 
-            context.send(MusicIcons.VOLUME + String.format(context.getTranslated("music.volume.set"), f));
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+            channel.sendMessage(MusicIcons.VOLUME + String.format(context.getTranslated("music.volume.set"), f));
         }
     }
 }

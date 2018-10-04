@@ -7,6 +7,8 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.bot.util.VoteUtil;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,11 +57,15 @@ public class NightcoreCommand extends MusicCommand {
             }
 
             player.setNightcore(f);
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
 
             if (f == 1.0f) {
-                context.send(CommandIcons.INFO + context.getTranslated("music.nightcore.disabled"));
+                channel.sendMessage(CommandIcons.INFO + context.getTranslated("music.nightcore.disabled")).queue();
             } else {
-                context.send(CommandIcons.INFO + String.format(context.getTranslated("music.nightcore.enabled"), f));
+                channel.sendMessage(CommandIcons.INFO + String.format(context.getTranslated("music.nightcore.enabled"), f)).queue();
             }
         }
     }

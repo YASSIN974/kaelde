@@ -3,6 +3,8 @@ package moe.kyokobot.music.commands;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.command.CommandIcons.ERROR;
@@ -26,8 +28,11 @@ public class StopCommand extends MusicCommand {
         if (player.getPlayingTrack() != null) {
             player.stopTrack();
             musicManager.dispose(context.getGuild());
-
-            context.send(STOP + context.getTranslated("music.stopped"));
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+            channel.sendMessage(STOP + context.getTranslated("music.stopped")).queue();
         } else {
             context.send(ERROR + context.getTranslated("music.nothingplaying").replace("{shrug}", SHRUG));
         }

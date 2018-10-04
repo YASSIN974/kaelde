@@ -6,6 +6,7 @@ import moe.kyokobot.bot.util.CommonErrors;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +52,10 @@ public class SkipCommand extends MusicCommand {
             if (queue.isEmpty()) {
 
                 if (player.getPlayingTrack() != null) {
-                    context.send(STOP + context.getTranslated("music.stopped"));
+                    TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                    if (channel == null)
+                        channel = context.getChannel();
+                    channel.sendMessage(STOP + context.getTranslated("music.stopped")).queue();
 
                     musicManager.dispose(context.getGuild());
                 } else {

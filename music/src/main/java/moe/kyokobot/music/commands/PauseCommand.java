@@ -5,6 +5,8 @@ import moe.kyokobot.bot.command.CommandIcons;
 import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
+import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class PauseCommand extends MusicCommand {
@@ -21,11 +23,16 @@ public class PauseCommand extends MusicCommand {
     public void execute(@NotNull CommandContext context) {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         if (player.getPlayingTrack() != null) {
+            MusicQueue queue = musicManager.getQueue(context.getGuild());
+            TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+            if (channel == null)
+                channel = context.getChannel();
+
             if (!player.isPaused()) {
                 player.setPaused(true);
-                context.send(MusicIcons.PAUSE + context.getTranslated("music.paused"));
+                channel.sendMessage(MusicIcons.PAUSE + context.getTranslated("music.paused")).queue();
             } else {
-                context.send(MusicIcons.PAUSE + context.getTranslated("music.notpaused"));
+                channel.sendMessage(MusicIcons.PAUSE + context.getTranslated("music.notpaused")).queue();
             }
         } else {
             context.send(CommandIcons.ERROR + context.getTranslated("music.nothingplaying").replace("{shrug}", MusicIcons.SHRUG));
