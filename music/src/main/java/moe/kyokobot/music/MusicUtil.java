@@ -35,7 +35,9 @@ public class MusicUtil {
 
             while (!player.isConnected()) {
                 if (timeout == 100) { // wait max 10 seconds
-                    TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel()
+                    TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                    if (channel == null)
+                        channel = context.getChannel();
                     channel.sendMessage(ERROR + format(context.getTranslated("music.nodetimeout"), Constants.DISCORD_URL, musicManager.getDebugString(context.getGuild(), player))).queue();
                     musicManager.dispose(context.getGuild());
                     locks.invalidate(context.getGuild());
