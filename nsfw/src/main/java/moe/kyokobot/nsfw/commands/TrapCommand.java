@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static moe.kyokobot.bot.util.NetworkUtil.download;
 
+@Deprecated
 public class TrapCommand extends NsfwCommand {
     public TrapCommand() {
         name = "trap";

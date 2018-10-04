@@ -29,7 +29,10 @@ public class Module implements KyokoModule {
 
         commands.add(new LewdNekoCommand());
         commands.add(new BoobsCommand());
-        commands.add(new TrapCommand());
+        /* Deprecated and not used because of third party issues.
+         * TODO: Bring 'trap' command back to life upon the underlying API is functional.
+         */
+        // commands.add(new TrapCommand());
 
         commands.forEach(commandManager::registerCommand);
     }
