@@ -4,9 +4,10 @@ import moe.kyokobot.bot.command.Command
 import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.command.CommandIcons
 import moe.kyokobot.bot.util.CommonErrors
+import moe.kyokobot.music.MusicManager
 import net.dv8tion.jda.core.Permission
 
-class JoinCommand: MusicCommand() {
+class JoinCommand(val musicManager: MusicManager): MusicCommand() {
     init {
         name = "join"
     }
@@ -42,14 +43,18 @@ class JoinCommand: MusicCommand() {
                     if (manager.isConnected)
                         manager.closeAudioConnection()
                     manager.openAudioConnection(channel)
-                    context.send(CommandIcons.SUCCESS + context.getTranslated("music.join.joinedchannel").format(channel.name))
+                    val queue = musicManager.getQueue(context.guild)
+                    val ch = (queue.boundChannel ?: queue.announcingChannel) ?: context.channel
+                    ch.sendMessage(CommandIcons.SUCCESS + context.getTranslated("music.join.joinedchannel").format(channel.name)).queue()
                     return
                 }
                 context.send(CommandIcons.ERROR + context.getTranslated("music.join.cannotinteract"))
                 return
             }
             context.guild.audioManager.openAudioConnection(channel)
-            context.send(CommandIcons.SUCCESS + context.getTranslated("music.join.joinedchannel").format(channel.name))
+            val queue = musicManager.getQueue(context.guild)
+            val ch = (queue.boundChannel ?: queue.announcingChannel) ?: context.channel
+            ch.sendMessage(CommandIcons.SUCCESS + context.getTranslated("music.join.joinedchannel").format(channel.name)).queue()
         } catch (err: Throwable) {
             Command.logger.error("Error when attempting to join a channel!", err)
             CommonErrors.exception(context, err)

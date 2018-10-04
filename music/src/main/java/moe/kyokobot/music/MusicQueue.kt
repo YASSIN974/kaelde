@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import moe.kyokobot.bot.command.CommandContext
 import moe.kyokobot.bot.util.StringUtil
 import net.dv8tion.jda.core.entities.Guild
+import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
 
@@ -12,9 +13,10 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         get() = if (tracks.isEmpty()) null else tracks.removeFirst()
         private set
 
+    var binder: Member? = null
+    var boundChannel: TextChannel? = null
     var announcingChannel: TextChannel? = null
         get() = context?.channel
-        private set
     var context: CommandContext? = null
 
     var repeating = false
@@ -34,8 +36,8 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
     }
 
     fun announce(track: AudioTrack) {
-        val ch = announcingChannel // because announcingChannel is a mutable property, could've changed
-        ch?.sendMessage(MusicIcons.PLAY + context?.getTranslated("music.nowplaying")?.format(
+        val channel = if (boundChannel != null) boundChannel else announcingChannel
+        channel?.sendMessage(MusicIcons.PLAY + context?.getTranslated("music.nowplaying")?.format(
                 track.info.title.replace("`", "\\`"),
                 StringUtil.musicPrettyPeriod(track.duration)))?.queue()
     }
