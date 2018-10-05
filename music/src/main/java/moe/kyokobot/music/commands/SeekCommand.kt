@@ -54,7 +54,7 @@ class SeekCommand(val musicManager: MusicManager): MusicCommand() {
         player.seek(position)
         val queue = musicManager.getQueue(context.guild)
         val channel = (queue.boundChannel ?: queue.announcingChannel) ?: context.channel
-        channel.sendMessage("${CommandIcons.SUCCESS}${context.getTranslated("music.seek.success").format(formatHms(position))}").queue()
+        channel.sendMessage("${CommandIcons.SUCCESS}${context.transFormat("music.seek.success", formatHms(position))}").queue()
     }
 
     fun formatHms(timeMs: Long): String = when {
