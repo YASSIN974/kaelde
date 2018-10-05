@@ -23,11 +23,12 @@ class SeekCommand(val musicManager: MusicManager): MusicCommand() {
             CommonErrors.noPermissionUser(context)
             return
         }
-        if (musicManager.getMusicPlayer(context.guild).playingTrack == null) {
+        val playing = musicManager.getMusicPlayer(context.guild).playingTrack
+        if (playing == null) {
             context.error(context.getTranslated("music.nothingplaying"))
             return
         }
-        if (!queue.tracks.last.isSeekable) {
+        if (!playing.isSeekable || playing.duration == Long.MAX_VALUE) {
             context.error(context.getTranslated("music.seek.unseekable"))
             return
         }
