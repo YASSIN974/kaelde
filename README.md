@@ -6,6 +6,7 @@
 Kyoko is an open-source multipurpose Discord bot, mainly for music, fun and moderation. It's developed everyday and new features are constantly added, but if you want - talk to us, suggest something, our Discord server invite is available below.
 
 [Click here to invite bot to server](https://discordapp.com/oauth2/authorize?&client_id=375750637540868107&scope=bot&permissions=2117598326)
+<br>[![Feature Requests](http://feathub.com/KyokoBot/Kyoko?format=svg)](http://feathub.com/KyokoBot/Kyoko)
 
 ### Self-hosting
 
