@@ -35,7 +35,8 @@ public class ListCommand extends MusicCommand {
         MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
         MusicQueue queue = musicManager.getQueue(context.getGuild());
 
-        List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
+        List<String> pages = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getUser().length() + track.getAudioTrack().getInfo().title.length() > 60 ?
+                track.getUser() + " queued: " + track.getAudioTrack().getInfo().title.substring(0, 60) + "..." : track.getUser() + " queued: " + track.getAudioTrack().getInfo().title).collect(Collectors.toList()));
         EmbedBuilder eb = context.getNormalEmbed();
 
         Paginator paginator = new Paginator(waiter, pages, context.getSender()) {
@@ -49,7 +50,8 @@ public class ListCommand extends MusicCommand {
                 if (player.getPlayingTrack() != null) {
                     if (prev != player.getPlayingTrack()) {
                         prev = player.getPlayingTrack();
-                        pageContents = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getInfo().title.length() > 60 ? track.getInfo().title.substring(0, 60) + "..." : track.getInfo().title).collect(Collectors.toList()));
+                        pageContents = StringUtil.createRawPages(queue.getTracks().stream().map(track -> track.getUser().length() + track.getAudioTrack().getInfo().title.length() > 60 ?
+                                track.getUser() + " queued: " + track.getAudioTrack().getInfo().title.substring(0, 60) + "..." : track.getUser() + " queued: " + track.getAudioTrack().getInfo().title).collect(Collectors.toList()));
                     }
                     String title = player.getPlayingTrack().getInfo().title.replace("`", "\\`");
                     sb.append("Now playing: `").append(title.length() > 80 ? title.substring(0, 80) + "..." : title)

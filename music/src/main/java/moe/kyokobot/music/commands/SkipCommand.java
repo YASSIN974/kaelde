@@ -3,6 +3,7 @@ package moe.kyokobot.music.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.music.AudioTrackWrapper;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
@@ -70,17 +71,17 @@ public class SkipCommand extends MusicCommand {
                 // TODO: enable/disable announcing
                 queue.setContext(context);
 
-                AudioTrack track = queue.poll();
+                AudioTrackWrapper wrappedTrack = queue.poll();
 
                 if (wasRepeating)
                     queue.setRepeating(false);
 
-                player.playTrack(track);
+                player.playTrack(wrappedTrack.getAudioTrack());
 
                 if (wasRepeating)
                     queue.setRepeating(true);
 
-                queue.announce(track);
+                queue.announce(wrappedTrack);
             }
         } else
             context.error(context.getTranslated("music.joinchannel"));

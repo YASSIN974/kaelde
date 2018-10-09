@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static moe.kyokobot.bot.command.CommandIcons.WORKING;
@@ -108,11 +109,16 @@ public class SearchCommand extends MusicCommand {
 
                         if (item instanceof AudioPlaylist) {
                             List<AudioTrack> tracks = ((AudioPlaylist) item).getTracks();
-
-                            tracks.forEach(queue::add);
+                            List<AudioTrackWrapper> wrappedTracks = new LinkedList<>();
+                            for (AudioTrack track : tracks) {
+                                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender().getName());
+                                wrappedTracks.add(wrappedTrack);
+                            }
+                            wrappedTracks.forEach(queue::add);
                             items += tracks.size();
                         } else if (item instanceof AudioTrack) {
-                            queue.add((AudioTrack) item);
+                            AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender().getName());
+                            queue.add(wrappedTrack);
                             items++;
                         }
                     }

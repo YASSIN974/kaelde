@@ -54,7 +54,7 @@ public class MusicUtil {
             }
 
             locks.invalidate(context.getGuild());
-            player.playTrack(queue.poll()); // it shouldn't be null!
+            player.playTrack(queue.poll().getAudioTrack()); // it shouldn't be null!
         } else
             player.setPaused(false);
 

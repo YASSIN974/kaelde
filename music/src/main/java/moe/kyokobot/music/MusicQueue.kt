@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
 
 class MusicQueue(val manager: MusicManager, val guild: Guild) {
-    var lastTrack: AudioTrack? = null
+    var lastTrack: AudioTrackWrapper? = null
         get() = if (tracks.isEmpty()) null else tracks.removeFirst()
         private set
 
@@ -20,12 +20,12 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
     var context: CommandContext? = null
 
     var repeating = false
-    val tracks = LinkedList<AudioTrack>()
+    val tracks = LinkedList<AudioTrackWrapper>()
 
     fun clear() = tracks.clear()
     fun poll() = lastTrack
     fun shuffle() = tracks.shuffle()
-    fun add(track: AudioTrack) {
+    fun add(track: AudioTrackWrapper) {
         if (tracks.size < 250)
             tracks.add(track)
     }
@@ -35,10 +35,10 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         tracks.removeAt(index)
     }
 
-    fun announce(track: AudioTrack) {
+    fun announce(track: AudioTrackWrapper) {
         val channel = if (boundChannel != null) boundChannel else announcingChannel
         channel?.sendMessage(MusicIcons.PLAY + context?.getTranslated("music.nowplaying")?.format(
-                track.info.title.replace("`", "\\`"),
-                StringUtil.musicPrettyPeriod(track.duration)))?.queue()
+                track.audioTrack.info.title.replace("`", "\\`"),
+                StringUtil.musicPrettyPeriod(track.audioTrack.duration)))?.queue()
     }
 }
