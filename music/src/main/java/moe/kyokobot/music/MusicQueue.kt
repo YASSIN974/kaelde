@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Guild
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.TextChannel
 import java.util.*
+import java.util.function.Predicate
 
 class MusicQueue(val manager: MusicManager, val guild: Guild) {
     var lastTrack: AudioTrackWrapper? = null
@@ -35,11 +36,7 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         tracks.removeAt(index)
     }
     fun removeUser(user: String) {
-        for (wrappedTrack: AudioTrackWrapper in tracks) {
-            if (wrappedTrack.user.equals(user)) {
-                tracks.remove(wrappedTrack)
-            }
-        }
+        tracks.removeIf { track -> track.user == user }
     }
 
     fun announce(track: AudioTrackWrapper) {
