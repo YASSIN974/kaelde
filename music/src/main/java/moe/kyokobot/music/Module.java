@@ -121,6 +121,7 @@ public class Module implements KyokoModule {
         commands.add(new BindCommand(musicManager));
         commands.add(new UnbindCommand(musicManager));
         commands.add(new SeekCommand(musicManager));
+        commands.add(new RemoveCommand(musicManager));
         commands.forEach(commandManager::registerCommand);
     }
 

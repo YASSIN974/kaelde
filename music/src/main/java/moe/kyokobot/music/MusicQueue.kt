@@ -34,6 +34,13 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         if (index >= tracks.size) return
         tracks.removeAt(index)
     }
+    fun removeUser(user: String) {
+        for (wrappedTrack: AudioTrackWrapper in tracks) {
+            if (wrappedTrack.user.equals(user)) {
+                tracks.remove(wrappedTrack)
+            }
+        }
+    }
 
     fun announce(track: AudioTrackWrapper) {
         val channel = if (boundChannel != null) boundChannel else announcingChannel
