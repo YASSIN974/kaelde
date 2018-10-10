@@ -2,9 +2,11 @@ package moe.kyokobot.music.commands;
 
 import moe.kyokobot.bot.command.CommandContext;
 import moe.kyokobot.bot.util.CommonErrors;
+import moe.kyokobot.music.MusicIcons;
 import moe.kyokobot.music.MusicManager;
 import moe.kyokobot.music.MusicPlayer;
 import moe.kyokobot.music.MusicQueue;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.jsoup.helper.StringUtil;
 
@@ -37,6 +39,9 @@ public class RemoveCommand extends MusicCommand {
             MusicQueue queue = musicManager.getQueue(context.getGuild());
             if (context.hasArgs()) {
                 String query = context.getConcatArgs().trim();
+                TextChannel channel = queue.getBoundChannel() == null ? queue.getAnnouncingChannel() : queue.getBoundChannel();
+                if (channel == null)
+                    channel = context.getChannel();
                 if (StringUtil.isNumeric(query.toLowerCase())) {
                     int index = parseInt(query, BASE_TEN) - 1;
                     if (index < 0) {
@@ -46,6 +51,7 @@ public class RemoveCommand extends MusicCommand {
                     }
                 } else {
                     queue.removeUser(query);
+                    channel.sendMessage(MusicIcons.REMOVE + "Removed " + query + "'s tracks from queue.").queue();
                 }
             }
         } else

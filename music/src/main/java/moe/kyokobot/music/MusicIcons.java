@@ -9,4 +9,5 @@ public class MusicIcons {
     public static String STOP = "\u23F9  |  ";
     public static String VOLUME = "\uD83D\uDD08  |";
     public static String SHRUG = "\uD83E\uDD37";
+    public static String REMOVE = "\u274C️  |  ";
 }
