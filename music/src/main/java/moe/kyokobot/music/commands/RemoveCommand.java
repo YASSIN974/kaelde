@@ -13,6 +13,7 @@ import org.jsoup.helper.StringUtil;
 import javax.annotation.Nonnull;
 
 import static java.lang.Integer.parseInt;
+import static moe.kyokobot.bot.command.CommandIcons.ERROR;
 
 public class RemoveCommand extends MusicCommand {
 
@@ -44,10 +45,11 @@ public class RemoveCommand extends MusicCommand {
                     channel = context.getChannel();
                 if (StringUtil.isNumeric(query.toLowerCase())) {
                     int index = parseInt(query, BASE_TEN) - 1;
-                    if (index < 0) {
-                        //TODO: Output an error message in text channel
+                    if (index < 0 || index > queue.getTracks().size()) {
+                        channel.sendMessage(ERROR + "\"" + query + "\" is an invalid index.").queue();
                     } else {
                         queue.remove(index);
+                        channel.sendMessage( MusicIcons.REMOVE + "Removed " + query + "from queue.").queue();
                     }
                 } else {
                     queue.removeUser(query);

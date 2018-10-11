@@ -39,6 +39,14 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         tracks.removeIf { track -> track.user == user }
     }
 
+    fun removeDuplicates() {
+        for(i in 1 until tracks.size) {
+           if(tracks.get(i).audioTrack.equals(tracks.get(i - 1).audioTrack)) {
+               tracks.removeAt(i);
+           }
+        }
+    }
+
     fun announce(track: AudioTrackWrapper) {
         val channel = if (boundChannel != null) boundChannel else announcingChannel
         channel?.sendMessage(MusicIcons.PLAY + context?.getTranslated("music.nowplaying")?.format(
