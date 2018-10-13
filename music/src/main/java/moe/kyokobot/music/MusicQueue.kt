@@ -40,11 +40,12 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
     }
 
     fun removeDuplicates() {
-        for(i in 1 until tracks.size) {
-           if(tracks.get(i).audioTrack.equals(tracks.get(i - 1).audioTrack)) {
-               tracks.removeAt(i);
+        for(i in 0 until tracks.size - 1) {
+           if (tracks[i].audioTrack.info.title == tracks[i + 1].audioTrack.info.title) {
+               tracks[i].user = "~~~";
            }
         }
+        removeUser("~~~")
     }
 
     fun announce(track: AudioTrackWrapper) {

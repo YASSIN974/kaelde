@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 
 import static java.lang.Integer.parseInt;
 import static moe.kyokobot.bot.command.CommandIcons.ERROR;
+import static moe.kyokobot.bot.util.StringUtil.markdown;
 
 public class RemoveCommand extends MusicCommand {
 
@@ -29,11 +30,6 @@ public class RemoveCommand extends MusicCommand {
 
     @Override
     public void execute(@Nonnull CommandContext context) {
-        if (!context.hasArgs()) {
-            CommonErrors.usage(context);
-            return;
-        }
-
         VoiceChannel voiceChannel = context.getMember().getVoiceState().getChannel();
         if (voiceChannel != null) {
             MusicPlayer player = musicManager.getMusicPlayer(context.getGuild());
@@ -45,17 +41,21 @@ public class RemoveCommand extends MusicCommand {
                     channel = context.getChannel();
                 if (StringUtil.isNumeric(query.toLowerCase())) {
                     int index = parseInt(query, BASE_TEN) - 1;
-                    if (index < 0 || index > queue.getTracks().size()) {
+                    if ((index < 0) || (index > queue.getTracks().size())) {
                         channel.sendMessage(ERROR + "\"" + query + "\" is an invalid index.").queue();
                     } else {
+                        channel.sendMessage( MusicIcons.REMOVE + context.transFormat("music.removed", markdown(queue.getTracks().get(index).getAudioTrack().getInfo().title))).queue();
                         queue.remove(index);
-                        channel.sendMessage( MusicIcons.REMOVE + "Removed " + query + "from queue.").queue();
                     }
+                } else if (query.toLowerCase().equals("~")) {
+                    queue.removeDuplicates();
+                    channel.sendMessage(MusicIcons.REMOVE + "Removed duplicate tracks").queue();
                 } else {
                     queue.removeUser(query);
                     channel.sendMessage(MusicIcons.REMOVE + "Removed " + query + "'s tracks from queue.").queue();
                 }
-            }
+            } else
+                CommonErrors.usage(context);
         } else
             context.error(context.getTranslated("music.joinchannel"));
     }

@@ -85,7 +85,6 @@ public class PlayCommand extends MusicCommand {
         context.send("YouTube, SoundCloud, Twitch, Bandcamp, NicoNico, ");
     }
 
-
     private boolean loadTracksFromAttachment(CommandContext context, MusicQueue queue) {
         AudioTrack track;
         int items = 0;
