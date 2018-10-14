@@ -92,7 +92,7 @@ public class PlayCommand extends MusicCommand {
         for (Message.Attachment attachment : context.getMessage().getAttachments()) {
             try {
                 track = (AudioTrack) musicManager.resolve(context.getGuild(), attachment.getUrl());
-                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender().getName());
+                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender());
                 queue.add(wrappedTrack);
                 items++;
             } catch (Exception e) {
@@ -132,16 +132,16 @@ public class PlayCommand extends MusicCommand {
                 int tracks = 0;
 
                 for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
-                    AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender().getName());
+                    AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender());
                     queue.add(wrappedTrack);
                     tracks++;
                 }
 
                 context.send(PLAY + context.transFormat("music.addedplaylist", tracks, markdown(((AudioPlaylist) item).getName())));
             } else if (item instanceof AudioTrack) {
-                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender().getName());
+                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender());
                 queue.add(wrappedTrack);
-                context.send(PLAY + "User " + wrappedTrack.getUser() + " " + context.transFormat("music.added", markdown(((AudioTrack) item).getInfo().title)));
+                context.send(context.transFormat("music.addeduser", wrappedTrack.getUser().getId()) + context.transFormat("music.added", markdown(((AudioTrack) item).getInfo().title)));
             } else if (item instanceof AudioReference) {
                 if (((AudioReference) item).identifier == null) {
                     context.error(context.getTranslated("music.agerestricted"));

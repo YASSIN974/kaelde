@@ -111,13 +111,13 @@ public class SearchCommand extends MusicCommand {
                             List<AudioTrack> tracks = ((AudioPlaylist) item).getTracks();
                             List<AudioTrackWrapper> wrappedTracks = new LinkedList<>();
                             for (AudioTrack track : tracks) {
-                                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender().getName());
+                                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender());
                                 wrappedTracks.add(wrappedTrack);
                             }
                             wrappedTracks.forEach(queue::add);
                             items += tracks.size();
                         } else if (item instanceof AudioTrack) {
-                            AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender().getName());
+                            AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender());
                             queue.add(wrappedTrack);
                             items++;
                         }

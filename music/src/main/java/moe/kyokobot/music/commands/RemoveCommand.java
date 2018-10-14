@@ -51,8 +51,9 @@ public class RemoveCommand extends MusicCommand {
                     queue.removeDuplicates();
                     channel.sendMessage(MusicIcons.REMOVE + context.getTranslated("music.remove.duplicates")).queue();
                 } else {
-                    queue.removeUser(query);
-                    channel.sendMessage(MusicIcons.REMOVE + context.transFormat("music.remove.user", query)).queue();
+                    String trimmedQuery = query.substring(2, query.length() - 1);
+                    queue.removeUser(trimmedQuery);
+                    channel.sendMessage(MusicIcons.REMOVE + context.transFormat("music.remove.user", trimmedQuery)).queue();
                 }
             } else
                 CommonErrors.usage(context);

@@ -36,16 +36,17 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
         tracks.removeAt(index)
     }
     fun removeUser(user: String) {
-        tracks.removeIf { track -> track.user == user }
+
+        tracks.removeIf { track -> track.user.id == user }
     }
 
     fun removeDuplicates() {
-        for(i in 0 until tracks.size - 1) {
-           if (tracks[i].audioTrack.info.title == tracks[i + 1].audioTrack.info.title) {
-               tracks[i].user = "~~~";
+        for(i in 0 until tracks.size) {
+           if (tracks[i].audioTrack.info.identifier == tracks[i + 1].audioTrack.info.identifier) {
+               tracks[i].marked = true
            }
         }
-        removeUser("~~~")
+        tracks.removeIf{ track -> track.marked }
     }
 
     fun announce(track: AudioTrackWrapper) {
