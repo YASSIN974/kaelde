@@ -49,10 +49,10 @@ public class RemoveCommand extends MusicCommand {
                     }
                 } else if (query.toLowerCase().equals("~")) {
                     queue.removeDuplicates();
-                    channel.sendMessage(MusicIcons.REMOVE + "Removed duplicate tracks").queue();
+                    channel.sendMessage(MusicIcons.REMOVE + context.getTranslated("music.remove.duplicates")).queue();
                 } else {
                     queue.removeUser(query);
-                    channel.sendMessage(MusicIcons.REMOVE + "Removed " + query + "'s tracks from queue.").queue();
+                    channel.sendMessage(MusicIcons.REMOVE + context.transFormat("music.remove.user", query)).queue();
                 }
             } else
                 CommonErrors.usage(context);
