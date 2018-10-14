@@ -29,7 +29,7 @@ public abstract class MusicCommand extends Command {
         if (checkChannel) {
             GuildVoiceState botState = context.getGuild().getSelfMember().getVoiceState();
             GuildVoiceState userState = context.getMember().getVoiceState();
-            if (botState.getChannel() != null && !userState.getChannel().equals(botState.getChannel())) {
+            if (botState.getChannel() != null && !botState.getChannel().equals(userState.getChannel())) {
                 context.send(CommandIcons.ERROR + context.getTranslated("music.notinbotchannel"));
                 return;
             }
