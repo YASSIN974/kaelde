@@ -50,10 +50,12 @@ public class RemoveCommand extends MusicCommand {
                 } else if (query.toLowerCase().equals("~")) {
                     queue.removeDuplicates();
                     channel.sendMessage(MusicIcons.REMOVE + context.getTranslated("music.remove.duplicates")).queue();
-                } else {
+                } else if (query.matches("<@([0-9])+>")) {
                     String trimmedQuery = query.substring(2, query.length() - 1);
                     queue.removeUser(trimmedQuery);
                     channel.sendMessage(MusicIcons.REMOVE + context.transFormat("music.remove.user", trimmedQuery)).queue();
+                } else {
+                    CommonErrors.usage(context);
                 }
             } else
                 CommonErrors.usage(context);
