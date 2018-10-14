@@ -42,7 +42,7 @@ public class RemoveCommand extends MusicCommand {
                 if (StringUtil.isNumeric(query.toLowerCase())) {
                     int index = parseInt(query, BASE_TEN) - 1;
                     if ((index < 0) || (index > queue.getTracks().size())) {
-                        channel.sendMessage(ERROR + "\"" + query + "\" is an invalid index.").queue();
+                        context.error(context.transFormat("music.invalidindex", query));
                     } else {
                         channel.sendMessage( MusicIcons.REMOVE + context.transFormat("music.removed", markdown(queue.getTracks().get(index).getAudioTrack().getInfo().title))).queue();
                         queue.remove(index);
