@@ -66,7 +66,7 @@ class SeekCommand(val musicManager: MusicManager): MusicCommand() {
                 TimeUnit.MILLISECONDS.toMinutes(timeMs) % 60,
                 TimeUnit.MILLISECONDS.toSeconds(timeMs) % 60)
         timeMs >= 1000 -> String.format("%02d", TimeUnit.MILLISECONDS.toSeconds(timeMs) % 60)
-        else -> "${timeMs}ms"
+        else -> "00:00"
     }
 
     companion object {
