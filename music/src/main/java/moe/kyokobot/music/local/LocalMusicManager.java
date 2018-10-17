@@ -14,10 +14,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import moe.kyokobot.bot.event.VoiceServerUpdateEvent;
 import moe.kyokobot.bot.event.VoiceStateUpdateEvent;
-import moe.kyokobot.music.MusicManager;
-import moe.kyokobot.music.MusicPlayer;
-import moe.kyokobot.music.MusicQueue;
-import moe.kyokobot.music.MusicSettings;
+import moe.kyokobot.music.*;
 import moe.kyokobot.music.event.TrackEndEvent;
 import moe.kyokobot.music.event.TrackStartEvent;
 import net.dv8tion.jda.core.entities.Guild;
@@ -185,14 +182,14 @@ public class LocalMusicManager implements MusicManager {
         MusicQueue queue = queues.get(event.getPlayer().getGuildId());
         if (queue != null) {
             if (queue.getRepeating()) {
-                event.getPlayer().playTrack(queue.getLastTrack().makeClone());
+                event.getPlayer().playTrack(queue.getLastTrack().getAudioTrack().makeClone());
             } else {
                 Guild g = queue.getGuild();
 
                 if (queue.getTracks().isEmpty() && queue.getLastTrack() == null) {
                     dispose(g);
                 } else if (event.getReason().mayStartNext) {
-                    AudioTrack track = queue.poll();
+                    AudioTrackWrapper track = queue.poll();
 
                     if (track == null) {
                         dispose(g);
@@ -205,8 +202,8 @@ public class LocalMusicManager implements MusicManager {
         }
     }
 
-    private void playAndAnnounce(TrackEndEvent event, MusicQueue queue, AudioTrack track) {
-        event.getPlayer().playTrack(track);
-        queue.announce(track);
+    private void playAndAnnounce(TrackEndEvent event, MusicQueue queue, AudioTrackWrapper wrappedTrack) {
+        event.getPlayer().playTrack(wrappedTrack.getAudioTrack());
+        queue.announce(wrappedTrack);
     }
 }

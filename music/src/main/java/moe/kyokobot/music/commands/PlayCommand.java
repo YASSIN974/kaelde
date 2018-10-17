@@ -85,7 +85,6 @@ public class PlayCommand extends MusicCommand {
         context.send("YouTube, SoundCloud, Twitch, Bandcamp, NicoNico, ");
     }
 
-
     private boolean loadTracksFromAttachment(CommandContext context, MusicQueue queue) {
         AudioTrack track;
         int items = 0;
@@ -93,7 +92,8 @@ public class PlayCommand extends MusicCommand {
         for (Message.Attachment attachment : context.getMessage().getAttachments()) {
             try {
                 track = (AudioTrack) musicManager.resolve(context.getGuild(), attachment.getUrl());
-                queue.add(track);
+                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender());
+                queue.add(wrappedTrack);
                 items++;
             } catch (Exception e) {
                 context.error(context.transFormat("music.error", e.getMessage()));
@@ -132,14 +132,16 @@ public class PlayCommand extends MusicCommand {
                 int tracks = 0;
 
                 for (AudioTrack track : ((AudioPlaylist) item).getTracks()) {
-                    queue.add(track);
+                    AudioTrackWrapper wrappedTrack = new AudioTrackWrapper(track, context.getSender());
+                    queue.add(wrappedTrack);
                     tracks++;
                 }
 
                 context.send(PLAY + context.transFormat("music.addedplaylist", tracks, markdown(((AudioPlaylist) item).getName())));
             } else if (item instanceof AudioTrack) {
-                queue.add((AudioTrack) item);
-                context.send(PLAY + context.transFormat("music.added", markdown(((AudioTrack) item).getInfo().title)));
+                AudioTrackWrapper wrappedTrack = new AudioTrackWrapper((AudioTrack) item, context.getSender());
+                queue.add(wrappedTrack);
+                context.send(context.transFormat("music.addeduser", wrappedTrack.getUser().getId()) + context.transFormat("music.added", markdown(((AudioTrack) item).getInfo().title)));
             } else if (item instanceof AudioReference) {
                 if (((AudioReference) item).identifier == null) {
                     context.error(context.getTranslated("music.agerestricted"));
