@@ -41,7 +41,7 @@ class MusicQueue(val manager: MusicManager, val guild: Guild) {
     }
 
     fun removeDuplicates() {
-        for(i in 0 until tracks.size) {
+        for(i in 0 until tracks.size - 1) {
            if (tracks[i].audioTrack.info.identifier == tracks[i + 1].audioTrack.info.identifier) {
                tracks[i].marked = true
            }
